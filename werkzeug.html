@@ -1099,6 +1099,15 @@
   .vs-feld textarea:focus { outline: 2px solid var(--blau); outline-offset: 1px; border-color: var(--blau); }
   .vs-feld .vs-auto { color: var(--fg-muted); font-size: 12.5px; margin-top: 5px; }
   .vs-fuss { display: flex; justify-content: flex-end; padding-top: 24px; }
+                                                                              
+                                                                                
+                             
+  .vs-verlauf > summary { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); cursor: pointer; list-style: none; display: flex; align-items: center; gap: 7px; }
+  .vs-verlauf > summary::-webkit-details-marker { display: none; }
+  .vs-verlauf > summary::before { content: '\203A'; font-size: 15px; line-height: 1; transition: transform .15s var(--ease); }
+  .vs-verlauf[open] > summary::before { transform: rotate(90deg); }
+  .vs-verlauf > summary:focus-visible { outline: 2px solid var(--blau); outline-offset: 3px; }
+  .vs-verlauf > *:not(summary) { margin-top: 9px; }
   @media (max-width: 560px) {
     .vorschau-dialog { width: 100%; }
   }
@@ -1376,6 +1385,43 @@
                                                                           
                                                                              
   #hausVorschau .vs-fuss { gap: 24px; justify-content: flex-start; }
+
+                                                                              
+                                                                        
+                                                                             
+  .haus-leiste { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; background: var(--weiss); border-top: 1px solid var(--line); box-shadow: 0 -8px 28px rgba(13,12,43,.10); padding: 12px clamp(16px, 4vw, 40px); }
+  .haus-leiste .textbtn { padding: 0; }
+                                                                          
+                                                                              
+                                    
+  #ansicht-haus.mit-leiste { padding-bottom: 72px; }
+                                                                             
+  #hausKuratierung .vs-fuss { gap: 22px; align-items: center; }
+
+                                                                           
+                                                                           
+                                                                      
+  .hp-druck { display: none; }
+  .hp-gruppe { margin-bottom: 18px; }
+  .hp-gruppe-kopf { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--fg); margin-bottom: 4px; }
+  .hp-meta { color: var(--fg-2); font-size: 12.5px; margin-top: 3px; }
+  @media print {
+    body.druck-hausportfolio .hp-druck { display: block; }
+    body.druck-hausportfolio header.top,
+    body.druck-hausportfolio .auftakt,
+    body.druck-hausportfolio #hausKopf,
+    body.druck-hausportfolio .flaeche,
+    body.druck-hausportfolio .haus-leiste,
+    body.druck-hausportfolio .fusszeile,
+    body.druck-hausportfolio .hs-druck-kopf,
+    body.druck-hausportfolio .vorschau-dialog { display: none !important; }
+    body.druck-hausportfolio .druck-item.nominiert { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+                                                                         
+    body.druck-hausportfolio .hp-seite2 { break-before: page; }
+                                                                            
+                                                             
+    body.druck-hausportfolio .druck-block, body.druck-hausportfolio .hp-gruppe { break-inside: auto; }
+  }
 
                                                                              
                                                                      
@@ -1685,15 +1731,39 @@
       </div>
       <div id="hausKoerper"></div>
     </div>
+    
+    <div class="haus-leiste verborgen" id="hausLeiste"></div>
     <div class="fusszeile">
-      <span>Stufe 1: Lesesicht. Die Auswahl bleibt in diesem Browser.</span>
+      <span id="hausFussHinweis">Die Vormerkung bleibt in diesem Browser, bis sie bestätigt wird.</span>
       <span class="fuss-rechts">
+        <button class="textbtn blau" type="button" id="hausPortfolioDruck">Portfolio drucken</button>
         <button class="textbtn blau" type="button" id="hausDruck">Liste drucken</button>
       </span>
     </div>
     
     <input type="file" id="hausDatei" accept=".json,application/json" multiple hidden>
+
+    
+    <div class="hp-druck" id="hausPortfolioDruckSeite" aria-hidden="true">
+      <header class="druck-kopf">
+        <h1>Leitungsportfolio</h1>
+        <p class="druck-datum" id="hpDruckDatum"></p>
+      </header>
+      <section class="druck-block">
+        <h2>Für das Leitungsportfolio nominiert</h2>
+        <div id="hpNachAbteilung"></div>
+      </section>
+      <section class="druck-block hp-seite2">
+        <h2>Nach Zieldimension</h2>
+        <div id="hpNachZiel"></div>
+      </section>
+    </div>
   </section>
+
+  
+  <dialog class="vorschau-dialog" id="hausKuratierung" aria-labelledby="hausKuratierungTitel">
+    <div id="hausKuratierungInhalt"></div>
+  </dialog>
 
   
   <dialog class="vorschau-dialog" id="hausVorschau" aria-labelledby="hausVorschauTitel">
@@ -1742,6 +1812,17 @@
   ];
   const IST_NOMINIERT = wert => wert === 'nominiert';
 
+                                                                            
+                                                                            
+                                                                     
+                                                                         
+                                                                           
+                                                      
+  function istZurueckgestellt(v) {
+    return !!(v && v.zurueckgestellt && v.zurueckgestellt.am);
+  }
+  const wirksamNominiert = v => !!v && IST_NOMINIERT(v.leitung) && !istZurueckgestellt(v);
+
                                                                            
                                                                                
                                                                                 
@@ -1782,6 +1863,15 @@
                                                                           
                     
       leitung: 'offen', bmWarum: '',
+                                                                               
+                                                                               
+                                                                        
+                                                                              
+      zurueckgestellt: null,
+                                                                         
+                                                                             
+                                                     
+      historie: [],
                                                                             
                                                                              
                                                                            
@@ -1842,6 +1932,120 @@
       v.kennung = neu;
     });
     return liste;
+  }
+
+                                                                            
+                                                                               
+                                                                             
+                                                                        
+                                                                          
+                                                      
+  const ISO_TAG = /^\d{4}-\d{2}-\d{2}$/;
+  function heuteTag(heute) {
+    if (typeof heute === 'string' && ISO_TAG.test(heute)) return heute;
+    const d = heute instanceof Date ? heute : new Date();
+    const zwei = zahl => String(zahl).padStart(2, '0');
+    return d.getFullYear() + '-' + zwei(d.getMonth() + 1) + '-' + zwei(d.getDate());
+  }
+  function tagDeutsch(tag) {
+    const teile = String(tag || '').split('-');
+    return teile.length === 3 ? teile[2] + '.' + teile[1] + '.' + teile[0] : '';
+  }
+
+                                                                             
+                                                                             
+                                                        
+  function historieFortschreiben(v, feld, alt, neu, heute) {
+    if (!v || alt === neu) return null;
+    const am = heuteTag(heute);
+    let eintrag = null;
+    if (feld === 'entscheidung') {
+      eintrag = { am: am, art: 'entscheidung', zu: String(neu) };
+    } else if (feld === 'leitung') {
+      if (IST_NOMINIERT(neu)) eintrag = { am: am, art: 'nominiert' };
+      else if (IST_NOMINIERT(alt)) eintrag = { am: am, art: 'nominierung-zurueckgenommen' };
+    } else if (feld === 'zurueckgestellt') {
+      eintrag = { am: am, art: neu ? 'zurueckgestellt' : 'zurueckstellung-zurueckgenommen' };
+    }
+    if (!eintrag) return null;
+    if (!Array.isArray(v.historie)) v.historie = [];
+    v.historie.push(eintrag);
+    return eintrag;
+  }
+
+                                                                      
+  function feldSetzen(v, feld, wert, heute) {
+    if (!v) return null;
+    const alt = v[feld];
+    v[feld] = wert;
+    return historieFortschreiben(v, feld, alt, wert, heute);
+  }
+
+                                                                         
+                                                                             
+                                                                
+  function nominierungSetzen(v, wert, heute) {
+    if (!v) return null;
+    v.zurueckgestellt = null;
+    return feldSetzen(v, 'leitung', wert, heute);
+  }
+
+                                                                        
+                                                                          
+  function zurueckstellen(v, heute) {
+    if (!v || istZurueckgestellt(v)) return null;
+    const marke = { am: heuteTag(heute) };
+    v.zurueckgestellt = marke;
+    return historieFortschreiben(v, 'zurueckgestellt', null, marke, heute);
+  }
+  function zurueckstellungZuruecknehmen(v, heute) {
+    if (!v || !istZurueckgestellt(v)) return null;
+    const alt = v.zurueckgestellt;
+    v.zurueckgestellt = null;
+    return historieFortschreiben(v, 'zurueckgestellt', alt, null, heute);
+  }
+
+                                                                             
+                                                                   
+  function historieErgaenzen(liste) {
+    (liste || []).forEach(v => {
+      if (!Array.isArray(v.historie)) v.historie = [];
+      if (!istZurueckgestellt(v)) v.zurueckgestellt = null;
+    });
+    return liste;
+  }
+
+  const HISTORIE_ENTSCHEIDUNG = {
+    prio: 'auf „eingeplant“ gestellt',
+    wartet: 'auf „wartet“ gestellt',
+    nicht: 'auf „eingestellt“ gestellt',
+    offen: 'auf offen zurückgesetzt'
+  };
+  const HISTORIE_WORT = {
+    nominiert: 'für das Leitungsportfolio nominiert',
+    'nominierung-zurueckgenommen': 'Nominierung zurückgenommen',
+    zurueckgestellt: 'von der Hausleitung zurückgestellt',
+    'zurueckstellung-zurueckgenommen': 'Zurückstellung zurückgenommen'
+  };
+  function historieSatz(eintrag) {
+    if (!eintrag) return '';
+    const wort = eintrag.art === 'entscheidung'
+      ? HISTORIE_ENTSCHEIDUNG[eintrag.zu] || ''
+      : HISTORIE_WORT[eintrag.art] || '';
+    return wort ? tagDeutsch(eintrag.am) + ' · ' + wort : '';
+  }
+                                                                         
+                          
+  function historieSaetze(v) {
+    const liste = (v && Array.isArray(v.historie)) ? v.historie : [];
+    return liste.slice().reverse().map(historieSatz).filter(Boolean);
+  }
+
+  const ZURUECKGESTELLT_CHIP = 'Nach Leitungsrunde zurückgestellt';
+  function zurueckstellungSatz(v) {
+    if (!istZurueckgestellt(v)) return '';
+    return 'Die Hausleitung hat das Vorhaben am ' + tagDeutsch(v.zurueckgestellt.am)
+      + ' in das Abteilungsportfolio zurückgestellt. Eine erneute Nominierung ist möglich.';
   }
 
                                                                        
@@ -2190,7 +2394,9 @@
     if (wahl === 'offen') return { wert: 'offen', satz: 'Noch nicht einzuordnen, es fehlen Antworten.' };
     if (wahl === 'wartet') return { wert: 'warte', satz: 'Wartet auf die benannte Bedingung, mit Wiedervorlage.' };
     if (wahl === 'nicht') return { wert: 'nicht', satz: 'Wird nicht weiterverfolgt, sichtbar ausgewiesen.' };
-    if (IST_NOMINIERT(v.leitung)) {
+                                                                         
+                                                              
+    if (wirksamNominiert(v)) {
       return { wert: 'haus', satz: 'Eingeplant und für Leitungsportfolio nominiert. Ausgewählt wird im Haus.' };
     }
     return { wert: 'fach', satz: 'Eingeplant, die Abteilung steuert es selbst.' };
@@ -2404,8 +2610,10 @@
                                                                                 
                                                                             
                                                
-  const nominierungen = liste => liste.filter(v => IST_NOMINIERT(v.leitung) && portfolio(v, liste).wert === 'haus');
-  const nominierungenZurueck = liste => liste.filter(v => IST_NOMINIERT(v.leitung) && portfolio(v, liste).wert !== 'haus');
+                                                                          
+                                                          
+  const nominierungen = liste => liste.filter(v => wirksamNominiert(v) && portfolio(v, liste).wert === 'haus');
+  const nominierungenZurueck = liste => liste.filter(v => wirksamNominiert(v) && portfolio(v, liste).wert !== 'haus');
 
                                                                              
                                                                           
@@ -2976,6 +3184,7 @@
     bericht.referate = [...referateAnzeige].sort((a, b) => a.localeCompare(b, 'de'));
     bericht.tagesgeschaeft = [...tgReferate];
     kennungenErgaenzen(stand.vorhaben);
+    historieErgaenzen(stand.vorhaben);
     return bericht;
   }
 
@@ -3002,7 +3211,9 @@
         referat: v.referat || '',
         wahl: gewaehlt(v, liste),
         korb: portfolio(v, liste).wert,
-        nominiert: IST_NOMINIERT(v.leitung),
+                                                                              
+                                           
+        nominiert: wirksamNominiert(v),
         vzae: vzaeWert(v),
         laeuft: v.laeuft || ''
       }))
@@ -3059,7 +3270,7 @@
       if (wahl !== e.wahl || korbOhneNominierung(korb) !== korbOhneNominierung(e.korb)) {
         entscheidung.push({ v, vonWahl: e.wahl, nachWahl: wahl, vonKorb: e.korb, nachKorb: korb });
       }
-      const nominiert = IST_NOMINIERT(v.leitung);
+      const nominiert = wirksamNominiert(v);
       if (nominiert !== !!e.nominiert) nominierung.push({ v, von: !!e.nominiert, nach: nominiert });
       const wert = vzaeWert(v);
       if (Math.abs(wert - (Number(e.vzae) || 0)) >= 0.05) bedarf.push({ v, von: Number(e.vzae) || 0, nach: wert });
@@ -3189,7 +3400,7 @@
                                                                             
                                                                            
   function standAusEintraegen(zeilen) {
-    const stand = { v: 3, abteilung: '', verfuegbar: '', tagesgeschaeft: [], vorhaben: [] };
+    const stand = { v: 3, abteilung: '', verfuegbar: '', schreibstand: 0, tagesgeschaeft: [], vorhaben: [] };
     const eintraege = [];
     let neuester = '';
     let sonderDa = false;
@@ -3213,6 +3424,9 @@
           stand.tagesgeschaeft = Array.isArray(objekt.tagesgeschaeft) ? objekt.tagesgeschaeft : [];
                                                                          
           stand.staende = Array.isArray(objekt.staende) ? objekt.staende : [];
+                                                                               
+                                                                               
+          stand.schreibstand = Number(objekt.schreibstand) || 0;
           if (objekt.v) stand.v = objekt.v;
         }
         eintraege.push(eintrag);
@@ -3233,6 +3447,7 @@
     migriereExterneAbhaengigkeiten(stand);
     stand.tagesgeschaeft = tagesgeschaeftZeilen(stand);
     kennungenErgaenzen(stand.vorhaben);
+    historieErgaenzen(stand.vorhaben);
     return { stand: stand, eintraege: eintraege, neuester: neuester, sonderDa: sonderDa };
   }
 
@@ -3289,6 +3504,10 @@
       verfuegbar: (stand && stand.verfuegbar) || '',
       tagesgeschaeft: (stand && stand.tagesgeschaeft) || [],
       staende: (stand && Array.isArray(stand.staende)) ? stand.staende : [],
+                                                                           
+                                                                         
+                            
+      schreibstand: Number(stand && stand.schreibstand) || 0,
       v: (stand && stand.v) || 3
     });
   }
@@ -3358,6 +3577,47 @@
     const sonder = alt[SP_SONDER] !== sonderJetzt ? { kennung: SP_SONDER, text: sonderJetzt } : null;
     const entfallen = Object.keys(alt).filter(kennung => !gesehen[kennung]);
     return { geaendert: geaendert, sonder: sonder, entfallen: entfallen };
+  }
+
+                                                                      
+                                                                             
+                                                                         
+                                                          
+
+                                                                          
+                                                                     
+                                                                     
+                                                                    
+                                                                        
+                                                                      
+  function fremdVorhabenSchreiben(hole, site, titel, kennung, digest, anwenden, typ, zweiterVersuch) {
+    return standLesen(hole, site, titel).then(gelesen => {
+      const v = (gelesen.stand.vorhaben || []).find(x => x.kennung === kennung);
+      const eintrag = (gelesen.eintraege || []).find(e => e.kennung === kennung);
+      if (!v || !eintrag) throw new Error('Vorhaben nicht in der Liste');
+      anwenden(v);
+      const koerper = eintragAusVorhaben(v, gelesen.stand.vorhaben, typ);
+      return eintragAendern(hole, site, titel, eintrag.id, eintrag.etag, digest, koerper).then(antwort => {
+        if (antwort.status === 412 && !zweiterVersuch) {
+          return fremdVorhabenSchreiben(hole, site, titel, kennung, digest, anwenden, typ, true);
+        }
+        if (!antwort.ok && antwort.status !== 204) throw new Error('Schreiben ' + antwort.status);
+        return { vorhaben: v, stand: gelesen.stand, eintraege: gelesen.eintraege };
+      });
+    });
+  }
+
+                                                                               
+                                                                          
+                                                                          
+                                                                            
+                   
+  function fremdZaehlerErhoehen(hole, site, titel, stand, eintraege, digest, typ) {
+    const eintrag = (eintraege || []).find(e => e.kennung === SP_SONDER);
+    if (!eintrag) return Promise.resolve(null);
+    const naechster = Object.assign({}, stand, { schreibstand: (Number(stand && stand.schreibstand) || 0) + 1 });
+    return eintragAendern(hole, site, titel, eintrag.id, eintrag.etag, digest, eintragAusSonder(naechster, typ))
+      .then(antwort => (antwort.status === 412 ? null : antwort));
   }
 
   function aenderungenSeit(hole, site, titel, seit) {
@@ -3527,7 +3787,7 @@
     return (liste || []).slice().sort((a, b) => {
       const stufe = HAUS_RANG[gewaehlt(a, liste)] - HAUS_RANG[gewaehlt(b, liste)];
       if (stufe) return stufe;
-      const nominiert = (IST_NOMINIERT(b.leitung) ? 1 : 0) - (IST_NOMINIERT(a.leitung) ? 1 : 0);
+      const nominiert = (wirksamNominiert(b) ? 1 : 0) - (wirksamNominiert(a) ? 1 : 0);
       if (nominiert) return nominiert;
       return String(a.name || '').localeCompare(String(b.name || ''), 'de');
     });
@@ -3555,7 +3815,10 @@
           liste,
           wahl,
           korb: portfolio(v, liste).wert,
-          nominiert: IST_NOMINIERT(v.leitung) && wahl !== 'nicht',
+          nominiert: wirksamNominiert(v) && wahl !== 'nicht',
+                                                                           
+                                                                           
+          zurueckgestellt: istZurueckgestellt(v),
           stand: v.laeuft === LAEUFT[1] ? 'läuft' : v.laeuft === LAEUFT[2] ? 'geplant' : '',
           folgen: folgenKurz(v),
           ziel: v.ziel,
@@ -3676,8 +3939,12 @@
     }).filter(bahn => bahn.ziel !== WAEHLEN || bahn.eintraege.length);
   }
 
+                                                                               
+                                                                             
+                                        
   function hausNominierungsWort(eintrag) {
     const v = (eintrag && eintrag.v) || eintrag || {};
+    if (istZurueckgestellt(v)) return 'zurückgestellt';
     if (v.leitung === 'offen') return 'offen';
     return IST_NOMINIERT(v.leitung) ? 'nominiert' : 'selbst';
   }
@@ -3711,9 +3978,11 @@
     });
   }
 
+                                                                           
+                                                                           
                                                                               
                                                                             
-                                                                     
+                                                             
   function auswahlSchluessel(eintrag) {
     return eintrag ? eintrag.schluessel : '';
   }
@@ -3730,6 +3999,61 @@
       gewaehlt: sichtbar.filter(e => !!(auswahl || {})[e.schluessel]).length,
       gesamt: sichtbar.length
     };
+  }
+
+                                                        
+
+                                                                        
+                                                                         
+                                                                             
+                                                                          
+                                                                     
+                                                                      
+                                                    
+  function hausKuratierbar(eintrag, umgebung) {
+    if (!eintrag || !eintrag.nominiert) return false;
+    if (eintrag.quelle === 'liste' || eintrag.quelle === 'demo') return true;
+    if (eintrag.quelle === 'eigene') return !!(umgebung && umgebung.eigeneSchreibbar);
+    return false;
+  }
+
+                                                                             
+                                                                         
+                                        
+  function hausVorgemerkte(auswahl, eintraege, umgebung) {
+    const gewaehlt = auswahl || {};
+    return (eintraege || []).filter(e => gewaehlt[e.schluessel] && hausKuratierbar(e, umgebung));
+  }
+
+  function hausZurueckstellenText(anzahl) {
+    return (anzahl === 1 ? '1 Vorhaben' : anzahl + ' Vorhaben') + ' ins Abteilungsportfolio zurückstellen';
+  }
+
+                                                                             
+                                                                         
+                                                                             
+                                                 
+  function hausDruckEintraege(eintraege) {
+    return (eintraege || []).filter(e => e.nominiert);
+  }
+  function hausDruckNachAbteilung(eintraege) {
+    const nach = new Map();
+    hausDruckEintraege(eintraege).forEach(e => {
+      if (!nach.has(e.kuerzel)) nach.set(e.kuerzel, { kuerzel: e.kuerzel, abteilung: e.abteilung, eintraege: [] });
+      nach.get(e.kuerzel).eintraege.push(e);
+    });
+    return [...nach.values()].sort((a, b) => String(a.kuerzel).localeCompare(String(b.kuerzel), 'de'));
+  }
+                                                                            
+                                                                               
+  const HAUS_DRUCK_OHNE_ZIEL = 'Ohne Zieldimension';
+  function hausDruckNachZiel(eintraege) {
+    const drin = hausDruckEintraege(eintraege);
+    const bahnen = ZIELE.map(ziel => ({ ziel: ziel, eintraege: drin.filter(e => e.ziel === ziel) }))
+      .filter(bahn => bahn.eintraege.length);
+    const ohne = drin.filter(e => ZIELE.indexOf(e.ziel) < 0);
+    if (ohne.length) bahnen.push({ ziel: HAUS_DRUCK_OHNE_ZIEL, eintraege: ohne });
+    return bahnen;
   }
 
                                                                              
@@ -3945,6 +4269,9 @@
                                                                             
                                                                  
     kennungenErgaenzen(S.vorhaben);
+                                                                              
+                                          
+    historieErgaenzen(S.vorhaben);
     speichern();
   }
   function speichern() {
@@ -3987,6 +4314,7 @@
   function standUebernehmen(daten, verworfen) {
     S = daten;
     S.vorhaben = S.vorhaben.map(v => Object.assign(neuesVorhaben(v.id, v.name), v));
+    historieErgaenzen(S.vorhaben);
     S.tagesgeschaeft = tagesgeschaeftZeilen(S);
     S.vorhaben.forEach(v => {
       const nummer = parseInt(String(v.id).replace(/\D/g, ''), 10);
@@ -4352,6 +4680,9 @@
           S.abteilung = objekt.abteilung || '';
           S.verfuegbar = objekt.verfuegbar || '';
           S.tagesgeschaeft = tagesgeschaeftZeilen({ tagesgeschaeft: objekt.tagesgeschaeft || [] });
+                                                                       
+                                                              
+          S.schreibstand = Number(objekt.schreibstand) || 0;
         }
         spSchnappschuss[SP_SONDER] = sonderText(S);
         spMarkeSetzen();
@@ -4465,6 +4796,7 @@
         S.abteilung = objekt.abteilung || '';
         S.verfuegbar = objekt.verfuegbar || '';
         S.tagesgeschaeft = tagesgeschaeftZeilen({ tagesgeschaeft: objekt.tagesgeschaeft || [] });
+        S.schreibstand = Number(objekt.schreibstand) || 0;
         spSchnappschuss[SP_SONDER] = sonderText(S);
         spEintraege[SP_SONDER] = { id: zeile.Id, kennung: SP_SONDER, etag: (zeile.__metadata && zeile.__metadata.etag) || (eintrag && eintrag.etag) || '', modified: zeile.Modified || '' };
         spMarkeSetzen();
@@ -5094,6 +5426,8 @@
             <input type="text" id="bmWarum" data-id="${v.id}" data-feld="bmWarum" required aria-required="true" maxlength="240" placeholder="Strategische Bedeutung kurz begründen" value="${esc(v.bmWarum)}">
             ${v.bmWarum.trim() ? '' : '<p class="fehlt">Begründung fehlt noch.</p>'}
           </div>` : ''}
+        
+        ${istZurueckgestellt(v) ? `<p class="hilfe sb-zurueckgestellt">${esc(zurueckstellungSatz(v))}</p>` : ''}
         </div>
       </div>
 
@@ -5133,7 +5467,11 @@
       el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', event => {
         const ziel = nachId(event.target.dataset.id);
         if (!ziel) return;
-        ziel[event.target.dataset.feld] = event.target.value;
+                                                                            
+                                                                            
+                                                                  
+        if (event.target.dataset.feld === 'leitung') nominierungSetzen(ziel, event.target.value);
+        else ziel[event.target.dataset.feld] = event.target.value;
         speichern();
         if (event.target.tagName === 'SELECT') renderErfassen();
         else renderNachTippen();
@@ -5645,7 +5983,7 @@
   function kachel(v, ohneWiederholung) {
     const wahl = gewaehlt(v, S.vorhaben);
     const vzae = vzaeWert(v);
-    const nominiert = IST_NOMINIERT(v.leitung) && wahl !== 'nicht';
+    const nominiert = wirksamNominiert(v) && wahl !== 'nicht';
     const korb = PORTFOLIO[portfolio(v, S.vorhaben).wert];
     const pflicht = offenePflicht(v, S.vorhaben);
     const zentralHinweis = wahl === 'nicht' && verknuepfungsZahl(v, S.vorhaben) >= 3
@@ -5686,6 +6024,20 @@
     return '';
   }
 
+                                                                            
+                                                                           
+                                                                           
+                                                    
+  function verlaufHtml(v) {
+    const saetze = historieSaetze(v);
+    return `<details class="vs-block vs-verlauf">
+      <summary>Verlauf</summary>
+      ${saetze.length
+        ? `<ul class="vs-liste">${saetze.map(satz => `<li>${esc(satz)}</li>`).join('')}</ul>`
+        : '<p class="vs-leer">Noch keine Verschiebungen aufgezeichnet.</p>'}
+    </details>`;
+  }
+
                                                                            
                                                                     
                                                                                
@@ -5714,9 +6066,14 @@
       `<button type="button" data-wahl="${wert}" aria-pressed="${wahl === wert}">${esc(titel)}<small>${esc(unter)}</small></button>`;
     const nominierung = v.leitung === 'offen'
       ? 'Nominierung noch offen.'
-      : IST_NOMINIERT(v.leitung)
-        ? 'Für Leitungsportfolio nominiert. Ausgewählt wird im Haus.'
-        : 'Nicht nominiert, die Abteilung steuert selbst.';
+      : !IST_NOMINIERT(v.leitung)
+        ? 'Nicht nominiert, die Abteilung steuert selbst.'
+                                                                             
+                                                                              
+                                                 
+        : istZurueckgestellt(v)
+          ? 'Für Leitungsportfolio nominiert.'
+          : 'Für Leitungsportfolio nominiert. Ausgewählt wird im Haus.';
     wurzel.innerHTML = `<div class="vs-inhalt">
       <div class="vs-kopf">
         <h2 id="vorschauTitel">${esc(v.name)}</h2>
@@ -5727,6 +6084,8 @@
         <span>${bedarf ? zahlText(bedarf) + ' VZÄ Bedarf' : 'Personalbedarf offen'}</span>
         ${v.ziel && v.ziel !== WAEHLEN ? `<span>${esc(v.ziel)}</span>` : ''}
         ${v.koav ? '<span>Bestandteil KoaV</span>' : ''}
+        
+        ${istZurueckgestellt(v) ? `<span>${esc(ZURUECKGESTELLT_CHIP)}</span>` : ''}
       </div>
       ${erstKlaeren ? `<p class="vs-erstklaeren">Erst klären: ${esc(luecken(v).join(', '))}</p>` : ''}
       <section class="vs-block">
@@ -5773,6 +6132,7 @@
         </div>` : ''}
         ${v.hinweis.trim() ? `<p class="vs-landet">Hinweis der Erfassung: ${esc(v.hinweis)}</p>` : ''}
       </section>
+      ${verlaufHtml(v)}
       <div class="vs-fuss"><button class="btn primary" type="button" id="vorschauSteckbrief">Steckbrief öffnen</button></div>
     </div>`;
                                                                          
@@ -5781,7 +6141,7 @@
                                                                           
                                                                             
     wurzel.querySelectorAll('[data-wahl]').forEach(el => el.addEventListener('click', () => {
-      v.entscheidung = v.entscheidung === el.dataset.wahl ? 'offen' : el.dataset.wahl;
+      feldSetzen(v, 'entscheidung', v.entscheidung === el.dataset.wahl ? 'offen' : el.dataset.wahl);
       speichern();
       renderPriorisieren();
       vorschauOeffnen(v.id);
@@ -5829,7 +6189,7 @@
     return liste.slice().sort((a, b) => {
       const stufe = RANG[gewaehlt(a, S.vorhaben)] - RANG[gewaehlt(b, S.vorhaben)];
       if (stufe) return stufe;
-      const nominiert = (IST_NOMINIERT(b.leitung) ? 1 : 0) - (IST_NOMINIERT(a.leitung) ? 1 : 0);
+      const nominiert = (wirksamNominiert(b) ? 1 : 0) - (wirksamNominiert(a) ? 1 : 0);
       if (nominiert) return nominiert;
       return String(a.name || '').localeCompare(String(b.name || ''), 'de');
     });
@@ -6340,12 +6700,15 @@
                                                                            
                                                                 
     const vorher = kapazitaet(S.vorhaben, verfuegbarWert(), tgLage().summe).wirdFrei;
-    v.entscheidung = wahl;
+    feldSetzen(v, 'entscheidung', wahl);
                                                                              
                                                                        
                                                          
-    if (zone === 'haus' && !IST_NOMINIERT(v.leitung)) v.leitung = 'nominiert';
-    if (zone === 'fach' && IST_NOMINIERT(v.leitung)) v.leitung = 'keine';
+                                                                             
+                                                                             
+                                                                          
+    if (zone === 'haus' && !wirksamNominiert(v)) nominierungSetzen(v, 'nominiert');
+    if (zone === 'fach' && IST_NOMINIERT(v.leitung)) nominierungSetzen(v, 'keine');
     const delta = runde1(kapazitaet(S.vorhaben, verfuegbarWert(), tgLage().summe).wirdFrei - vorher);
     if (delta > 0) belohnungFuer(delta);
     speichern();
@@ -6649,7 +7012,7 @@
                                                                             
                                                             
     box.innerHTML = `<p class="quittung">
-      <span class="qt-satz"><strong>${esc(v.name)}</strong> steht jetzt auf ${esc(ENTSCHEIDUNG[gewaehlt(v, S.vorhaben)])}${IST_NOMINIERT(v.leitung) && gewaehlt(v, S.vorhaben) === 'prio' ? ' und ist für Leitungsportfolio nominiert' : ''}.</span>
+      <span class="qt-satz"><strong>${esc(v.name)}</strong> steht jetzt auf ${esc(ENTSCHEIDUNG[gewaehlt(v, S.vorhaben)])}${wirksamNominiert(v) && gewaehlt(v, S.vorhaben) === 'prio' ? ' und ist für Leitungsportfolio nominiert' : ''}.</span>
       ${pflicht ? `<button class="textbtn blau qt-tun" type="button" data-quittung="${v.id}" data-pflicht="${pflicht}">${esc(OFFENE_PFLICHT[pflicht].kurz.replace(' fehlt', ' ergänzen'))}</button>` : ''}
     </p>`;
     const knopf = box.querySelector('[data-quittung]');
@@ -6746,9 +7109,9 @@
                                                                      
   function druckItemHtml(v) {
     const vzae = vzaeWert(v);
-    const warum = IST_NOMINIERT(v.leitung) && v.bmWarum.trim() ? `<p class="druck-warum">${esc(v.bmWarum)}</p>` : '';
+    const warum = wirksamNominiert(v) && v.bmWarum.trim() ? `<p class="druck-warum">${esc(v.bmWarum)}</p>` : '';
                                                                              
-    return `<div class="druck-item eingeplant${IST_NOMINIERT(v.leitung) ? ' nominiert' : ''}">
+    return `<div class="druck-item eingeplant${wirksamNominiert(v) ? ' nominiert' : ''}">
       <p class="druck-item-name">${esc(v.name)}<span class="druck-item-vzae">${vzae ? zahlText(vzae) + ' VZÄ' : 'VZÄ offen'}</span></p>
       ${warum}
     </div>`;
@@ -6911,6 +7274,7 @@
     migriereExterneAbhaengigkeiten(stand);
     stand.tagesgeschaeft = tagesgeschaeftZeilen(stand);
     kennungenErgaenzen(stand.vorhaben);
+    historieErgaenzen(stand.vorhaben);
     return stand;
   }
 
@@ -7137,8 +7501,7 @@
         </select>
       </div>
       <div class="haus-steuer-teil">
-        <span class="haus-auswahl-zahl"><span class="haus-zahl">${zaehler.gewaehlt}</span> von ${zaehler.gesamt} ausgewählt</span>
-        ${zaehler.gewaehlt ? '<button class="textbtn blau" type="button" id="hausAuswahlLeeren">Auswahl leeren</button>' : ''}
+        <span class="haus-auswahl-zahl"><span class="haus-zahl">${zaehler.gewaehlt}</span> von ${zaehler.gesamt} vorgemerkt</span>
       </div>`;
     document.querySelectorAll('#hausSteuer [data-haus-umfang]').forEach(el => el.addEventListener('click', () => {
       hausNurNominierte = el.dataset.hausUmfang === 'nominiert';
@@ -7153,18 +7516,47 @@
       hausSichtSichern();
       renderHaus();
     });
-    const leeren = document.getElementById('hausAuswahlLeeren');
-    if (leeren) leeren.addEventListener('click', () => {
-      hausAuswahl = {};
-      hausSchreib(HAUS_AUSWAHL, hausAuswahl);
-      renderHaus();
-    });
+  }
+
+  function hausAuswahlLeeren() {
+    hausAuswahl = {};
+    hausSchreib(HAUS_AUSWAHL, hausAuswahl);
+    renderHaus();
+  }
+
+                                                                             
+                                                                            
+                                                                       
+  function renderHausLeiste(bau) {
+    const leiste = document.getElementById('hausLeiste');
+    if (!leiste) return;
+    const vorgemerkt = hausVorgemerkte(hausAuswahl, bau.alle, hausUmgebung());
+    leiste.classList.toggle('verborgen', !vorgemerkt.length);
+    document.getElementById('ansicht-haus').classList.toggle('mit-leiste', !!vorgemerkt.length);
+    if (!vorgemerkt.length) { leiste.innerHTML = ''; return; }
+    leiste.innerHTML = `
+      <button class="btn primary" type="button" id="hausZurueckstellen">${esc(hausZurueckstellenText(vorgemerkt.length))}</button>
+      <button class="textbtn blau" type="button" id="hausAuswahlLeeren">Auswahl leeren</button>`;
+    document.getElementById('hausZurueckstellen').addEventListener('click', () => hausKuratierungOeffnen());
+    document.getElementById('hausAuswahlLeeren').addEventListener('click', hausAuswahlLeeren);
+  }
+
+                                                                             
+                                                                               
+                                                                             
+           
+  function hausUmgebung() {
+    return { eigeneSchreibbar: speicherArt === 'liste' };
   }
 
   const HAUS_HAKEN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17.5 19 7"/></svg>';
+                                                                              
+                                                                              
+                                                                   
   function hausHakenHtml(eintrag, an) {
+    if (!hausKuratierbar(eintrag, hausUmgebung())) return '';
     return `<button class="pt-haken" type="button" data-haus-haken="${esc(eintrag.schluessel)}" aria-pressed="${an}"
-      aria-label="${esc(eintrag.v.name)} für das Leitungsportfolio auswählen">${HAUS_HAKEN_SVG}</button>`;
+      aria-label="${esc(eintrag.v.name)} zum Zurückstellen vormerken">${HAUS_HAKEN_SVG}</button>`;
   }
 
                                                                          
@@ -7527,6 +7919,7 @@
     if (hausAktiv && !bau.sichtbar.some(e => e.schluessel === hausAktiv)) hausAktiv = null;
     renderHausKopf(bau);
     renderHausSteuer(bau);
+    renderHausLeiste(bau);
     document.querySelectorAll('#hausReiterZeile button').forEach(el =>
       el.setAttribute('aria-pressed', String(el.dataset.hausReiter === hausReiter)));
     renderHausLinse();
@@ -7534,7 +7927,143 @@
     else if (hausReiter === 'ziele') renderHausZiele(bau);
     else if (hausReiter === 'laufzeiten') renderHausLaufzeiten(bau);
     else renderHausListe(bau);
+                                                                         
+                                                                         
+                                                                          
+                             
+    const fuss = document.getElementById('hausFussHinweis');
+    if (fuss) {
+      const kuratierbar = bau.alle.some(e => hausKuratierbar(e, hausUmgebung()));
+      fuss.textContent = !kuratierbar
+        ? 'Lesesicht. Stände aus Dateien lassen sich hier nicht verändern.'
+        : (speicherArt === 'liste'
+          ? 'Zurückstellen schreibt in die Liste der betroffenen Abteilung. Die Vormerkung bleibt in diesem Browser, bis sie bestätigt wird.'
+          : 'Demo: Zurückstellen wird hier nur vorgeführt und nicht gespeichert.');
+    }
     hausVerdrahten();
+  }
+
+                                                                             
+                                                                            
+                                                                      
+                                                                               
+
+  function hausDemoQuelle() {
+    return !!(H && H.abteilungen && H.abteilungen.some(a => a.quelle === 'demo'));
+  }
+
+  function hausKuratierungOeffnen() {
+    const bau = hausAufbau();
+    const vorgemerkt = hausVorgemerkte(hausAuswahl, bau.alle, hausUmgebung());
+    const dialog = document.getElementById('hausKuratierung');
+    const wurzel = document.getElementById('hausKuratierungInhalt');
+    if (!vorgemerkt.length || !dialog || !wurzel) return;
+    const nurDemo = vorgemerkt.every(e => e.quelle === 'demo');
+    wurzel.innerHTML = `<div class="vs-inhalt">
+      <div class="vs-kopf">
+        <h2 id="hausKuratierungTitel">Ins Abteilungsportfolio zurückstellen</h2>
+        <button class="vs-schliessen" type="button" aria-label="Rückfrage schließen">&times;</button>
+      </div>
+      <section class="vs-block">
+        <h3>Betroffene Vorhaben</h3>
+        <ul class="vs-liste">${vorgemerkt.map(e => `<li>${esc(e.v.name)} (${esc(e.kuerzel)})</li>`).join('')}</ul>
+      </section>
+      <section class="vs-block">
+        <p>Die Vorhaben kehren in das Portfolio ihrer Abteilung zurück. Die Abteilungen sehen diese Entscheidung. Es wird nichts gelöscht; die Zurückstellung kann jederzeit zurückgenommen werden.</p>
+        ${nurDemo ? '<p class="vs-leer">Demo: Es wird nichts gespeichert.</p>' : ''}
+      </section>
+      <div class="vs-fuss">
+        <button class="textbtn blau" type="button" id="hausKuratierungAbbrechen">Abbrechen</button>
+        <button class="btn primary" type="button" id="hausKuratierungOk">Zurückstellen</button>
+      </div>
+    </div>`;
+    wurzel.querySelector('.vs-schliessen').addEventListener('click', () => dialog.close());
+    document.getElementById('hausKuratierungAbbrechen').addEventListener('click', () => dialog.close());
+    document.getElementById('hausKuratierungOk').addEventListener('click', () => {
+      dialog.close();
+      hausZurueckstellenAusfuehren(vorgemerkt);
+    });
+    dialog.onclick = event => { if (event.target === dialog) dialog.close(); };
+    if (!dialog.open) dialog.showModal();
+  }
+
+                                                                              
+                                                             
+  function hausSchreibweg(eintrag, anwenden) {
+    if (eintrag.quelle === 'eigene') {
+      const v = S.vorhaben.find(x => x.id === eintrag.v.id) || eintrag.v;
+      anwenden(v);
+      speichern();
+      return Promise.resolve(true);
+    }
+    if (eintrag.quelle === 'demo') {
+                                                                               
+                                      
+      anwenden(eintrag.v);
+      return Promise.resolve(true);
+    }
+    const liste = spListen.find(l => l.kuerzel === eintrag.kuerzel);
+    if (speicherArt !== 'liste' || !liste) return Promise.resolve(false);
+                                                                          
+                                                     
+    return hausTypHolen(liste.titel).then(typ => spDigestSichern()
+      .then(digest => fremdVorhabenSchreiben(spHole, spSite, liste.titel, eintrag.v.kennung, digest, anwenden, typ)
+        .then(erg => fremdZaehlerErhoehen(spHole, spSite, liste.titel, erg.stand, erg.eintraege, digest, typ))
+        .then(() => true)));
+  }
+
+  const hausTypen = {};
+  function hausTypHolen(titel) {
+    if (hausTypen[titel]) return Promise.resolve(hausTypen[titel]);
+    return listenTypHolen(spHole, spSite, titel).then(typ => { hausTypen[titel] = typ; return typ; });
+  }
+
+  function hausKuratierungMelden(erfolge, fehler, wort) {
+    if (fehler) {
+      hausHinweis = 'Nicht alles konnte gespeichert werden. ' + (erfolge ? erfolge + ' von ' + (erfolge + fehler) + ' ' : '')
+        + 'Bitte in einem Moment noch einmal versuchen.';
+    } else if (hausDemoQuelle()) {
+      hausHinweis = wort + ' In der Demo wird nichts gespeichert.';
+    } else {
+      hausHinweis = wort;
+    }
+  }
+
+  function hausZurueckstellenAusfuehren(eintraege) {
+    let erfolge = 0, fehler = 0;
+    let kette = Promise.resolve();
+    eintraege.forEach(eintrag => {
+      kette = kette
+        .then(() => hausSchreibweg(eintrag, v => zurueckstellen(v)))
+        .then(gut => { if (gut) erfolge += 1; else fehler += 1; })
+        .catch(() => { fehler += 1; });
+    });
+    return kette.then(() => {
+      hausKuratierungMelden(erfolge, fehler,
+        (erfolge === 1 ? 'Ein Vorhaben steht' : erfolge + ' Vorhaben stehen') + ' wieder im Abteilungsportfolio.');
+      hausAuswahl = {};
+      hausSchreib(HAUS_AUSWAHL, hausAuswahl);
+                                                                         
+                                                                               
+      if (speicherArt === 'liste') return hausLaden().then(() => { renderHaus(); return null; });
+      renderHaus();
+      return null;
+    });
+  }
+
+  function hausRuecknahmeAusfuehren(eintrag) {
+    return hausSchreibweg(eintrag, v => zurueckstellungZuruecknehmen(v))
+      .then(gut => {
+        hausKuratierungMelden(gut ? 1 : 0, gut ? 0 : 1, 'Die Zurückstellung ist zurückgenommen.');
+        if (speicherArt === 'liste') return hausLaden().then(() => { renderHaus(); return null; });
+        renderHaus();
+        return null;
+      })
+      .catch(() => {
+        hausKuratierungMelden(0, 1, '');
+        renderHaus();
+        return null;
+      });
   }
 
                                                                    
@@ -7549,6 +8078,14 @@
     hausVorschauSchluessel = schluessel;
     const v = eintrag.v;
     const an = !!hausAuswahl[schluessel];
+                                                                               
+                                                                           
+                                                                        
+    const umgebung = hausUmgebung();
+    const kuratierbar = hausKuratierbar(eintrag, umgebung);
+    const ruecknahmeMoeglich = eintrag.zurueckgestellt
+      && (eintrag.quelle === 'liste' || eintrag.quelle === 'demo'
+        || (eintrag.quelle === 'eigene' && umgebung.eigeneSchreibbar));
     const konkret = konkretisierung(v);
     const nominierung = v.leitung === 'offen'
       ? 'Nominierung noch offen.'
@@ -7568,6 +8105,7 @@
         ${eintrag.ziel && eintrag.ziel !== WAEHLEN ? `<span>${esc(eintrag.ziel)}</span>` : ''}
         ${eintrag.stand ? `<span>${esc(eintrag.stand)}</span>` : ''}
         ${v.koav ? '<span>Bestandteil KoaV</span>' : ''}
+        ${eintrag.zurueckgestellt ? `<span>${esc(ZURUECKGESTELLT_CHIP)}</span>` : ''}
       </div>
       <section class="vs-block">
         <h3>Veränderung</h3>
@@ -7597,17 +8135,26 @@
         <h3>Hinweis der Erfassung</h3>
         <p>${esc(v.hinweis)}</p>
       </section>` : ''}
+      ${verlaufHtml(v)}
       <div class="vs-fuss">
-        <button class="textbtn blau" type="button" id="hausVorschauHaken">${an ? 'Auswahl zurücknehmen' : 'Für das Leitungsportfolio auswählen'}</button>
+        ${kuratierbar ? `<button class="textbtn blau" type="button" id="hausVorschauHaken">${an ? 'Vormerkung zurücknehmen' : 'Zum Zurückstellen vormerken'}</button>` : ''}
+        ${ruecknahmeMoeglich ? '<button class="textbtn blau" type="button" id="hausVorschauRuecknahme">Zurückstellung zurücknehmen</button>' : ''}
         ${hausSteckbriefWeg(eintrag)}
       </div>
     </div>`;
     wurzel.querySelector('.vs-schliessen').addEventListener('click', () => dialog.close());
-    document.getElementById('hausVorschauHaken').addEventListener('click', () => {
+    const haken = document.getElementById('hausVorschauHaken');
+    if (haken) haken.addEventListener('click', () => {
       hausAuswahl = auswahlUmschalten(hausAuswahl, schluessel);
       hausSchreib(HAUS_AUSWAHL, hausAuswahl);
       renderHaus();
       hausVorschauOeffnen(schluessel);
+    });
+                                                                         
+    const ruecknahme = document.getElementById('hausVorschauRuecknahme');
+    if (ruecknahme) ruecknahme.addEventListener('click', () => {
+      dialog.close();
+      hausRuecknahmeAusfuehren(eintrag);
     });
     const zumSteckbriefKnopf = document.getElementById('hausVorschauSteckbrief');
     if (zumSteckbriefKnopf) zumSteckbriefKnopf.addEventListener('click', () => {
@@ -7643,8 +8190,60 @@
     const zaehler = auswahlZaehler(hausAuswahl, bau.sichtbar);
     document.getElementById('hausDruckTitel').textContent =
       'Portfolio des Hauses · Stand ' + heuteText() + ' · ' + filter + ', ' + abteilung
-      + (zaehler.gewaehlt ? ' · ' + zaehler.gewaehlt + ' von ' + zaehler.gesamt + ' ausgewählt' : '');
+      + (zaehler.gewaehlt ? ' · ' + zaehler.gewaehlt + ' von ' + zaehler.gesamt + ' vorgemerkt' : '');
   }
+
+                                                                        
+                                                                         
+                                                                         
+                                                              
+  function hpItemHtml(eintrag, mitKuerzel) {
+    const v = eintrag.v;
+    const vzae = vzaeWert(v);
+    const referat = String(v.referat || '').trim();
+    const zielText = eintrag.ziel === OHNE_ZIEL ? 'ohne Hausziel'
+      : eintrag.ziel === WAEHLEN ? 'Ziel offen' : eintrag.ziel;
+    const meta = [mitKuerzel ? eintrag.kuerzel : '', referat, zielText, v.koav ? 'Bestandteil KoaV' : '']
+      .filter(Boolean).join(' · ');
+    const warum = String(v.bmWarum || '').trim();
+    return `<div class="druck-item eingeplant nominiert">
+      <p class="druck-item-name">${esc(v.name)}<span class="druck-item-vzae">${vzae ? zahlText(vzae) + ' VZÄ' : 'VZÄ offen'}</span></p>
+      <p class="hp-meta">${esc(meta)}</p>
+      ${warum ? `<p class="druck-warum">${esc(warum)}</p>` : ''}
+    </div>`;
+  }
+
+  function hausPortfolioDruckSetzen(bau) {
+    const eintraege = bau.alle;
+    const gruppen = hausDruckNachAbteilung(eintraege);
+    const bahnen = hausDruckNachZiel(eintraege);
+    const zahl = hausDruckEintraege(eintraege).length;
+    document.getElementById('hpDruckDatum').textContent =
+      'Stand ' + heuteText() + ' · ' + (zahl === 1 ? '1 Vorhaben' : zahl + ' Vorhaben')
+      + ' aus ' + (gruppen.length === 1 ? 'einer Abteilung' : gruppen.length + ' Abteilungen');
+    document.getElementById('hpNachAbteilung').innerHTML = gruppen.length
+      ? gruppen.map(g => `<div class="hp-gruppe">
+          <p class="hp-gruppe-kopf">${esc(g.abteilung)}</p>
+          ${g.eintraege.map(e => hpItemHtml(e, false)).join('')}
+        </div>`).join('')
+      : '<p class="druck-leer">Keine Nominierung gemeldet.</p>';
+    document.getElementById('hpNachZiel').innerHTML = bahnen.length
+      ? bahnen.map(b => `<div class="hp-gruppe">
+          <p class="hp-gruppe-kopf">${esc(b.ziel)}</p>
+          ${b.eintraege.map(e => hpItemHtml(e, true)).join('')}
+        </div>`).join('')
+      : '<p class="druck-leer">Keine Nominierung gemeldet.</p>';
+  }
+
+  function hausPortfolioDrucken() {
+    hausPortfolioDruckSetzen(hausAufbau());
+    document.body.classList.add('druck-hausportfolio');
+    window.print();
+  }
+
+  window.addEventListener('afterprint', () => {
+    document.body.classList.remove('druck-hausportfolio');
+  });
 
   function hausDrucken() {
     if (hausReiter !== 'liste') {
@@ -7836,6 +8435,7 @@
       renderHaus();
     }));
     document.getElementById('hausDruck').addEventListener('click', hausDrucken);
+    document.getElementById('hausPortfolioDruck').addEventListener('click', hausPortfolioDrucken);
     document.getElementById('hausDatei').addEventListener('change', event => {
       const dateien = [...event.target.files];
       event.target.value = '';
