@@ -7094,14 +7094,16 @@
                                                                         
   let druckRueckweg = null;
   function portfolioDruckenVon(hier) {
-    if (ansicht !== 'priorisieren') { druckRueckweg = hier; wechsle('priorisieren'); }
+                                                                          
+                                                            
+    if (ansicht !== 'priorisieren') { druckRueckweg = hier; wechsle('priorisieren', true); }
     portfolioDrucken();
   }
 
   window.addEventListener('afterprint', () => {
     document.body.classList.remove('druck-portfolio');
     dpSeitenregel(false);
-    if (druckRueckweg) { const zurueck = druckRueckweg; druckRueckweg = null; wechsle(zurueck); }
+    if (druckRueckweg) { const zurueck = druckRueckweg; druckRueckweg = null; wechsle(zurueck, true); }
   });
 
                                                                                
@@ -8268,7 +8270,25 @@
     }
   });
 
-  function wechsle(neu) {
+                                                                            
+                                                                           
+                                                                             
+                                                                         
+                                                                          
+                                                                             
+                                                                        
+                                         
+  const ANSICHT_ANKER = { erfassen: '#erfassen', vorbereiten: '#vorbereiten', priorisieren: '#entscheiden', druck: '#druck', haus: '#haus' };
+  const ANKER_ANSICHT = {
+    '#erfassen': 'erfassen', '#vorbereiten': 'vorbereiten', '#druck': 'druck', '#haus': 'haus',
+    '#entscheiden': 'priorisieren', '#portfolio': 'priorisieren', '#matrix': 'priorisieren',
+    '#abhaengig': 'priorisieren', '#laufzeiten': 'priorisieren'
+  };
+  function ankerNutzbar() {
+    try { return !String(location.href).startsWith('about:'); } catch (fehler) { return false; }
+  }
+
+  function wechsle(neu, ohneAnker) {
                                                                             
                                                                         
     if (speicherArt === 'liste') spSchreiben();
@@ -8339,8 +8359,28 @@
       renderHaus();
     }
     else renderPriorisieren();
+                                                                         
+                                                                          
+                                                                           
+                                                                           
+                                                            
+    if (!ohneAnker && ankerNutzbar() && ANSICHT_ANKER[ansicht]
+      && ANKER_ANSICHT[location.hash] !== ansicht
+      && !(location.hash === '' && ansicht === 'erfassen')) {
+      try { location.hash = ANSICHT_ANKER[ansicht]; } catch (fehler) {                           }
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+                                                                              
+                                                                            
+                                                                       
+  window.addEventListener('hashchange', () => {
+    const ziel = location.hash === '' ? 'erfassen' : ANKER_ANSICHT[location.hash];
+    if (!ziel || ziel === ansicht) return;
+    if (ziel === 'haus' && !hausVerfuegbar()) return;
+    wechsle(ziel);
+  });
 
   function start() {
                                                                                
