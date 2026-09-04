@@ -5097,7 +5097,17 @@
   }
 
   function spUhrenStarten() {
-    setInterval(spAktualisieren, 30000);
+                                                                     
+                                                                            
+                                                                          
+                                                                          
+                          
+    setInterval(spAktualisieren, 10000);
+                                                                         
+                                                                    
+    setInterval(() => {
+      if (ansicht === 'haus' && speicherArt === 'liste' && !hausLaedt) hausLaden();
+    }, 30000);
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') spAktualisieren();
     });
