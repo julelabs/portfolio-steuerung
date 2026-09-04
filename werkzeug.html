@@ -2127,6 +2127,48 @@
     return x.abteilung ? x.name + ' (' + x.abteilung + ')' : x.name;
   }
 
+                                                                           
+                                                                          
+                                                                             
+                                                                        
+                                                                       
+                                                                          
+                                                               
+  const VERK_PAAR = /^verk:([a-z0-9]{8}):([a-z0-9]{8})$/;
+  function paarKennung(von, zu) { return 'verk:' + von + ':' + zu; }
+  function paarLesen(kennung) {
+    const t = VERK_PAAR.exec(String(kennung || ''));
+    return t ? { von: t[1], zu: t[2] } : null;
+  }
+  function gewuenschtePaare(liste) {
+    const paare = new Set();
+    (liste || []).forEach(v => {
+      if (!kennungGueltig(v.kennung)) return;
+      fremdeVerknuepfungen(v).forEach(zu => paare.add(paarKennung(v.kennung, zu)));
+    });
+    return paare;
+  }
+                                                                    
+                                                                      
+                                                                         
+                                                                            
+                                  
+  function eingehendeVerknuepfungen(v, externe) {
+    if (!v || !kennungGueltig(v.kennung)) return [];
+    const eigene = new Set(fremdeVerknuepfungen(v));
+    return (externe || []).map(e => paarLesen(e && e.kennung)).filter(Boolean)
+      .filter(p => p.zu === v.kennung && !eigene.has(p.von))
+      .map(p => {
+        const x = (externe || []).find(e => e && e.kennung === p.von);
+        return { kennung: p.von, name: (x && x.name) || '', abteilung: (x && x.abteilung) || '' };
+      });
+  }
+  function rueckverweisSatz(x) {
+    const name = x.name ? '„' + x.name + '“' : 'Ein Vorhaben';
+    const abt = x.abteilung ? ' (Abteilung ' + x.abteilung + ')' : ' (andere Abteilung)';
+    return name + abt + ' hat sich mit diesem Vorhaben verknüpft.';
+  }
+
   function abhaengigkeitenBereinigen(liste) {
     const ids = new Set((liste || []).map(v => v.id));
                                                                            
@@ -3721,6 +3763,23 @@
     }).catch(() => null);
   }
 
+                                                                          
+                                                                           
+                                                                        
+                                                                         
+                                                                  
+  function paareAbgleichen(hole, site, digest, typ, vorhaben, kuerzel, vorhandene) {
+    const soll = gewuenschtePaare(vorhaben);
+    const schritte = [];
+    soll.forEach(k => {
+      if (!vorhandene.has(k)) schritte.push(() => namenPflegen(hole, site, digest, typ, k, '(Verknüpfung)', kuerzel));
+    });
+    vorhandene.forEach(k => {
+      if (!soll.has(k)) schritte.push(() => namenLoeschen(hole, site, digest, k));
+    });
+    return schritte.reduce((kette, schritt) => kette.then(schritt), Promise.resolve()).then(() => soll);
+  }
+
   function namenTypHolen(hole, site) {
     return listenTypHolen(hole, site, 'Vorhabensnamen').catch(() => null);
   }
@@ -4393,6 +4452,7 @@
   let spReferate = null;                                                                            
   let spNamenDa = false;
   let spNamen = null;                                                                             
+  let spPaarStand = null;                                                                                     
   let spStandZeit = '';
   let spSchreibUhr = null, spWiederholUhr = null, spAbgleichZeit = 0;
   let spLaeuft = false, spNochmal = false, spOffline = false, spKeepalive = false;
@@ -4566,6 +4626,7 @@
       diff.entfallen.forEach(kennung => { kette = kette.then(() => spEintragWeg(kennung, digest)); });
       diff.geaendert.forEach(eintrag => { kette = kette.then(() => spEintragSchreiben(eintrag, digest)); });
       if (diff.sonder) kette = kette.then(() => spSonderSchreiben(diff.sonder, digest));
+      kette = kette.then(() => spPaareAbgleichen(digest));
       return kette;
     }).then(() => {
       spFehlerAus();
@@ -4717,6 +4778,16 @@
     return namenLoeschen(spHole, spSite, digest, kennung);
   }
 
+                                                                           
+                                                                  
+  function spPaareAbgleichen(digest) {
+    if (!spNamenDa || !spNamenTyp || !spListe || !spListe.schreiben) return Promise.resolve(null);
+    const soll = gewuenschtePaare(S.vorhaben);
+    if (spPaarStand && soll.size === spPaarStand.size && [...soll].every(k => spPaarStand.has(k))) return Promise.resolve(null);
+    return paareAbgleichen(spHole, spSite, digest, spNamenTyp, S.vorhaben, spListe.kuerzel, spPaarStand || new Set())
+      .then(neu => { spPaarStand = neu; return null; });
+  }
+
                                                                                 
 
   function spAnlegen(name) {
@@ -4853,7 +4924,12 @@
         spFehlerAus();
         if (Date.now() - spAbgleichZeit > 5 * 60 * 1000) {
           spAbgleichZeit = Date.now();
-          return spAbgleich();
+                                                                       
+                                                                        
+                                             
+          return namenLesen(spHole, spSite)
+            .then(namen => { if (namen) spNamen = namen; return null; })
+            .then(() => spAbgleich());
         }
         return null;
       })
@@ -4987,6 +5063,12 @@
         if (spReferate && !spReferate.length) spReferate = null;
         spNamenDa = !!namen;
         spNamen = namen;
+                                                                              
+                                                                            
+                                                      
+        spPaarStand = new Set((namen || [])
+          .filter(e => e.abteilung === spListe.kuerzel && paarLesen(e.kennung))
+          .map(e => e.kennung));
         spTyp = typ;
         spNamenTyp = namenTyp;
         spSicherungSchreiben();
@@ -5209,6 +5291,19 @@
     if (speicherArt !== 'liste' || !Array.isArray(spNamen) || !spListe) return [];
     const eigene = new Set(S.vorhaben.map(v => v.kennung));
     return spNamen.filter(e => kennungGueltig(e.kennung) && e.abteilung !== spListe.kuerzel && !eigene.has(e.kennung) && String(e.name || '').trim());
+  }
+
+                                                                           
+                                                                            
+                                  
+  function rueckverweise(v) {
+    if (speicherArt !== 'liste' || !Array.isArray(spNamen)) return [];
+    return eingehendeVerknuepfungen(v, spNamen);
+  }
+  function rueckverweisFeldHtml(v) {
+    const rueck = rueckverweise(v);
+    if (!rueck.length) return '';
+    return `<p class="feld-hilfe">${rueck.map(x => esc(rueckverweisSatz(x))).join(' ')}</p>`;
   }
 
   function feldFolge(v, feld, frage, hinweisText) {
@@ -5444,6 +5539,7 @@
               <button class="btn leise" type="button" id="abhAdd">Hinzufügen</button>
               <datalist id="abhListe">${abhVorschlaege(v)}</datalist>
             </div>
+            ${rueckverweisFeldHtml(v)}
           </div>
           <div class="feld">
             <label for="hinweis">Weitere wichtige Information</label>
@@ -6132,6 +6228,10 @@
         </div>` : ''}
         ${v.hinweis.trim() ? `<p class="vs-landet">Hinweis der Erfassung: ${esc(v.hinweis)}</p>` : ''}
       </section>
+      ${rueckverweise(v).length ? `<section class="vs-block">
+        <h3>${rueckverweise(v).length > 1 ? 'Verknüpfungen aus anderen Abteilungen' : 'Verknüpfung aus anderer Abteilung'}</h3>
+        ${rueckverweise(v).map(x => `<p>${esc(rueckverweisSatz(x))}</p>`).join('')}
+      </section>` : ''}
       ${verlaufHtml(v)}
       <div class="vs-fuss"><button class="btn primary" type="button" id="vorschauSteckbrief">Steckbrief öffnen</button></div>
     </div>`;
@@ -6269,7 +6369,11 @@
       .map(id => nachId(id)).filter(Boolean).map(v => v.name)
                                                                               
                                                            
-      .concat((fokus.auswahl.haengtAn || []).filter(istKennungsVerweis).map(a => fremdName(a, fremdeNamen())));
+      .concat((fokus.auswahl.haengtAn || []).filter(istKennungsVerweis).map(a => fremdName(a, fremdeNamen())))
+                                                                     
+                                                                       
+                             
+      .concat(rueckverweise(fokus.auswahl).map(x => x.name ? x.name + ' (' + (x.abteilung ? 'Abteilung ' + x.abteilung : 'andere Abteilung') + ')' : 'ein Vorhaben einer anderen Abteilung'));
     if (!namen.length) return 'Keine Verknüpfung zu einem anderen Vorhaben erfasst.';
     return `${fokus.auswahl.name} hängt zusammen mit ${namensListe(namen)}.`;
   }
