@@ -169,48 +169,33 @@
   details.frage[open] summary .pfeil { transform: rotate(180deg); border-color: var(--blau); }
   details.frage summary:hover .pfeil { border-color: var(--blau); }
 
-  .antwort { padding: 0 36px 24px 0; }
-  .antwort > p, .antwort > ul, .antwort .kern, .antwort .detail, .antwort .orientierung, .antwort .zwei { max-width: 70ch; }
+  .antwort { padding: 0 36px 24px 0; font-size: 15.5px; }
+                                                                               
+                                                                           
+                                                    
+  .antwort > :not(.tabelle) { width: 100%; max-width: 640px; }
+  .antwort > * + * { margin-top: 12px; }
   .antwort p, .antwort li { font-size: 15.5px; color: var(--fg-2); text-wrap: pretty; }
-  .antwort p + p, .antwort ul + p, .antwort p + ul, .antwort .tabelle + p, .antwort p + .tabelle, .antwort .kern + p, .antwort p + .kern, .antwort ul + .kern, .antwort .tabelle + .kern { margin-top: 12px; }
-  .antwort ul { margin-left: 1.2em; }
+  .antwort ul { padding-left: 1.2em; }
   .antwort li + li { margin-top: 6px; }
   .antwort strong, .antwort b { color: var(--fg); }
 
-                                               
-  .kern { background: var(--blau-10); border-radius: 10px; padding: 14px 18px; font-family: var(--display); font-weight: 700; font-size: 16px; line-height: 1.4; color: var(--fg); }
-  .kern small { display: block; margin-top: 4px; font-family: var(--body); font-weight: 400; font-size: 14.5px; color: var(--fg-2); }
-
-                                                  
-  .nein b { display: block; font-family: var(--display); font-size: 24px; line-height: 1.1; margin-bottom: 6px; }
-
-                                                       
-  .detail { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--blau-20); }
-  .detail p { font-size: 14px; color: var(--fg-muted); }
-  .detail .detail-label { font-family: var(--display); font-weight: 700; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 4px; }
-
-  .orientierung { margin-top: 14px; border: 1px solid var(--blau-20); border-radius: 10px; padding: 12px 16px; }
-  .orientierung .label { font-family: var(--display); font-weight: 700; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 4px; }
-  .orientierung p { font-size: 14.5px; }
-
-  .tabelle { margin-top: 14px; overflow-x: auto; max-width: 820px; }
+                                                                           
+                                                                            
+  .tabelle { overflow-x: auto; max-width: 820px; }
   table { border-collapse: collapse; min-width: 520px; width: 100%; }
-  th, td { text-align: left; font-size: 14.5px; padding: 9px 14px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg-muted); }
+  th, td { text-align: left; font: inherit; padding: 9px 14px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-weight: 700; color: var(--fg); }
   td { color: var(--fg-2); }
-  td b { font-family: var(--display); color: var(--fg); }
-  td b.leise { color: var(--fg-muted); font-weight: 600; }
   tr:last-child td { border-bottom: 0; }
-  td.mitte { color: var(--fg-muted); }
 
-
-  .zwei { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 28px; margin-top: 6px; }
-  .zwei h4 { font-family: var(--display); font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: var(--blau); margin-bottom: 6px; }
-  .zwei ul { margin-left: 1.1em; }
+  .zwei { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 28px; }
+  .zwei h4 { font: inherit; font-weight: 700; color: var(--fg); margin-bottom: 6px; }
   @media (max-width: 620px) { .zwei { grid-template-columns: 1fr; } }
 
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-  .chips span { font-family: var(--display); font-weight: 600; font-size: 13px; color: var(--fg-2); background: var(--blau-10); border-radius: 999px; padding: 5px 11px; }
+  .angaben { columns: 2; column-gap: 28px; }
+  .angaben li { break-inside: avoid; }
+  @media (max-width: 620px) { .angaben { columns: 1; } }
 
                                                                             
                                                                        
@@ -296,13 +281,10 @@
   <details class="frage" id="entscheidet">
     <summary><h3>Was entscheidet das Werkzeug, was die Abteilung?</h3><span class="pfeil" aria-hidden="true"></span></summary>
     <div class="antwort">
-      <p>Das Werkzeug schlägt für jedes Vorhaben <strong>eingeplant</strong>, <strong>wartet</strong> oder <strong>eingestellt</strong> vor. Der Vorschlag kommt aus zwei Antworten im Steckbrief: Was passiert, wenn das Vorhaben im nächsten Halbjahr ruht? Und zahlt es auf ein Ziel des Hauses ein?</p>
+      <p>Das Werkzeug schlägt für jedes Vorhaben <strong>eingeplant</strong>, <strong>wartet</strong> oder <strong>eingestellt</strong> vor. Grundlage sind zwei Antworten im Steckbrief: Was passiert, wenn das Vorhaben im nächsten Halbjahr ruht? Und zahlt es auf ein Ziel des Hauses ein? Auch <a href="#verknuepfungen">Verknüpfungen</a> können die Empfehlung verändern.</p>
       <p>Die Abteilung entscheidet in ihrer Portfoliorunde. Sie kann jedes Vorhaben anders einordnen als vorgeschlagen, auch per Ziehen in der Portfolio-Sicht. Weicht sie ab, hält sie den Grund in einem Satz fest. Dieser Satz bleibt eine Arbeitsnotiz der Abteilung.</p>
       <p>Bei eingeplanten Vorhaben trifft die Abteilung eine zweite Entscheidung: Sie nominiert das Vorhaben für das Leitungsportfolio, oder sie steuert es selbst.</p>
-      <div class="detail">
-        <div class="detail-label">Im Detail</div>
-        <p>Im Werkzeug heißt der Vorschlag „Empfehlung“. Er steht in der Lupe jeder Kachel und im Entscheidungsfeld, jeweils mit der Regel, aus der er kommt.</p>
-      </div>
+      <p>Im Werkzeug heißt der Vorschlag „Empfehlung“. Er steht in der Lupe jeder Kachel und im Entscheidungsfeld, jeweils mit der Regel, aus der er kommt.</p>
     </div>
   </details>
 
@@ -313,21 +295,18 @@
       <div class="tabelle">
         <table>
           <tr><th>Wenn das Vorhaben ruht …</th><th>Zahlt es auf ein Hausziel ein?</th><th>Vorschlag</th></tr>
-          <tr><td>wird eine Frist oder rechtliche Pflicht verletzt</td><td class="mitte">egal</td><td><b>eingeplant</b></td></tr>
-          <tr><td>kann eine politische Zusage nicht eingehalten werden</td><td class="mitte">egal</td><td><b>eingeplant</b></td></tr>
-          <tr><td>entsteht spürbarer Schaden oder Wirkung geht verloren</td><td class="mitte">egal</td><td><b>eingeplant</b></td></tr>
+          <tr><td>wird eine Frist verpasst oder eine rechtliche Pflicht verletzt</td><td>egal</td><td><b>eingeplant</b></td></tr>
+          <tr><td>kann eine politische Zusage nicht eingehalten werden</td><td>egal</td><td><b>eingeplant</b></td></tr>
+          <tr><td>entsteht spürbarer Schaden oder Wirkung geht verloren</td><td>egal</td><td><b>eingeplant</b></td></tr>
           <tr><td>verschiebt sich eine Chance</td><td>ja</td><td><b>eingeplant</b></td></tr>
           <tr><td>verschiebt sich eine Chance</td><td>nein</td><td><b>wartet</b></td></tr>
           <tr><td>würde es auch dauerhaft kaum auffallen</td><td>ja</td><td><b>wartet</b></td></tr>
           <tr><td>würde es auch dauerhaft kaum auffallen</td><td>nein</td><td><b>eingestellt</b></td></tr>
-          <tr><td>sind Folgen oder Veränderung noch offen</td><td class="mitte">egal</td><td><b class="leise">noch offen</b></td></tr>
+          <tr><td>sind Folgen oder Veränderung noch offen</td><td>egal</td><td><b>noch offen</b></td></tr>
         </table>
       </div>
-      <div class="kern">„Eingestellt“ nur bei zwei Gründen zugleich.<small>Das Vorhaben würde dauerhaft kaum fehlen, und es zahlt auf kein Ziel des Hauses ein. Eine Antwort allein reicht nie.</small></div>
-      <div class="detail">
-        <div class="detail-label">Ausnahme</div>
-        <p>Ein Vorhaben, das mit drei oder mehr anderen verknüpft ist, bekommt „eingeplant“ statt „wartet“ vorgeschlagen. Siehe <a href="#verknuepfungen">Verknüpfungen</a>.</p>
-      </div>
+      <p><strong>„Eingestellt“ nur bei zwei Gründen zugleich.</strong> Das Vorhaben würde dauerhaft kaum fehlen, und es zahlt auf kein Ziel des Hauses ein. Eine Antwort allein reicht nie.</p>
+      <p><strong>Ausnahme:</strong> Ein Vorhaben, das mit drei oder mehr anderen verknüpft ist, bekommt „eingeplant“ statt „wartet“ vorgeschlagen. Siehe <a href="#verknuepfungen">Verknüpfungen</a>.</p>
     </div>
   </details>
 
@@ -356,12 +335,9 @@
       <ul>
         <li>Gewichtungen wären politische Entscheidungen in mathematischer Form.</li>
         <li>Ein Gesamtwert verdeckt, welche Antwort den Unterschied gemacht hat.</li>
-        <li>73 gegen 71 sieht nach einem Unterschied aus, ist aber keiner.</li>
+        <li>73 statt 71 Punkte wirkt genauer, als die Einschätzung sein kann.</li>
       </ul>
-      <div class="detail">
-        <div class="detail-label">Im Detail</div>
-        <p>Kapazität fließt in keinen Wert ein. Sie ist ein Preis, kein Urteil über das Vorhaben. Was hineinpasst, zeigt die Kapazitätsgrenze.</p>
-      </div>
+      <p>Kapazität fließt in keinen Wert ein. Sie ist ein Preis, kein Urteil über das Vorhaben. Was hineinpasst, zeigt die Kapazitätsgrenze.</p>
     </div>
   </details>
 </section>
@@ -379,9 +355,9 @@
           <tr><th>Entscheidung</th><th>Nominierung</th><th>Bereich</th></tr>
           <tr><td>eingeplant</td><td>nominiert</td><td><b>Für Leitungsportfolio nominiert</b></td></tr>
           <tr><td>eingeplant</td><td>nicht nominiert</td><td><b>Restliches Abteilungsportfolio</b></td></tr>
-          <tr><td>wartet</td><td class="mitte">egal</td><td><b>Warteliste</b></td></tr>
-          <tr><td>eingestellt</td><td class="mitte">egal</td><td><b>Eingestellt</b></td></tr>
-          <tr><td>noch keine, Steckbrief unvollständig</td><td class="mitte">egal</td><td><b>Erst klären</b></td></tr>
+          <tr><td>wartet</td><td>egal</td><td><b>Warteliste</b></td></tr>
+          <tr><td>eingestellt</td><td>egal</td><td><b>Eingestellt</b></td></tr>
+          <tr><td>noch keine, Steckbrief unvollständig</td><td>egal</td><td><b>Erst klären</b></td></tr>
         </table>
       </div>
       <p>Nur die Spalte „eingeplant“ teilt sich in zwei Bereiche. Entscheidet die Abteilung anders, wandert das Vorhaben sofort mit.</p>
@@ -391,7 +367,7 @@
   <details class="frage" id="nominiert">
     <summary><h3>Was heißt „für Leitungsportfolio nominiert“?</h3><span class="pfeil" aria-hidden="true"></span></summary>
     <div class="antwort">
-      <div class="kern">Nominierung ist ein Vorschlag ans Haus, noch keine Auswahl.</div>
+      <p><strong>Nominierung ist ein Vorschlag ans Haus, noch keine Auswahl.</strong></p>
       <p>Mit der Nominierung schlägt die Abteilung das Vorhaben dem Haus als hausweit wichtiges Fokusvorhaben vor. Der Stab sichtet die Nominierungen aller Abteilungen, StS und BM wählen daraus aus.</p>
       <p>Erst die ausgewählten Vorhaben bilden das Leitungsportfolio. Nicht ausgewählte Vorhaben bleiben eingeplant im Abteilungsportfolio.</p>
     </div>
@@ -404,19 +380,16 @@
         <li>Das Vorhaben ist <strong>eingeplant</strong>. Nur eingeplante Vorhaben werden ans Haus gemeldet.</li>
         <li>Eine Begründung im Steckbrief: Warum ist dieses Vorhaben für das Haus strategisch wichtig?</li>
       </ul>
-      <p>Ein nominiertes Vorhaben, das wartet oder eingestellt ist, wird nicht gemeldet. Es steht in der Liste der Nominierungen unter „Nicht gemeldet“, mit seinem Stand.</p>
+      <p>Ein nominiertes Vorhaben, das wartet oder eingestellt ist, gehört nicht zur hausweiten Auswahl. Es bleibt in seiner Spalte im Abteilungsportfolio sichtbar.</p>
     </div>
   </details>
 
   <details class="frage" id="limits">
     <summary><h3>Gibt es Limits oder Richtwerte für Nominierungen?</h3><span class="pfeil" aria-hidden="true"></span></summary>
     <div class="antwort">
-      <p class="nein"><b>Nein.</b> Jede Abteilung nominiert, was sie für hausweit wichtig hält. Nichts wird blockiert.</p>
+      <p><strong>Keine festen Limits, aber Richtwerte.</strong> Jede Abteilung nominiert, was sie für hausweit wichtig hält. Das Werkzeug begrenzt die Zahl nicht.</p>
       <p>Eine feste Quote würde eher zum Erfüllen einladen als zum Priorisieren. Wie viel eine Abteilung warten lassen oder einstellen muss, zeigt die Kapazitätsgrenze.</p>
-      <div class="orientierung">
-        <div class="label">Zur Orientierung, nicht als Vorgabe</div>
-        <p>StS und BM wählen hausweit etwa 8 bis 10 Vorhaben aus, die BM eng begleitet. Das AL-Reporting umfasst insgesamt rund 40 Vorhaben, einschließlich dieser Auswahl.</p>
-      </div>
+      <p><strong>Zur Orientierung, nicht als Vorgabe:</strong> StS und BM wählen hausweit etwa 8 bis 10 Vorhaben aus, die BM eng begleitet. Das AL-Reporting umfasst insgesamt rund 40 Vorhaben, einschließlich dieser Auswahl.</p>
     </div>
   </details>
 </section>
@@ -428,7 +401,7 @@
   <details class="frage" id="kapazitaet-wirkung">
     <summary><h3>Wie wirkt die Kapazität?</h3><span class="pfeil" aria-hidden="true"></span></summary>
     <div class="antwort">
-      <div class="kern">Kapazität bewertet kein Vorhaben. Sie zeigt, was gleichzeitig machbar ist.</div>
+      <p><strong>Kapazität bewertet kein Vorhaben. Sie zeigt, was gleichzeitig machbar ist.</strong></p>
       <p>Die Grenze ist die Gesamtkapazität der Abteilung in Vollzeitäquivalenten (VZÄ). Der Balken zeigt, was davon gebunden ist: vorn das Tagesgeschäft der Referate, danach der Personalbedarf der eingeplanten Vorhaben. Was bis zur Grenze frei bleibt, ist grün markiert.</p>
       <p>Die Kapazität verändert den Vorschlag nicht. Sie vergibt keinen Rang unter den eingeplanten Vorhaben und verschiebt nichts von selbst.</p>
     </div>
@@ -450,7 +423,7 @@
     <div class="antwort">
       <p>Der Teil über der Grenze wird rot. Das Briefing fragt: Welches Vorhaben wartet stattdessen?</p>
       <p>Das Werkzeug verschiebt nichts von selbst. Die Abteilung zieht Vorhaben auf wartet oder eingestellt, der Balken rechnet sofort mit.</p>
-      <p>Ist die Kapazität überschritten und trotzdem kein Vorhaben eingestellt, kommt eine zweite Frage dazu: Was legt ihr weg?</p>
+      <p>Ist die Kapazität überschritten und trotzdem kein Vorhaben eingestellt, kommt eine zweite Frage dazu: Was hat Vorrang, wenn nicht alles gleichzeitig geht?</p>
     </div>
   </details>
 
@@ -459,17 +432,14 @@
     <div class="antwort">
       <p>Nur aus laufender Arbeit. Wird ein Vorhaben, das bereits läuft, auf wartet oder eingestellt gesetzt, wird sein Personal frei.</p>
       <p>Ein Vorhaben, das noch nicht gestartet ist, setzt nichts frei. Es bindet nur nichts Neues.</p>
-      <div class="detail">
-        <div class="detail-label">Im Detail</div>
-        <p>Der hohle Umriss im Balken zeigt, wo der Balken zu Beginn der Sitzung endete. Was die Runde seither auf wartet oder eingestellt gesetzt hat, erscheint als hohler Teil. Beim Ziehen eines laufenden Vorhabens blendet die frei gewordene Zahl kurz auf.</p>
-      </div>
+      <p>Der hohle Umriss zeigt die gebundene Kapazität beim letzten eingefrorenen Stand. Gibt es noch keinen, gilt der erste Blick aufs Portfolio in dieser Sitzung als Vergleich. Sinkt der Bedarf, bleibt der frei gewordene Teil als Umriss sichtbar. Beim Verschieben eines laufenden Vorhabens auf „wartet“ oder „eingestellt“ erscheint die frei gewordene Kapazität kurz als Zahl.</p>
     </div>
   </details>
 
   <details class="frage" id="deckung">
     <summary><h3>Verändert Kapazität die Empfehlung?</h3><span class="pfeil" aria-hidden="true"></span></summary>
     <div class="antwort">
-      <p class="nein"><b>Nein.</b> Der Vorschlag kommt aus den Folgen des Ruhenlassens und dem Zielbezug. Was davon hineinpasst, zeigt die Grenze.</p>
+      <p><strong>Nein.</strong> Der Vorschlag kommt aus den Folgen des Ruhenlassens und dem Zielbezug. Was davon hineinpasst, zeigt die Grenze.</p>
       <p>Auch die personelle Deckung verändert nichts. Sie zeigt im Steckbrief, welcher Bedarf noch unbesetzt ist, und sammelt ungedeckte Lücken für die Portfoliorunde.</p>
     </div>
   </details>
@@ -489,7 +459,7 @@
   <details class="frage" id="spannungen">
     <summary><h3>Welche Spannungen zeigt das Werkzeug an?</h3><span class="pfeil" aria-hidden="true"></span></summary>
     <div class="antwort">
-      <div class="kern">Das Werkzeug macht Spannungen sichtbar. Es löst sie nicht.</div>
+      <p><strong>Das Werkzeug macht Spannungen sichtbar. Es löst sie nicht.</strong></p>
       <p>Das Briefing, ein eigener Reiter neben dem Portfolio, sortiert sie in drei Kategorien: Kapazitätslücken, Abhängigkeiten, Fehlende Informationen. Keine davon ändert eine Entscheidung.</p>
       <ul>
         <li>Die eingeplanten Vorhaben überschreiten die Kapazität.</li>
@@ -506,6 +476,22 @@
 
 <section class="bereich" id="steckbrief">
   <h2>Steckbrief und Angaben</h2>
+
+  <details class="frage" id="was-ist-ein-vorhaben">
+    <summary><h3>Was zählt als Vorhaben?</h3><span class="pfeil" aria-hidden="true"></span></summary>
+    <div class="antwort">
+      <p>Alles, worüber eine Abteilung bewusst entscheiden kann: vorantreiben, warten lassen oder einstellen. Der Begriff ist absichtlich breit. Ein Vorhaben kann ein Projekt sein, muss es aber nicht.</p>
+      <ul>
+        <li>Projekte mit Anfang und Ende, etwa die Einführung eines Fachverfahrens</li>
+        <li>Gesetzes- und Verordnungsvorhaben, Strategien, Programme</li>
+        <li>größere Linienaufgaben mit eigenem Ziel, etwa der Umbau eines Verfahrens oder einer Organisationseinheit</li>
+        <li>Aufträge aus der Leitung, aus dem Koalitionsvertrag oder aus Zusagen gegenüber Dritten</li>
+        <li>Vorhaben, die schon laufen, auch wenn sie noch Jahre dauern</li>
+      </ul>
+      <p>Nicht gemeint ist das Tagesgeschäft: laufende Aufgaben ohne eigenes Ziel, die ohnehin erledigt werden. Es wird gesammelt als Sockel erfasst, damit die Kapazität stimmt, aber nicht als einzelnes Vorhaben.</p>
+      <p>Die Laufzeit spielt für die Frage keine Rolle. Das Werkzeug fragt nur, was im nächsten Halbjahr passiert, wenn das Vorhaben ruht; ob es insgesamt sechs Monate oder fünf Jahre dauert, ändert an der Aufnahme nichts.</p>
+    </div>
+  </details>
 
   <details class="frage" id="vollstaendig">
     <summary><h3>Wann ist ein Steckbrief vollständig?</h3><span class="pfeil" aria-hidden="true"></span></summary>
@@ -528,11 +514,8 @@
           </ul>
         </div>
       </div>
-      <p>„Wissen wir nicht“ bei den Folgen zählt als offen.</p>
-      <div class="detail">
-        <div class="detail-label">Im Detail</div>
-        <p>Pflichtangaben tragen im Steckbrief einen Stern. Alles andere ist freiwillig und macht den Steckbrief nicht unvollständig.</p>
-      </div>
+      <p>Bei „wissen wir nicht“ bleiben die Folgen offen. Die Abteilung kann trotzdem entscheiden.</p>
+      <p>Pflichtangaben tragen im Steckbrief einen Stern. Alles andere ist freiwillig und macht den Steckbrief nicht unvollständig.</p>
     </div>
   </details>
 
@@ -540,7 +523,8 @@
     <summary><h3>Was passiert, wenn Angaben fehlen?</h3><span class="pfeil" aria-hidden="true"></span></summary>
     <div class="antwort">
       <p>Ein unvollständiger Steckbrief landet unter <strong>Erst klären</strong>. Das Werkzeug ordnet ihn keinem Bereich zu.</p>
-      <p>Hat die Abteilung das Vorhaben schon entschieden, gilt die Entscheidung trotzdem. Was fehlt, bleibt als offener Punkt sichtbar: unter dem Portfolio und im Briefing unter „Fehlende Informationen“.</p>
+      <p>Hat die Abteilung bereits entschieden, gilt die Entscheidung trotzdem. Fehlende Angaben stehen in der Kurzvorschau und im Briefing unter „Fehlende Informationen“.</p>
+      <p>Die Antwort „wissen wir nicht“ bei den Folgen des Ruhenlassens ist kein Fehler, sondern eine ehrliche Angabe. Das Werkzeug gibt dann keine Empfehlung, das Vorhaben steht unter Erst klären, und die Abteilung kann trotzdem entscheiden. Ein freiwilliges Feld fragt, was geklärt werden müsste und wer das kann.</p>
     </div>
   </details>
 
@@ -559,10 +543,10 @@
   <details class="frage" id="einordnung">
     <summary><h3>Welche Angaben helfen nur beim Abwägen?</h3><span class="pfeil" aria-hidden="true"></span></summary>
     <div class="antwort">
-      <p><strong>Hilft beim Abwägen, verändert den Vorschlag aber nicht:</strong></p>
-      <div class="chips">
-        <span>Reichweite</span><span>Wirkungshorizont</span><span>Referat</span><span>Laufzeit</span><span>Stand</span><span>Personalbedarf</span><span>personelle Deckung</span><span>Tagesgeschäft</span><span>weitere Hinweise</span>
-      </div>
+      <p>Diese Angaben helfen beim Abwägen, ohne die Empfehlung zu verändern:</p>
+      <ul class="angaben">
+        <li>Reichweite</li><li>Wirkungshorizont</li><li>Referat</li><li>Laufzeit</li><li>Stand</li><li>Personalbedarf</li><li>personelle Deckung</li><li>Tagesgeschäft</li><li>Bestandteil des Koalitionsvertrags (KoaV)</li><li>weitere Hinweise</li>
+      </ul>
       <p>Personalbedarf, Stand und Tagesgeschäft rechnen in der Kapazitätsleiste mit. Laufzeit und Referat ordnen die Sicht „Laufzeiten“ und die Referats-Linse.</p>
     </div>
   </details>
@@ -577,7 +561,7 @@
 
 <footer class="site">
   <div class="inner">
-    <div>Interner Prototyp mit fiktiven Beispieldaten. Speichert nur lokal im Browser, keine Übertragung.</div>
+    <div>Speicherung in der Demo: lokal im Browser. Bei SharePoint-Verbindung: gemeinsam im Haus.</div>
     <div>Portfolio-Priorisierung · Arbeitsstand</div>
   </div>
 </footer>
