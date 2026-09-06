@@ -1391,6 +1391,11 @@
                                                                              
   .haus-leiste { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; background: var(--weiss); border-top: 1px solid var(--line); box-shadow: 0 -8px 28px rgba(13,12,43,.10); padding: 12px clamp(16px, 4vw, 40px); }
   .haus-leiste .textbtn { padding: 0; }
+                                                                                
+                                                                           
+                                                                          
+                                          
+  .haus-leiste .btn.leise { padding: 9px 16px; font-size: 14px; }
                                                                           
                                                                               
                                     
@@ -7715,6 +7720,7 @@
                                                                              
                                                                             
                                                                        
+                                                                          
   function renderHausLeiste(bau) {
     const leiste = document.getElementById('hausLeiste');
     if (!leiste) return;
@@ -7722,8 +7728,10 @@
     leiste.classList.toggle('verborgen', !vorgemerkt.length);
     document.getElementById('ansicht-haus').classList.toggle('mit-leiste', !!vorgemerkt.length);
     if (!vorgemerkt.length) { leiste.innerHTML = ''; return; }
+    const zaehler = auswahlZaehler(hausAuswahl, bau.sichtbar);
     leiste.innerHTML = `
-      <button class="btn primary" type="button" id="hausZurueckstellen">${esc(hausZurueckstellenText(vorgemerkt.length))}</button>
+      <span class="haus-auswahl-zahl"><span class="haus-zahl">${zaehler.gewaehlt}</span> von ${zaehler.gesamt} vorgemerkt</span>
+      <button class="btn leise" type="button" id="hausZurueckstellen" aria-label="${esc(hausZurueckstellenText(vorgemerkt.length))}">Ins Abteilungsportfolio zurückstellen</button>
       <button class="textbtn blau" type="button" id="hausAuswahlLeeren">Auswahl leeren</button>`;
     document.getElementById('hausZurueckstellen').addEventListener('click', () => hausKuratierungOeffnen());
     document.getElementById('hausAuswahlLeeren').addEventListener('click', hausAuswahlLeeren);
