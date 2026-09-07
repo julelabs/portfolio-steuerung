@@ -1402,7 +1402,11 @@
                                     
   #ansicht-haus.mit-leiste { padding-bottom: 72px; }
                                                                              
-  #hausKuratierung .vs-fuss { gap: 22px; align-items: center; }
+  #hausKuratierung .vs-fuss, #hausVerschieben .vs-fuss { gap: 22px; align-items: center; }
+                                                                        
+                                            
+  #hausVerschieben label { display: block; font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 6px; }
+  #hausVerschieben select { background: var(--weiss); border: 1px solid var(--feldkante); border-radius: 6px; color: var(--fg); font-family: var(--body); font-size: 14px; padding: 6px 10px; cursor: pointer; min-width: 220px; }
 
                                                                            
                                                                            
@@ -1772,6 +1776,11 @@
   </dialog>
 
   
+  <dialog class="vorschau-dialog" id="hausVerschieben" aria-labelledby="hausVerschiebenTitel">
+    <div id="hausVerschiebenInhalt"></div>
+  </dialog>
+
+  
   <dialog class="vorschau-dialog" id="hausVorschau" aria-labelledby="hausVorschauTitel">
     <div id="hausVorschauInhalt"></div>
   </dialog>
@@ -1973,6 +1982,9 @@
                                          
   const HISTORIE_ARTEN = {
     entscheidung: ['entscheidung'],
+                                                                        
+                                                                           
+    abteilung: ['abteilung'],
     leitung: ['nominiert', 'nominierung-zurueckgenommen'],
     zurueckgestellt: ['zurueckgestellt', 'zurueckstellung-zurueckgenommen']
   };
@@ -1991,14 +2003,17 @@
       const weg = v.historie.splice(index, 1)[0];
       return { am: am, aufgehoben: weg.art };
     };
-    if (feld === 'entscheidung') {
+                                                                          
+                                                                         
+                                 
+    if (feld === 'entscheidung' || feld === 'abteilung') {
       const zu = String(neu);
       if (heutiger) {
         if (heutiger.von !== undefined && heutiger.von === zu) return aufheben();
         heutiger.zu = zu;
         return heutiger;
       }
-      const eintrag = { am: am, art: 'entscheidung', von: String(alt), zu: zu };
+      const eintrag = { am: am, art: feld, von: String(alt), zu: zu };
       v.historie.push(eintrag);
       return eintrag;
     }
@@ -2080,6 +2095,12 @@
   };
   function historieSatz(eintrag) {
     if (!eintrag) return '';
+                                                                          
+                                                                          
+                                 
+    if (eintrag.art === 'abteilung') {
+      return tagDeutsch(eintrag.am) + ' · nach Abteilung ' + eintrag.zu + ' verschoben (vorher ' + eintrag.von + ')';
+    }
     const wort = eintrag.art === 'entscheidung'
       ? HISTORIE_ENTSCHEIDUNG[eintrag.zu] || ''
       : HISTORIE_WORT[eintrag.art] || '';
@@ -2218,6 +2239,41 @@
     const name = x.name ? '„' + x.name + '“' : 'Ein Vorhaben';
     const abt = x.abteilung ? ' (Abteilung ' + x.abteilung + ')' : ' (andere Abteilung)';
     return name + abt + ' hat sich mit diesem Vorhaben verknüpft.';
+  }
+
+                                                                        
+                                                                          
+                                                                         
+                                                                         
+                                                           
+                                                                 
+  function vorhabenVerschiebenVorbereiten(v, quellVorhaben, vonKuerzel, nachKuerzel, heute) {
+    const alle = quellVorhaben || [];
+    const neu = JSON.parse(JSON.stringify(v));
+                                                                      
+                                                                       
+                                                                
+    neu.haengtAn = (neu.haengtAn || []).reduce((liste, a) => {
+      if (!a) return liste;
+      if (a.typ !== 'v' || istKennungsVerweis(a)) { liste.push(a); return liste; }
+      const ziel = alle.find(x => x.id === a.id);
+      if (ziel && kennungGueltig(ziel.kennung)) liste.push({ typ: 'v', id: 'k:' + ziel.kennung });
+      return liste;
+    }, []);
+    historieFortschreiben(neu, 'abteilung', vonKuerzel, nachKuerzel, heute);
+                                                                         
+                                                                             
+    const quelleRest = alle.filter(x => x.id !== v.id).map(x => {
+      const kopie = JSON.parse(JSON.stringify(x));
+      kopie.haengtAn = (kopie.haengtAn || []).reduce((liste, a) => {
+        if (!a) return liste;
+        if (a.typ !== 'v' || a.id !== v.id) { liste.push(a); return liste; }
+        if (kennungGueltig(v.kennung)) liste.push({ typ: 'v', id: 'k:' + v.kennung });
+        return liste;
+      }, []);
+      return kopie;
+    });
+    return { neu, quelleRest };
   }
 
   function abhaengigkeitenBereinigen(liste) {
@@ -3812,9 +3868,16 @@
     }).catch(() => null);
   }
 
-  function namenLoeschen(hole, site, digest, kennung) {
+                                                                            
+                                                                              
+                                                                           
+                                                                           
+                                                                             
+                                                            
+  function namenLoeschen(hole, site, digest, kennung, kuerzel) {
     return namenEintragSuchen(hole, site, kennung).then(treffer => {
       if (!treffer) return null;
+      if (kuerzel && treffer.abteilung && treffer.abteilung !== kuerzel) return null;
       return eintragLoeschen(hole, site, 'Vorhabensnamen', treffer.id, digest).then(() => null);
     }).catch(() => null);
   }
@@ -3852,6 +3915,74 @@
       });
     });
     return vorhaben;
+  }
+
+                                                                    
+                                                                            
+                                                                           
+                                                                           
+                                                                       
+                                                                           
+                                                                            
+                                                                       
+                                                                      
+               
+  function vorhabenVerschieben(hole, site, quellTitel, zielTitel, kennung, digest, typen, vonKuerzel, nachKuerzel, heute, optionen) {
+    const opt = optionen || {};
+    return standLesen(hole, site, quellTitel).then(quellGelesen => {
+      const v = (quellGelesen.stand.vorhaben || []).find(x => x.kennung === kennung);
+      const eintrag = (quellGelesen.eintraege || []).find(e => e.kennung === kennung);
+      if (!v || !eintrag) throw new Error('Vorhaben nicht in der Liste');
+      return standLesen(hole, site, zielTitel).then(zielGelesen => {
+        if ((zielGelesen.stand.vorhaben || []).some(x => x.kennung === kennung)) {
+          throw new Error('Das Vorhaben steht schon in der Ziel-Liste');
+        }
+        const vorbereitet = vorhabenVerschiebenVorbereiten(v, quellGelesen.stand.vorhaben, vonKuerzel, nachKuerzel, heute);
+        const neu = vorbereitet.neu;
+        const quelleRest = vorbereitet.quelleRest;
+        const zielAlle = zielGelesen.stand.vorhaben.concat([neu]);
+        return eintragAnlegen(hole, site, zielTitel, digest, eintragAusVorhaben(neu, zielAlle, typen.ziel)).then(angelegt => {
+          const zielId = angelegt.id;
+          neu.id = 'v' + zielId;
+                                                                             
+                                                              
+          return eintragAendern(hole, site, zielTitel, zielId, angelegt.etag, digest, eintragAusVorhaben(neu, zielAlle, typen.ziel)).then(() => {
+            const namenSchritt = () => typen.namen
+              ? namenPflegen(hole, site, digest, typen.namen, kennung, neu.name, nachKuerzel)
+              : Promise.resolve(null);
+            if (opt.quelleEigene) {
+              return namenSchritt()
+                .then(() => fremdZaehlerErhoehen(hole, site, zielTitel, zielGelesen.stand, zielGelesen.eintraege, digest, typen.ziel))
+                .then(() => ({ neu, zielId, verweiseOffen: 0, quelleRest }));
+            }
+            return eintragLoeschen(hole, site, quellTitel, eintrag.id, digest).then(loeschErgebnis => {
+              if (!loeschErgebnis.ok) {
+                return eintragLoeschen(hole, site, zielTitel, zielId, digest).then(rollback => {
+                  if (!rollback.ok) {
+                    throw new Error('Das Vorhaben steht jetzt in beiden Listen (Quelle: ' + quellTitel + ', Ziel: ' + zielTitel + '). Bitte in der Quell-Liste von Hand entfernen.');
+                  }
+                  throw new Error('Löschen in der Quell-Liste fehlgeschlagen (Status ' + loeschErgebnis.status + '), nichts verändert');
+                });
+              }
+              let verweiseOffen = 0;
+              const geaendert = quelleRest.filter(x => {
+                const original = (quellGelesen.stand.vorhaben || []).find(o => o.id === x.id);
+                return !original || JSON.stringify(original) !== JSON.stringify(x);
+              });
+              const schreibKette = geaendert.reduce((kette, x) => kette.then(() =>
+                fremdVorhabenSchreiben(hole, site, quellTitel, x.kennung, digest, ziel => { ziel.haengtAn = x.haengtAn; }, typen.quelle)
+                  .catch(() => { verweiseOffen += 1; })
+              ), Promise.resolve());
+              return schreibKette
+                .then(namenSchritt)
+                .then(() => fremdZaehlerErhoehen(hole, site, quellTitel, quellGelesen.stand, quellGelesen.eintraege, digest, typen.quelle))
+                .then(() => fremdZaehlerErhoehen(hole, site, zielTitel, zielGelesen.stand, zielGelesen.eintraege, digest, typen.ziel))
+                .then(() => ({ neu, zielId, verweiseOffen, quelleRest }));
+            });
+          });
+        });
+      });
+    });
   }
 
                 
@@ -4142,6 +4273,32 @@
 
   function hausZurueckstellenText(anzahl) {
     return (anzahl === 1 ? '1 Vorhaben' : anzahl + ' Vorhaben') + ' ins Abteilungsportfolio zurückstellen';
+  }
+
+                                                                        
+                                                                            
+                                                                       
+                                                                    
+                                                                          
+                                                                        
+                                                                            
+                
+                                                                             
+                                                                       
+                                                                         
+                                                                      
+  function hausVerschiebbar(eintrag, umgebung) {
+    if (!eintrag || eintrag.quelle === 'datei') return [];
+    const u = umgebung || {};
+    if (u.demo) {
+      return u.demo.filter(a => a.kuerzel !== eintrag.kuerzel)
+        .map(a => ({ kuerzel: a.kuerzel, name: a.name, titel: '' }));
+    }
+    const listen = u.listen || [];
+    const quelle = listen.find(l => l.kuerzel === eintrag.kuerzel);
+    if (!quelle || !quelle.schreiben) return [];
+    return listen.filter(l => l.schreiben && l.kuerzel !== eintrag.kuerzel)
+      .map(l => ({ kuerzel: l.kuerzel, name: l.name, titel: l.titel }));
   }
 
                                                                              
@@ -4831,7 +4988,10 @@
 
   function spNamenLoeschen(kennung, digest) {
     if (!spNamenDa) return Promise.resolve(null);
-    return namenLoeschen(spHole, spSite, digest, kennung);
+                                                                            
+                                                                           
+                                                                   
+    return namenLoeschen(spHole, spSite, digest, kennung, spListe.kuerzel);
   }
 
                                                                            
@@ -7746,6 +7906,30 @@
     return { eigeneSchreibbar: speicherArt === 'liste' };
   }
 
+                                                                        
+                                                                         
+                                                                           
+                                                                           
+                     
+  function hausVerschiebUmgebung() {
+    if (speicherArt === 'liste') {
+      return {
+        listen: spListen.map(l => ({
+          kuerzel: l.kuerzel,
+          titel: l.titel,
+          schreiben: l.schreiben,
+          name: ((H && H.abteilungen) || []).find(a => a.kuerzel === l.kuerzel)
+            ? ((H && H.abteilungen) || []).find(a => a.kuerzel === l.kuerzel).name
+            : ('Abteilung ' + l.kuerzel)
+        }))
+      };
+    }
+    if (hausDemoQuelle()) {
+      return { demo: ((H && H.abteilungen) || []).map(a => ({ kuerzel: a.kuerzel, name: a.name })) };
+    }
+    return {};
+  }
+
   const HAUS_HAKEN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17.5 19 7"/></svg>';
                                                                               
                                                                               
@@ -8263,6 +8447,128 @@
       });
   }
 
+                                                                                
+
+  function hausVerschiebenOeffnen(eintrag, kandidaten) {
+    const dialog = document.getElementById('hausVerschieben');
+    const wurzel = document.getElementById('hausVerschiebenInhalt');
+    if (!kandidaten.length || !dialog || !wurzel) return;
+    const referat = String(eintrag.v.referat || '').trim();
+                                                                   
+    const heute = eintrag.kuerzel + (referat ? ', ' + referat : '');
+    wurzel.innerHTML = `<div class="vs-inhalt">
+      <div class="vs-kopf">
+        <h2 id="hausVerschiebenTitel">In andere Abteilung verschieben</h2>
+        <button class="vs-schliessen" type="button" aria-label="Verschieben schließen">&times;</button>
+      </div>
+      <section class="vs-block">
+        <p><strong>${esc(eintrag.v.name)}</strong></p>
+        <p>Heute in ${esc(eintrag.abteilung)} (${esc(heute)}).</p>
+      </section>
+      <section class="vs-block">
+        <label for="hausVerschiebenZiel">Ziel-Abteilung</label>
+        <select id="hausVerschiebenZiel">
+          ${kandidaten.map(k => `<option value="${esc(k.kuerzel)}">${esc(k.kuerzel + ' · ' + k.name)}</option>`).join('')}
+        </select>
+      </section>
+      <section class="vs-block">
+        <p>Das Vorhaben wechselt mit Steckbrief, Entscheidung, Nominierung und Verlauf in die Liste der gewählten Abteilung. Die Kennung bleibt, Verknüpfungen anderer Abteilungen laufen weiter. Beide Abteilungen sehen die Änderung beim nächsten Laden. Der Weg zurück ist derselbe Knopf.</p>
+        ${hausDemoQuelle() ? '<p class="vs-leer">Demo: Es wird nichts gespeichert.</p>' : ''}
+      </section>
+      <div class="vs-fuss">
+        <button class="textbtn blau" type="button" id="hausVerschiebenAbbrechen">Abbrechen</button>
+        <button class="btn primary" type="button" id="hausVerschiebenOk">Verschieben</button>
+      </div>
+    </div>`;
+    wurzel.querySelector('.vs-schliessen').addEventListener('click', () => dialog.close());
+    document.getElementById('hausVerschiebenAbbrechen').addEventListener('click', () => dialog.close());
+    document.getElementById('hausVerschiebenOk').addEventListener('click', () => {
+      const ziel = document.getElementById('hausVerschiebenZiel').value;
+      dialog.close();
+      hausVerschiebenAusfuehren(eintrag, ziel);
+    });
+    dialog.onclick = event => { if (event.target === dialog) dialog.close(); };
+    if (!dialog.open) dialog.showModal();
+  }
+
+                                                                           
+                                                                            
+                                                                            
+                                                                 
+  function hausVerschiebenOhneListen(eintrag, zielKuerzel) {
+    const quellAbteilung = (H.abteilungen || []).find(a => a.kuerzel === eintrag.kuerzel);
+    const zielAbteilung = (H.abteilungen || []).find(a => a.kuerzel === zielKuerzel);
+    if (!quellAbteilung || !zielAbteilung) { hausKuratierungMelden(0, 1, ''); renderHaus(); return; }
+    const vorbereitet = vorhabenVerschiebenVorbereiten(eintrag.v, quellAbteilung.stand.vorhaben, eintrag.kuerzel, zielKuerzel, heuteTag());
+    vorbereitet.neu.id = freieVorhabenId(zielAbteilung.stand.vorhaben, 1);
+    zielAbteilung.stand.vorhaben.push(vorbereitet.neu);
+    quellAbteilung.stand.vorhaben = vorbereitet.quelleRest;
+                                                                            
+                                                                         
+                                    
+    if (quellAbteilung.quelle === 'eigene' || zielAbteilung.quelle === 'eigene') { zeigerBereinigen(); speichern(); }
+    hausKuratierungMelden(1, 0, '„' + eintrag.v.name + '“ ist jetzt in Abteilung ' + zielKuerzel + '.');
+    renderHaus();
+  }
+
+                                                                             
+                                                                           
+                                                                    
+  function zeigerBereinigen() {
+    const ids = new Set(S.vorhaben.map(v => v.id));
+    if (offenId && !ids.has(offenId)) offenId = null;
+    if (vorschauId && !ids.has(vorschauId)) vorschauId = null;
+    if (abhAktivId && !ids.has(abhAktivId)) abhAktivId = null;
+  }
+
+                                                                 
+                                                                           
+                                                                           
+                                                                      
+                  
+  function hausVerschiebenAusfuehren(eintrag, zielKuerzel) {
+    if (speicherArt !== 'liste') { hausVerschiebenOhneListen(eintrag, zielKuerzel); return; }
+    const quellListe = spListen.find(l => l.kuerzel === eintrag.kuerzel);
+    const zielListe = spListen.find(l => l.kuerzel === zielKuerzel);
+    if (!quellListe || !zielListe) {
+      hausHinweis = 'Verschieben hat nicht geklappt: Liste nicht gefunden.';
+      renderHaus();
+      return;
+    }
+    const quelleEigene = quellListe.titel === spListe.titel;
+    const zielEigene = zielListe.titel === spListe.titel;
+    Promise.all([hausTypHolen(quellListe.titel), hausTypHolen(zielListe.titel), spDigestSichern()])
+      .then(([quellTyp, zielTyp, digest]) => {
+        const typen = { quelle: quellTyp, ziel: zielTyp, namen: spNamenDa ? spNamenTyp : null };
+        return vorhabenVerschieben(spHole, spSite, quellListe.titel, zielListe.titel, eintrag.v.kennung, digest, typen,
+          eintrag.kuerzel, zielKuerzel, heuteTag(), quelleEigene ? { quelleEigene: true } : undefined);
+      })
+      .then(ergebnis => {
+                                                                         
+                                                                            
+                                                      
+        if (quelleEigene) {
+          S.vorhaben = ergebnis.quelleRest;
+          zeigerBereinigen();
+          speichern();
+        }
+                                                                             
+                                                              
+        if (zielEigene) spAktualisieren();
+        let hinweis = '„' + eintrag.v.name + '“ ist jetzt in Abteilung ' + zielKuerzel + '.';
+        if (ergebnis.verweiseOffen > 0) {
+          hinweis += ' Bei ' + ergebnis.verweiseOffen + ' Verknüpfungen in Abteilung ' + eintrag.kuerzel
+            + ' konnte der Verweis nicht umgeschrieben werden; beim nächsten Speichern der Abteilung heilt sich das.';
+        }
+        hausHinweis = hinweis;
+        return hausLaden().then(() => { renderHaus(); return null; });
+      })
+      .catch(fehler => {
+        hausHinweis = 'Verschieben hat nicht geklappt: ' + fehler.message;
+        renderHaus();
+      });
+  }
+
                                                                    
                                                                           
                                                                     
@@ -8283,6 +8589,9 @@
     const ruecknahmeMoeglich = eintrag.zurueckgestellt
       && (eintrag.quelle === 'liste' || eintrag.quelle === 'demo'
         || (eintrag.quelle === 'eigene' && umgebung.eigeneSchreibbar));
+                                                                       
+                                                            
+    const verschiebKandidaten = hausVerschiebbar(eintrag, hausVerschiebUmgebung());
     const konkret = konkretisierung(v);
     const nominierung = v.leitung === 'offen'
       ? 'Nominierung noch offen.'
@@ -8336,10 +8645,16 @@
       <div class="vs-fuss">
         ${kuratierbar ? `<button class="textbtn blau" type="button" id="hausVorschauHaken">${an ? 'Vormerkung zurücknehmen' : 'Zum Zurückstellen vormerken'}</button>` : ''}
         ${ruecknahmeMoeglich ? '<button class="textbtn blau" type="button" id="hausVorschauRuecknahme">Zurückstellung zurücknehmen</button>' : ''}
+        ${verschiebKandidaten.length ? '<button class="textbtn blau" type="button" id="hausVorschauVerschieben">In andere Abteilung verschieben</button>' : ''}
         ${hausSteckbriefWeg(eintrag)}
       </div>
     </div>`;
     wurzel.querySelector('.vs-schliessen').addEventListener('click', () => dialog.close());
+    const verschiebenKnopf = document.getElementById('hausVorschauVerschieben');
+    if (verschiebenKnopf) verschiebenKnopf.addEventListener('click', () => {
+      dialog.close();
+      hausVerschiebenOeffnen(eintrag, verschiebKandidaten);
+    });
     const haken = document.getElementById('hausVorschauHaken');
     if (haken) haken.addEventListener('click', () => {
       hausAuswahl = auswahlUmschalten(hausAuswahl, schluessel);
