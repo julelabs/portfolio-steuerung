@@ -89,6 +89,13 @@
                                                                           
   .sb-zurueck { display: inline-block; background: transparent; border: 0; cursor: pointer; font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--blau-60); padding: 0 0 10px; text-align: left; }
   .sb-zurueck:hover { color: var(--blau); }
+                                                                             
+                                                                              
+                                                                               
+                                                              
+  .sb-zurueck-zeile { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+  .sb-gespeichert { font-family: var(--display); font-size: 12.5px; color: var(--fg-muted); white-space: nowrap; }
+  .sb-gespeichert.fehler { color: var(--kirsche-text); }
                                                                               
                                                     
                                                                                
@@ -372,14 +379,14 @@
                                                                               
                                                                    
                                                                         
-  .steckbrief input[type="text"]:not(.sb-titel), .steckbrief input[type="month"], .steckbrief select, .steckbrief textarea,
+  .steckbrief input[type="text"]:not(.sb-titel), .steckbrief input[type="url"], .steckbrief input[type="month"], .steckbrief select, .steckbrief textarea,
   .vs-feld input, .navfoot input, .tg-zeile input, .tg-neu input {
     width: 100%; background: var(--weiss); border: 1px solid var(--feldkante); border-radius: 6px;
     color: var(--fg); font-family: var(--body); font-size: 15px; padding: 9px 12px;
   }
-  .steckbrief input[type="text"]:not(.sb-titel):hover, .steckbrief input[type="month"]:hover, .steckbrief select:hover, .steckbrief textarea:hover,
+  .steckbrief input[type="text"]:not(.sb-titel):hover, .steckbrief input[type="url"]:hover, .steckbrief input[type="month"]:hover, .steckbrief select:hover, .steckbrief textarea:hover,
   .vs-feld input:hover, .navfoot input:hover, .tg-zeile input:hover, .tg-neu input:hover { border-color: var(--blau-60); }
-  .steckbrief input[type="text"]:not(.sb-titel):focus, .steckbrief input[type="month"]:focus, .steckbrief select:focus, .steckbrief textarea:focus,
+  .steckbrief input[type="text"]:not(.sb-titel):focus, .steckbrief input[type="url"]:focus, .steckbrief input[type="month"]:focus, .steckbrief select:focus, .steckbrief textarea:focus,
   .vs-feld input:focus, .navfoot input:focus, .tg-zeile input:focus, .tg-neu input:focus {
     outline: 2px solid var(--blau); outline-offset: 1px; border-color: var(--blau);
   }
@@ -402,7 +409,10 @@
                                                                              
                                                                             
                                                                  
-  .ablesung { background: var(--blau-10); border-left: 4px solid var(--kirsche-text); border-radius: 6px; padding: 16px 18px; margin-top: 22px; margin-left: 34px; }
+                                                                             
+                                                                         
+                                           
+  .ablesung { background: var(--blau-10); border-left: 4px solid var(--blau); border-radius: 6px; padding: 16px 18px; margin-top: 22px; margin-left: 34px; }
   .empf-label { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 6px; }
   .empf-regel { color: var(--fg-2); font-size: 14px; }
   .ab-wort { font-family: var(--display); font-weight: 700; font-size: 16px; color: var(--fg); margin-bottom: 2px; }
@@ -1092,6 +1102,7 @@
   .vs-empfehlung { color: var(--fg-muted); font-size: 13.5px; margin-bottom: 10px; }
   .vs-empfehlung strong { font-family: var(--display); font-weight: 600; color: var(--fg); }
   .vs-landet { margin-top: 12px; }
+  .vs-link a { color: var(--blau); font-family: var(--display); font-weight: 700; font-size: 13.5px; text-decoration: underline; text-underline-offset: 3px; }
   .vs-landet strong { font-family: var(--display); color: var(--fg); }
   .vs-feld { margin-top: 16px; }
   .vs-feld label { display: block; font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--fg); margin-bottom: 4px; }
@@ -1893,8 +1904,19 @@
                                                      
       haengtAn: [],
       hinweis: '',
+                                                                             
+                                                                           
+                                                                 
+      link: '',
       entscheidung: 'offen', bedingung: '', begruendung: ''
     };
+  }
+
+                                                                         
+                                               
+  function linkSicher(wert) {
+    const rein = String(wert || '').trim();
+    return /^https?:\/\/\S+$/i.test(rein) ? rein : '';
   }
 
   function freieVorhabenId(liste, start) {
@@ -2162,7 +2184,7 @@
     if (!v) return false;
     const leer = feld => String(v[feld] || '').trim() === '';
     const leereFelder = ['referat', 'veraenderung', 'vzae', 'vzaeGedeckt', 'startAb', 'endeBis',
-      'bmWarum', 'hinweis', 'rollenFehlen', 'chanceKonkret', 'pflichtKonkret', 'zusageKonkret', 'schadenKonkret', 'klaerungKonkret'];
+      'bmWarum', 'hinweis', 'link', 'rollenFehlen', 'chanceKonkret', 'pflichtKonkret', 'zusageKonkret', 'schadenKonkret', 'klaerungKonkret'];
     const gewaehltFelder = ['ziel', 'reichweite', 'wirkungAb', 'ruhen', 'laeuft'];
     return leereFelder.every(leer) && gewaehltFelder.every(feld => v[feld] === WAEHLEN) && v.leitung === 'offen' && v.koav !== true;
   }
@@ -4554,7 +4576,7 @@
                                                                             
                                                                               
                                                               
-    if (speicherArt === 'liste') { spSchreibenAnstossen(); return; }
+    if (speicherArt === 'liste') { speicherStatusSetzen('laeuft'); spSchreibenAnstossen(); return; }
                                                                           
                                                                       
                                                                         
@@ -4566,6 +4588,29 @@
     if (fremd) { standUebernehmen(fremd, true); return; }
     S.schreibstand = (S.schreibstand || 0) + 1;
     try { localStorage.setItem(SPEICHER, JSON.stringify(S)); } catch (fehler) {                   }
+    speicherStatusSetzen('gespeichert');
+  }
+
+                                                                          
+                                                                           
+                                                                              
+                                                                
+  const speicherStatus = { art: '', zeit: '' };
+  function speicherStatusText() {
+    if (speicherStatus.art === 'laeuft') return 'Wird gespeichert …';
+    if (speicherStatus.art === 'fehler') return 'Nicht gespeichert, wird wiederholt';
+    if (speicherStatus.art === 'gespeichert') return 'Gespeichert ' + speicherStatus.zeit;
+    return '';
+  }
+  function speicherStatusSetzen(art) {
+    speicherStatus.art = art;
+    if (art === 'gespeichert') {
+      speicherStatus.zeit = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    }
+    const el = document.getElementById('sbGespeichert');
+    if (!el) return;
+    el.textContent = speicherStatusText();
+    el.classList.toggle('fehler', art === 'fehler');
   }
   function fremderNeuererStand() {
     try {
@@ -4832,7 +4877,11 @@
     clearTimeout(spSchreibUhr);
     if (spLaeuft) { spNochmal = true; return Promise.resolve(); }
     const diff = aenderungenErmitteln(S, spSchnappschuss);
-    if (!diff.geaendert.length && !diff.sonder && !diff.entfallen.length) return Promise.resolve();
+    if (!diff.geaendert.length && !diff.sonder && !diff.entfallen.length) {
+                                                                            
+      if (speicherStatus.art === 'laeuft') speicherStatusSetzen('gespeichert');
+      return Promise.resolve();
+    }
     spLaeuft = true;
     return spDigestSichern().then(digest => {
       let kette = Promise.resolve();
@@ -4843,8 +4892,10 @@
       return kette;
     }).then(() => {
       spFehlerAus();
+      if (!spNochmal) speicherStatusSetzen('gespeichert');
     }).catch(() => {
       spFehlerAn();
+      speicherStatusSetzen('fehler');
     }).then(() => {
       spLaeuft = false;
       if (spNochmal) { spNochmal = false; syncZeichnen(); return spSchreiben(); }
@@ -5647,7 +5698,10 @@
     const nominiert = IST_NOMINIERT(v.leitung);
 
     wurzel.innerHTML = `<div class="steckbrief">
-      <button class="sb-zurueck" type="button" id="sbZurueck">‹ Zur Übersicht</button>
+      <div class="sb-zurueck-zeile">
+        <button class="sb-zurueck" type="button" id="sbZurueck">‹ Zur Übersicht</button>
+        <span class="sb-gespeichert${speicherStatus.art === 'fehler' ? ' fehler' : ''}" id="sbGespeichert" role="status">${esc(speicherStatusText())}</span>
+      </div>
       <div class="sb-kopf">
         <input class="sb-titel" type="text" id="titel" value="${esc(v.name)}" maxlength="90" aria-label="Name des Vorhabens">
       </div>
@@ -5716,7 +5770,7 @@
       <div class="block">
         <span class="block-nr">4</span>
         <div>
-          <span class="frage">Welche Ressourcen braucht das Vorhaben?</span>
+          <span class="frage">Welche Ressourcen braucht es, und wo steht es?</span>
           <div class="zeile2">
             <div class="feld">
               <label for="vzae">Personalbedarf in den nächsten sechs Monaten (VZÄ)</label>
@@ -5789,6 +5843,11 @@
           <div class="feld">
             <label for="hinweis">Weitere wichtige Information</label>
             <textarea id="hinweis" data-id="${v.id}" data-feld="hinweis" maxlength="240" placeholder="z. B. Zielkonflikt oder Bedingung, kein Statusbericht">${esc(v.hinweis)}</textarea>
+          </div>
+          <div class="feld">
+            <label for="link">Link zur Ablage oder zu PM Flex</label>
+            <p class="feld-hilfe">Freiwillig. Erscheint in der Kurzvorschau, damit niemand Details doppelt aufschreiben muss.</p>
+            <input type="url" id="link" data-id="${v.id}" data-feld="link" maxlength="500" placeholder="https://…" value="${esc(v.link || '')}">
           </div>
         </div>
       </div>
@@ -6475,6 +6534,7 @@
           <p class="vs-auto">Änderungen werden automatisch gespeichert.</p>
         </div>` : ''}
         ${v.hinweis.trim() ? `<p class="vs-landet">Hinweis der Erfassung: ${esc(v.hinweis)}</p>` : ''}
+        ${linkSicher(v.link) ? `<p class="vs-landet vs-link"><a href="${esc(linkSicher(v.link))}" target="_blank" rel="noopener">Ablage oder PM Flex öffnen</a></p>` : ''}
       </section>
       ${rueckverweise(v).length ? `<section class="vs-block">
         <h3>${rueckverweise(v).length > 1 ? 'Verknüpfungen aus anderen Abteilungen' : 'Verknüpfung aus anderer Abteilung'}</h3>
@@ -7974,8 +8034,13 @@
 
                                                                          
                                                                         
+                                                                           
+                                                                              
+                                                                           
+                                       
   const HAUS_GRUPPEN = [
-    { name: 'eingeplant', koerbe: ['haus', 'fach'] },
+    { name: 'Für Leitungsportfolio nominiert', koerbe: ['haus'] },
+    { name: 'Restliches Abteilungsportfolio', koerbe: ['fach'] },
     { name: 'wartet', koerbe: ['warte'] },
     { name: 'eingestellt', koerbe: ['nicht'] },
     { name: 'Erst klären', koerbe: ['offen'], nurGefuellt: true }
@@ -8640,6 +8705,9 @@
       ${v.hinweis.trim() ? `<section class="vs-block">
         <h3>Hinweis der Erfassung</h3>
         <p>${esc(v.hinweis)}</p>
+      </section>` : ''}
+      ${linkSicher(v.link) ? `<section class="vs-block vs-link">
+        <p><a href="${esc(linkSicher(v.link))}" target="_blank" rel="noopener">Ablage oder PM Flex öffnen</a></p>
       </section>` : ''}
       ${verlaufHtml(v)}
       <div class="vs-fuss">
