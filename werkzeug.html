@@ -3634,11 +3634,41 @@
       stand.vorhaben.push(v);
       eintraege.push(eintrag);
     });
+                                                                                
+                                                                             
+                                                                               
+                                                                       
+                                                                        
+    const vorher = {};
+    stand.vorhaben.forEach(v => { vorher[v.kennung || v.id] = JSON.stringify(v.haengtAn || []); });
     migriereExterneAbhaengigkeiten(stand);
+    const repariert = stand.vorhaben
+      .filter(v => vorher[v.kennung || v.id] !== JSON.stringify(v.haengtAn || []))
+      .map(v => v.kennung);
     stand.tagesgeschaeft = tagesgeschaeftZeilen(stand);
     kennungenErgaenzen(stand.vorhaben);
     historieErgaenzen(stand.vorhaben);
-    return { stand: stand, eintraege: eintraege, neuester: neuester, sonderDa: sonderDa };
+    return { stand: stand, eintraege: eintraege, neuester: neuester, sonderDa: sonderDa, repariert: repariert };
+  }
+
+                                                                       
+                                                                         
+                                                                         
+                                                                        
+                                                                       
+                                                                          
+                                                                         
+                                                                           
+  function vorhabenFuerListe(v, alle) {
+    const kopie = JSON.parse(JSON.stringify(v));
+    kopie.haengtAn = (kopie.haengtAn || []).reduce((liste, a) => {
+      if (!a || a.typ !== 'v') { if (a) liste.push(a); return liste; }
+      if (istKennungsVerweis(a)) { liste.push(a); return liste; }
+      const ziel = (alle || []).find(x => x.id === a.id);
+      if (ziel && kennungGueltig(ziel.kennung)) liste.push({ typ: 'v', id: 'k:' + ziel.kennung });
+      return liste;
+    }, []);
+    return kopie;
   }
 
   function standLesen(hole, site, titel) {
@@ -4768,6 +4798,7 @@
     if (!el) return;
     let text = '';
     if (speicherArt !== 'liste') text = spHinweisKopf;
+    else if (spImportStand) text = 'Einlesen: ' + spImportStand.fertig + ' von ' + spImportStand.gesamt + ' angelegt, bitte warten';
     else if (spOffline) text = 'keine Verbindung';
     else if (!spListe.schreiben) text = 'Nur lesen: Portfolio der Abteilung ' + spListe.kuerzel;
     else text = 'verbunden';
@@ -4784,6 +4815,13 @@
     if (!mehrere) return;
     wahl.innerHTML = spListen.map(l => `<option value="${esc(l.titel)}"${l.titel === spListe.titel ? ' selected' : ''}>${esc(l.kuerzel)}</option>`).join('');
     wahl.onchange = () => {
+                                                                      
+                                                                          
+      if (spImportStand) {
+        wahl.value = spListe.titel;
+        syncHinweisZeigen('Das Einlesen läuft noch (' + spImportStand.fertig + ' von ' + spImportStand.gesamt + '). Der Listenwechsel wartet, bis alle Vorhaben angelegt sind.');
+        return;
+      }
       try { localStorage.setItem(SP_LETZTE_LISTE, wahl.value); } catch (fehler) {                   }
       location.reload();
     };
@@ -4865,6 +4903,10 @@
     spSchnappschuss = {};
     (ergebnis.eintraege || []).forEach(e => { spEintraege[e.kennung] = e; });
     (S.vorhaben || []).forEach(v => { spSchnappschuss[v.kennung] = JSON.stringify(v); });
+                                                                           
+                                                                        
+                                              
+    (ergebnis.repariert || []).forEach(kennung => { if (spSchnappschuss[kennung]) spSchnappschuss[kennung] = ''; });
     if (ergebnis.sonderDa) spSchnappschuss[SP_SONDER] = sonderText(S);
     spZeitMerken(ergebnis.neuester);
   }
@@ -4922,9 +4964,10 @@
     const koerper = eintragAusVorhaben(aenderung.vorhaben, S.vorhaben, spTyp);
     if (!eintrag) {
                                                                                 
-                                              
+                                                                               
+                                                                              
       const alteId = aenderung.vorhaben.id;
-      return eintragAnlegen(spHole, spSite, spListe.titel, digest, koerper).then(erg => {
+      return eintragAnlegen(spHole, spSite, spListe.titel, digest, eintragAusVorhaben(vorhabenFuerListe(aenderung.vorhaben, S.vorhaben), S.vorhaben, spTyp)).then(erg => {
         aenderung.vorhaben.id = 'v' + erg.id;
         if (alteId !== aenderung.vorhaben.id) {
                                                                            
@@ -5105,21 +5148,41 @@
                                                                                 
                                                                              
                                                            
+                                                                            
+                                                                                
+                                                                           
+                                                                      
+                                                       
+  let spImportStand = null;
+  function spImportMelden(stand) {
+    spImportStand = stand;
+    spStatusZeigen();
+  }
+
   function spNeueAnlegen() {
     const offen = S.vorhaben.filter(v => !spEintraege[v.kennung]);
     if (!offen.length) return spSchreiben();
     const umbenannt = {};
+    let fehler = 0;
+    spImportMelden({ gesamt: offen.length, fertig: 0 });
     return spDigestSichern().then(digest => {
       let kette = Promise.resolve();
       offen.forEach(v => {
-        kette = kette.then(() => eintragAnlegen(spHole, spSite, spListe.titel, digest, eintragAusVorhaben(v, S.vorhaben, spTyp))
-          .then(erg => {
-            umbenannt[v.id] = 'v' + erg.id;
-            v.id = 'v' + erg.id;
-            spEintraege[v.kennung] = { id: erg.id, kennung: v.kennung, etag: erg.etag, modified: erg.modified };
-            spZeitMerken(erg.modified);
-            return spNamenPflegen(v, digest);
-          }));
+                                                                         
+                                                                              
+                                                                            
+                                                                
+        kette = kette
+          .then(() => eintragAnlegen(spHole, spSite, spListe.titel, digest, eintragAusVorhaben(vorhabenFuerListe(v, S.vorhaben), S.vorhaben, spTyp))
+            .then(erg => {
+              umbenannt[v.id] = 'v' + erg.id;
+              v.id = 'v' + erg.id;
+              spEintraege[v.kennung] = { id: erg.id, kennung: v.kennung, etag: erg.etag, modified: erg.modified };
+              spZeitMerken(erg.modified);
+              return spNamenPflegen(v, digest);
+            }))
+          .catch(() => { fehler += 1; })
+          .then(() => { spImportMelden({ gesamt: offen.length, fertig: spImportStand ? spImportStand.fertig + 1 : 1 }); });
       });
       return kette;
     }).then(() => {
@@ -5129,7 +5192,10 @@
       if (vorschauId && !ids.has(vorschauId)) vorschauId = null;
       if (abhAktivId && !ids.has(abhAktivId)) abhAktivId = null;
       return spSchreiben();
-    }).catch(() => { spFehlerAn(); });
+    }).then(() => {
+      spImportMelden(null);
+      if (fehler) spFehlerAn((fehler === 1 ? 'Ein Vorhaben konnte' : fehler + ' Vorhaben konnten') + ' nicht angelegt werden. Bitte die Datei noch einmal einlesen; was schon da ist, bleibt stehen.');
+    }).catch(() => { spImportMelden(null); spFehlerAn(); });
   }
 
                                                                                 
@@ -5354,6 +5420,10 @@
         spTyp = typ;
         spNamenTyp = namenTyp;
         spSicherungSchreiben();
+                                                                          
+                                                                             
+                                              
+        if ((ergebnis.repariert || []).length && spListe.schreiben && spTyp) spSchreibenAnstossen();
         return null;
       });
     });
@@ -5400,7 +5470,8 @@
       spKeepalive = true;
       spSchreiben();
       spKeepalive = false;
-      if (spOffline) { event.preventDefault(); event.returnValue = ''; }
+                                                                          
+      if (spOffline || spImportStand) { event.preventDefault(); event.returnValue = ''; }
     });
   }
                                                                           
