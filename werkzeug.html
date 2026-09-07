@@ -842,6 +842,8 @@
                                                                  
   .reiter-linse { margin-left: auto; align-self: center; padding-bottom: 8px; }
   .reiter-linse .bild-steuer, .reiter-linse .lz-steuer { margin-bottom: 0; }
+                                                                          
+  .reiter-linse .bild-suche { margin-right: 10px; }
 
                                                              
   .mx-scroll { overflow-x: auto; padding-bottom: 4px; }
@@ -6632,6 +6634,9 @@
 
   function renderLanes() {
     const bahnen = [...ZIELE, OHNE_ZIEL, WAEHLEN];
+                                                                            
+                             
+    document.getElementById('reiterLinse').innerHTML = `<div class="bild-steuer">${bildSucheHtml()}</div>`;
     document.getElementById('bildKoerper').innerHTML = bahnen.map(bahn => {
       const drin = sortiert(S.vorhaben.filter(v => v.ziel === bahn));
       if (bahn === WAEHLEN && !drin.length) return '';
@@ -6645,6 +6650,7 @@
         <div class="lane-body">${drin.map(v => kachel(v)).join('')}</div>
       </div>`;
     }).join('');
+    bildSucheMarkieren();
   }
 
                                                                   
@@ -6791,6 +6797,44 @@
     zeichneAbhaengigkeitsLinien(fokus);
   }
 
+                                                                       
+                                                                            
+                                                                               
+                                                                            
+                                     
+  let bildSuche = '';
+  function bildSuchTreffer(v) {
+    const suche = bildSuche.trim().toLowerCase();
+    if (!suche || !v) return true;
+    return (String(v.name || '') + ' ' + String(v.referat || '')).toLowerCase().indexOf(suche) >= 0;
+  }
+  function bildSucheHtml() {
+    return `<input class="haus-suche bild-suche" type="search" id="bildSuche" value="${esc(bildSuche)}" placeholder="Vorhaben suchen ..." aria-label="Vorhaben suchen" autocomplete="off">`;
+  }
+                                                                           
+                                                                      
+  function bildSucheAnbinden() {
+    const feld = document.getElementById('bildSuche');
+    if (!feld) return;
+    feld.addEventListener('input', () => {
+      const stelle = feld.selectionStart;
+      bildSuche = feld.value;
+      renderBild();
+      const neu = document.getElementById('bildSuche');
+      if (neu) { neu.focus(); try { neu.setSelectionRange(stelle, stelle); } catch (fehler) {                                } }
+    });
+  }
+                                                                  
+  function bildSucheMarkieren() {
+    if (!bildSuche.trim()) return;
+    document.getElementById('bildKoerper').querySelectorAll('[data-kachel]').forEach(el => {
+      const karte = el.closest('.pt-wrap') || el;
+      if (!bildSuchTreffer(nachId(el.dataset.kachel))) karte.classList.add('abh-zurueck');
+    });
+    const tg = document.getElementById('bildKoerper').querySelector('.tg-wrap');
+    if (tg) tg.classList.add('abh-zurueck');
+  }
+
   function renderPortfolio() {
     let fokus = abhaengigkeitsFokus(abhAktivId);
     if (abhAktivId && !fokus) abhAktivId = null;
@@ -6801,14 +6845,15 @@
     if (pfReferat !== 'alle' && pfReferat !== 'ohne' && !referate.includes(pfReferat)) pfReferat = 'alle';
                                                                             
                                                          
-    document.getElementById('reiterLinse').innerHTML = referate.length ? `<div class="bild-steuer">
-        <label for="pfReferat">Referat</label>
+    document.getElementById('reiterLinse').innerHTML = `<div class="bild-steuer">
+        ${bildSucheHtml()}
+        ${referate.length ? `<label for="pfReferat">Referat</label>
         <select id="pfReferat">
           <option value="alle" ${pfReferat === 'alle' ? 'selected' : ''}>alle Referate</option>
           ${referate.map(r => `<option value="${esc(r)}" ${pfReferat === r ? 'selected' : ''}>${esc(r)}</option>`).join('')}
           <option value="ohne" ${pfReferat === 'ohne' ? 'selected' : ''}>ohne Referat</option>
-        </select>
-      </div>` : '';
+        </select>` : ''}
+      </div>`;
     const imKorb = korb => sortiert(S.vorhaben.filter(v => portfolio(v, S.vorhaben).wert === korb));
     const vzaeSumme = liste => liste.reduce((wert, v) => wert + vzaeWert(v), 0);
                                                                            
@@ -6891,6 +6936,7 @@
       renderBild();
     });
     markiereAbhaengigkeiten(fokus);
+    bildSucheMarkieren();
   }
 
                                                                              
@@ -6947,8 +6993,8 @@
     const h0 = heute.getFullYear() * 12 + heute.getMonth();
     const referate = [...new Set(S.vorhaben.map(v => v.referat.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'de'));
     if (lzReferat !== 'alle' && lzReferat !== 'ohne' && !referate.includes(lzReferat)) lzReferat = 'alle';
-    const gefiltert = S.vorhaben.filter(v => lzReferat === 'alle'
-      || (lzReferat === 'ohne' ? !v.referat.trim() : v.referat.trim() === lzReferat));
+    const gefiltert = S.vorhaben.filter(v => (lzReferat === 'alle'
+      || (lzReferat === 'ohne' ? !v.referat.trim() : v.referat.trim() === lzReferat)) && bildSuchTreffer(v));
     const mitZeit = gefiltert.map(v => ({ v, z: zeitraum(v) }));
     const balken = mitZeit.filter(e => e.z.art !== 'offen');
     const offene = mitZeit.filter(e => e.z.art === 'offen');
@@ -6978,6 +7024,7 @@
                                                                    
                                                        
     document.getElementById('reiterLinse').innerHTML = `<div class="lz-steuer">
+        ${bildSucheHtml()}
         <label for="lzReferat">Referat</label>
         <select id="lzReferat">
           <option value="alle" ${lzReferat === 'alle' ? 'selected' : ''}>alle Referate</option>
@@ -6990,7 +7037,7 @@
         <span class="lz-heute">ab heute (${monatsText(h0)})</span>
         <div class="lz-spur" style="${rasterStil}">${marken.join('')}</div>
       </div>
-      ${balken.length ? balken.map(zeile).join('') : `<p class="lz-leer">Kein Vorhaben mit Zeitangaben${lzReferat === 'alle' ? '' : ' in diesem Referat'}.</p>`}
+      ${balken.length ? balken.map(zeile).join('') : `<p class="lz-leer">Kein Vorhaben mit Zeitangaben${lzReferat === 'alle' ? '' : ' in diesem Referat'}${bildSuche.trim() ? ' passt zu „' + esc(bildSuche.trim()) + '“' : ''}.</p>`}
       <p class="mx-lese"><strong>So liest sich das Bild:</strong> Eine Zeile pro Vorhaben, der Balken reicht vom geplanten Start bis zum voraussichtlichen Ende. Was schon läuft, kommt offen vom linken Rand; was über die ${LZ_MONATE} Monate hinausreicht, läuft rechts offen weiter. Die Farben sind die der Entscheidungen oben.</p>
       ${offene.length ? `<div class="mx-offen">
         <p class="mx-offen-kopf">Zeitraum noch offen · ${offene.length}</p>
@@ -7056,6 +7103,7 @@
     if (sicht === 'portfolio') renderPortfolio();
     else if (sicht === 'laufzeiten') renderLaufzeiten();
     else renderLanes();
+    bildSucheAnbinden();
     document.getElementById('bildKoerper').querySelectorAll('[data-vorschau]').forEach(el => el.addEventListener('click', event => {
       event.stopPropagation();
       vorschauOeffnen(el.dataset.vorschau);
