@@ -270,6 +270,10 @@
                                      
   .erfassen:not(.hat-offen) .listen-aktionsleiste button { width: auto; margin: 0; padding: 15px 12px 13px; font-size: 15px; line-height: 1.3; border-bottom: 2px solid transparent; }
   .erfassen:not(.hat-offen) .listen-aktionsleiste button:hover { background: transparent; color: var(--blau); border-bottom-color: var(--blau); }
+  .listen-suche { margin-left: auto; align-self: center; width: 220px; background: var(--weiss); border: 1px solid var(--feldkante); border-radius: 6px; color: var(--fg); font-family: var(--body); font-size: 14px; padding: 6px 10px; }
+  .listen-suche:focus { outline: 2px solid var(--blau); outline-offset: 1px; border-color: var(--blau); }
+                                                                     
+  .erfassen.hat-offen .listen-suche { width: 100%; margin: 6px 0 4px; }
   .erfassen:not(.hat-offen) .nav-neu { color: var(--blau); }
   .erfassen:not(.hat-offen) .nav-neu .plus { font-size: 17px; font-weight: 600; }
   .erfassen:not(.hat-offen) .nav-tg { color: var(--fg-2); }
@@ -1324,8 +1328,14 @@
   .haus-meta { color: var(--fg-muted); font-size: 12.5px; }
   .haus-flaeche { display: flex; flex-wrap: wrap; gap: 10px; align-content: flex-start; }
   .haus-gruppen { display: block; width: 100%; }
-  .haus-gruppe + .haus-gruppe { margin-top: 14px; }
-  .haus-gruppe-kopf { background: var(--lavendel); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px; }
+                                                                           
+                                                                              
+                                                                             
+                                                                          
+                      
+  .haus-gruppe + .haus-gruppe { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .haus-gruppe + .haus-gruppe.haus-gruppe-rest { margin-top: 18px; padding-top: 12px; border-top-color: var(--blau-20); }
+  .haus-gruppe-kopf { color: var(--fg-muted); font-size: 10.5px; margin-bottom: 8px; }
   .haus-gruppe-body { display: flex; flex-wrap: wrap; gap: 10px; }
   @media (max-width: 860px) { .haus-zeile { grid-template-columns: 1fr; gap: 8px; } }
 
@@ -1578,6 +1588,8 @@
           
           <button class="nav-tg" type="button" id="einlesenZeigen" title="JSON-Dateien der Referate in diesen Stand übernehmen">Referatsstand einlesen</button>
           <input type="file" id="einlesenDatei" accept=".json,application/json" multiple hidden>
+          
+          <input type="search" class="listen-suche" id="listeSuche" placeholder="Vorhaben suchen ..." aria-label="Vorhabenliste durchsuchen" autocomplete="off">
         </div>
         <div class="navfoot verborgen" id="neuForm">
           <input type="text" id="neuName" placeholder="Name des Vorhabens ..." autocomplete="off" aria-label="Name des neuen Vorhabens">
@@ -5208,7 +5220,8 @@
   function spLeseansicht() {
     const anwenden = () => {
       document.querySelectorAll('input, textarea, select').forEach(el => {
-        if (el.type === 'file' || el.id === 'spListenWahl') return;
+                                                                                  
+        if (el.type === 'file' || el.type === 'search' || el.id === 'spListenWahl') return;
         if (!el.disabled) el.disabled = true;
       });
       document.querySelectorAll('[draggable="true"]').forEach(el => { el.draggable = false; });
@@ -5440,9 +5453,23 @@
     </button>`;
   }
 
+                                                                          
+                                                
+  let listeSuche = '';
+  function listeTreffer() {
+    const suche = listeSuche.trim().toLowerCase();
+    if (!suche) return S.vorhaben;
+    return S.vorhaben.filter(v => (String(v.name || '') + ' ' + String(v.referat || '')).toLowerCase().indexOf(suche) >= 0);
+  }
+
   function renderNav() {
     const wurzel = document.getElementById('nav');
     const offenAnzahl = S.vorhaben.filter(v => luecken(v).length).length;
+    const treffer = listeTreffer();
+    const sucht = !!listeSuche.trim();
+    const zaehlText = sucht ? `${treffer.length} von ${S.vorhaben.length}` : String(S.vorhaben.length);
+    const keinTreffer = sucht && S.vorhaben.length && !treffer.length
+      ? `<p class="lane-leer">Kein Vorhaben passt zu „${esc(listeSuche.trim())}“.</p>` : '';
                                                                            
                                                                            
                                                                     
@@ -5452,19 +5479,19 @@
     if (!S.vorhaben.length) {
       wurzel.innerHTML = '<p class="lane-leer">Noch kein Vorhaben.</p>';
     } else if (offenId) {
-      wurzel.innerHTML = S.vorhaben.map(v => `
+      wurzel.innerHTML = treffer.map(v => `
       <button class="nav-item" type="button" data-nav="${v.id}" aria-current="${v.id === offenId}">
         <span class="reife ${istReif(v) ? 'fertig' : 'entwurf'}"></span>
         <span class="nav-name">${esc(v.name)}</span>
-      </button>`).join('');
+      </button>`).join('') + keinTreffer;
     } else {
       wurzel.innerHTML = `<div class="vzeile vz-kopf" role="row">
-          <span role="columnheader">Vorhaben <span class="vz-count">${S.vorhaben.length}</span></span>
+          <span role="columnheader">Vorhaben <span class="vz-count">${zaehlText}</span></span>
           <span class="vz-ref" role="columnheader">Referat</span>
           <span class="vz-stand" role="columnheader">Stand</span>
           <span class="vz-bedarf" role="columnheader">Bedarf</span>
           <span class="vz-fehlt" role="columnheader">Was fehlt <span class="vz-count">${offenText}</span></span>
-        </div>` + S.vorhaben.map(vzeileHtml).join('');
+        </div>` + treffer.map(vzeileHtml).join('') + keinTreffer;
     }
     document.getElementById('nav').querySelectorAll('[data-nav]').forEach(el => el.addEventListener('click', () => {
       offenId = el.dataset.nav;
@@ -7856,7 +7883,10 @@
       abteilungen,
       alle,
       index,
-      sichtbar: hausFilter(alle, { nurNominierte: hausNurNominierte, abteilung: hausAbteilung }),
+                                                                         
+                                                                            
+                                                                       
+      sichtbar: hausFilter(alle, { nurNominierte: hausNurNominierte, abteilung: hausAbteilung }).filter(hausSuchTreffer),
       zaehler: hausZaehler(abteilungen, alle)
     };
   }
@@ -7915,11 +7945,26 @@
         </select>
       </div>
       <div class="haus-steuer-teil">
+        <input class="haus-suche" type="search" id="hausSuche" value="${esc(hausSuche)}" placeholder="Vorhaben suchen ..." aria-label="Vorhaben suchen" autocomplete="off">
         <span class="haus-auswahl-zahl"><span class="haus-zahl">${zaehler.gewaehlt}</span> von ${zaehler.gesamt} vorgemerkt</span>
       </div>`;
+                                                                               
+                                                                            
+                                                                              
+    const suche = document.getElementById('hausSuche');
+    if (suche) suche.addEventListener('input', () => {
+      const stelle = suche.selectionStart;
+      hausSuche = suche.value;
+      renderHaus();
+      const neu = document.getElementById('hausSuche');
+      if (neu) { neu.focus(); try { neu.setSelectionRange(stelle, stelle); } catch (fehler) {                                } }
+    });
     document.querySelectorAll('#hausSteuer [data-haus-umfang]').forEach(el => el.addEventListener('click', () => {
       hausNurNominierte = el.dataset.hausUmfang === 'nominiert';
       hausAktiv = null;
+                                                                             
+                                                                               
+      hausOffen = {};
       hausSichtSichern();
       renderHaus();
     }));
@@ -8040,7 +8085,7 @@
                                        
   const HAUS_GRUPPEN = [
     { name: 'Für Leitungsportfolio nominiert', koerbe: ['haus'] },
-    { name: 'Restliches Abteilungsportfolio', koerbe: ['fach'] },
+    { name: 'Restliches Abteilungsportfolio', koerbe: ['fach'], klasse: 'haus-gruppe-rest' },
     { name: 'wartet', koerbe: ['warte'] },
     { name: 'eingestellt', koerbe: ['nicht'] },
     { name: 'Erst klären', koerbe: ['offen'], nurGefuellt: true }
@@ -8051,7 +8096,7 @@
       const drin = [];
       gruppe.koerbe.forEach(korb => eintraege.filter(e => e.korb === korb).forEach(e => drin.push(e)));
       if (gruppe.nurGefuellt && !drin.length) return '';
-      return `<div class="haus-gruppe">
+      return `<div class="haus-gruppe${gruppe.klasse ? ' ' + gruppe.klasse : ''}">
         <p class="pf-korb haus-gruppe-kopf">${esc(gruppe.name)} · ${drin.length}</p>
         <div class="haus-gruppe-body">${drin.map(e => hausKachel(e, { gedaempft: gedaempft && !hausAuswahl[e.schluessel] })).join('')}</div>
       </div>`;
@@ -8093,7 +8138,7 @@
                                                                             
                                                              
       const offen = !hausNurNominierte || !!hausOffen[a.kuerzel];
-      const meine = (offen ? bau.alle : bau.sichtbar).filter(e => e.kuerzel === a.kuerzel);
+      const meine = (offen ? bau.alle.filter(hausSuchTreffer) : bau.sichtbar).filter(e => e.kuerzel === a.kuerzel);
                                                                            
                                                                            
                                                   
@@ -8340,23 +8385,13 @@
         : { spalte, richtung: 'auf' };
       renderHaus();
     }));
-    const suche = document.getElementById('hausSuche');
-                                                                             
-                                           
-    if (suche) suche.addEventListener('input', () => {
-      const stelle = suche.selectionStart;
-      hausSuche = suche.value;
-      renderHaus();
-      const neu = document.getElementById('hausSuche');
-      if (neu) { neu.focus(); neu.setSelectionRange(stelle, stelle); }
-    });
   }
 
+                                                                            
+                                                                          
   function renderHausLinse() {
     const linse = document.getElementById('hausLinse');
-    linse.innerHTML = hausReiter === 'liste'
-      ? `<input class="haus-suche" type="search" id="hausSuche" value="${esc(hausSuche)}" placeholder="In der Liste suchen ..." aria-label="Liste durchsuchen">`
-      : '';
+    linse.innerHTML = '';
   }
 
   function renderHaus() {
@@ -9018,6 +9053,11 @@
       zurUebersicht();
     });
     document.getElementById('tgSchritt1').addEventListener('click', tgErfassenOeffnen);
+                                                                             
+    document.getElementById('listeSuche').addEventListener('input', event => {
+      listeSuche = event.target.value;
+      renderNav();
+    });
                                                                                
                                                                                
                                                                         
