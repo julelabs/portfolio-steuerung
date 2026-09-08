@@ -221,16 +221,17 @@
 
                                               
                                                                        
-                                                                  
+                                                                           
+                                                                    
+                                                                       
+                                                              
   .weg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 40px; }
   .schritt { display: flex; flex-direction: column; }
-  .situation { align-self: flex-start; font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; background: var(--blau-10); color: var(--blau); }
-  .schritt .fuer { font-family: var(--display); font-size: 12.5px; font-weight: 600; color: var(--fg-muted); margin-top: -2px; }
+  .schritt .fuer { font-family: var(--display); font-size: 12.5px; font-weight: 600; color: var(--fg-muted); margin-top: -6px; }
   .schritt .karte { flex: 1; display: flex; flex-direction: column; gap: 10px; background: var(--weiss); border: 1px solid var(--line); border-radius: var(--r-panel); padding: 22px 20px; text-decoration: none; transition: border-color .2s, transform .2s; }
   .schritt .karte:hover { border-color: var(--blau); transform: translateY(-2px); }
-  .schritt h3 { font-size: 18.5px; }
-  .schritt .lage { font-size: 14px; color: var(--fg-muted); font-style: normal; }
-  .schritt p { font-size: 14.5px; color: var(--fg-2); }
+  .schritt h3 { font-size: 20px; }
+  .schritt .lage { font-size: 15px; color: var(--fg-2); font-style: normal; }
   .schritt .go { margin-top: auto; padding-top: 8px; font-family: var(--display); font-weight: 800; font-size: 14px; color: var(--blau); }
   .weg-fuss { margin-top: 26px; font-size: 15px; color: var(--fg-2); max-width: 70ch; }
   @media (max-width: 940px) {
@@ -293,9 +294,9 @@
     </div>
     <span class="trenner" aria-hidden="true"></span>
     <div class="schritte">
-      <a href="werkzeug.html#erfassen">Schritt 1 · Vorhaben erfassen</a>
-      <a href="werkzeug.html#vorbereiten">Schritt 2 · Portfoliorunde vorbereiten</a>
-      <a href="werkzeug.html#entscheiden">Schritt 3 · Portfolio entscheiden</a>
+      <a href="werkzeug.html#erfassen">Vorhaben erfassen</a>
+      <a href="werkzeug.html#vorbereiten">Portfoliorunde vorbereiten</a>
+      <a href="werkzeug.html#entscheiden">Portfolio entscheiden</a>
       <a href="faq.html">FAQ</a>
     </div>
   </div>
@@ -378,41 +379,33 @@
     <div class="weg">
       <div class="schritt">
         <a class="karte" href="werkzeug.html">
-          <span class="situation">Neues Vorhaben</span>
+          <h3>Neues Vorhaben</h3>
           <span class="fuer">für Referate</span>
-          <h3>Schritt 1 · Vorhaben erfassen</h3>
           <span class="lage">Ein Vorhaben ist neu oder noch nirgends beschrieben.</span>
-          <p>Ein Steckbrief, sechs Blöcke: Worum geht es, was passiert beim Ruhenlassen, welche Kapazität braucht es, kommt eine Nominierung für das Leitungsportfolio infrage? Leer lassen ist erlaubt, das Werkzeug zeigt, was noch fehlt.</p>
           <span class="go">Vorhaben eintragen</span>
         </a>
       </div>
       <div class="schritt">
         <a class="karte" href="werkzeug.html">
-          <span class="situation">Laufend</span>
+          <h3>Laufendes Vorhaben</h3>
           <span class="fuer">für Referate</span>
-          <h3>Vorhaben aktualisieren</h3>
           <span class="lage">Der Stand hat sich geändert: neue Zahlen, neuer Endtermin, neue Abhängigkeit.</span>
-          <p>Steckbrief öffnen, nachziehen, fertig. Die Änderung erscheint sofort im Portfolio und in den Laufzeiten. Es gibt keinen zweiten Datenstand.</p>
           <span class="go">Zur Vorhabenliste</span>
         </a>
       </div>
       <div class="schritt">
         <a class="karte" href="werkzeug.html#vorbereiten">
-          <span class="situation">Vor der Runde</span>
+          <h3>Vor der Runde</h3>
           <span class="fuer">für die Abteilung</span>
-          <h3>Schritt 2 · Portfoliorunde vorbereiten</h3>
           <span class="lage">Die Runde steht an. Was ist reif, was fehlt, was ist überbucht?</span>
-          <p>Drei Karten statt fünf Mails: Kapazitätslücken, Abhängigkeiten und fehlende Informationen, jede mit ihrer Zahl und dem Befund in einem Satz. Erst der Klick zeigt die Punkte dahinter.</p>
           <span class="go">Portfoliorunde vorbereiten</span>
         </a>
       </div>
       <div class="schritt">
         <a class="karte" href="werkzeug.html#portfolio">
-          <span class="situation">In der Runde</span>
+          <h3>In der Runde</h3>
           <span class="fuer">für die Abteilungsleitung</span>
-          <h3>Schritt 3 · Portfolio entscheiden</h3>
           <span class="lage">Alle Vorhaben liegen nebeneinander. Die Runde entscheidet gemeinsam.</span>
-          <p>Je Vorhaben: eingeplant, wartet oder eingestellt. Die Kapazitätslinie zeigt, was nicht mehr hineinpasst, und jede Abweichung von der Empfehlung braucht einen Satz Begründung.</p>
           <span class="go">Portfolio entscheiden</span>
         </a>
       </div>
