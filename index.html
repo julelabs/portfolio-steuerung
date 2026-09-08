@@ -241,9 +241,11 @@
 
                                               
   .staffel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 34px; }
-  .staffel .stufe { background: var(--weiss); border: 1px solid var(--line); border-radius: var(--r-panel); padding: 20px; }
-  .staffel .stufe b { display: block; font-family: var(--display); font-size: 15.5px; margin-bottom: 6px; }
-  .staffel .stufe p { font-size: 14.5px; color: var(--fg-2); }
+                                                                                    
+                                                     
+  .staffel .stufe { display: flex; flex-direction: column; gap: 10px; background: var(--weiss); border: 1px solid var(--line); border-radius: var(--r-panel); padding: 22px 20px; }
+  .staffel .stufe b { display: block; font-family: var(--display); font-weight: 700; font-size: 20px; letter-spacing: -0.02em; line-height: 1.12; }
+  .staffel .stufe p { font-size: 15px; color: var(--fg-2); }
   .pill { display: inline-block; font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; background: var(--lavendel); color: var(--fg-2); margin-left: 8px; vertical-align: 2px; }
   .hint { background: var(--weiss); border-left: 4px solid var(--minze); border-radius: 0 10px 10px 0; padding: 14px 18px; font-size: 15px; color: var(--fg-2); margin-top: 30px; max-width: 72ch; }
                                                                          
