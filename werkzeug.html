@@ -3594,6 +3594,8 @@
     const eintraege = [];
     let neuester = '';
     let sonderDa = false;
+    const vorlaeufig = {};
+    const unfertig = [];
     (zeilen || []).forEach(zeile => {
       const kennung = String(zeile.Kennung || '');
       const eintrag = {
@@ -3624,6 +3626,14 @@
       }
       const id = 'v' + zeile.Id;
       const v = Object.assign(neuesVorhaben(id, (objekt && objekt.name) || zeile.Title || ''), objekt || {});
+                                                                          
+                                                                          
+                                                                            
+                                                                        
+      if (objekt && typeof objekt.id === 'string' && objekt.id && objekt.id !== id) {
+        vorlaeufig[objekt.id] = id;
+        unfertig.push(v);
+      }
       v.id = id;
       v.kennung = kennung || v.kennung;
       if (!objekt) {
@@ -3641,9 +3651,23 @@
                                                                         
     const vorher = {};
     stand.vorhaben.forEach(v => { vorher[v.kennung || v.id] = JSON.stringify(v.haengtAn || []); });
+                                                                               
+                                                                          
+                                                                           
+                                                                           
+                                                                              
+                                                                            
+                                                         
+    unfertig.forEach(v => {
+      v.haengtAn = (v.haengtAn || []).map(a => {
+        if (a && a.typ === 'v' && !istKennungsVerweis(a) && vorlaeufig[a.id]) return { typ: 'v', id: vorlaeufig[a.id] };
+        return a;
+      });
+    });
     migriereExterneAbhaengigkeiten(stand);
+    const unfertigKennungen = new Set(unfertig.map(v => v.kennung));
     const repariert = stand.vorhaben
-      .filter(v => vorher[v.kennung || v.id] !== JSON.stringify(v.haengtAn || []))
+      .filter(v => unfertigKennungen.has(v.kennung) || vorher[v.kennung || v.id] !== JSON.stringify(v.haengtAn || []))
       .map(v => v.kennung);
     stand.tagesgeschaeft = tagesgeschaeftZeilen(stand);
     kennungenErgaenzen(stand.vorhaben);
