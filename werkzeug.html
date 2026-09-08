@@ -1183,7 +1183,7 @@
                                                           
   .vb-fuss-leise { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
 
-                                                                    
+                                                                   
                                                                     
                                                                           
                                                                            
@@ -1233,7 +1233,7 @@
                                                                               
                                                                              
                                                                             
-                                                                        
+                                                                       
   .dp-kopf { display: none; }
   @media print {
     body.druck-portfolio .dp-kopf { display: block; margin-bottom: 10px; }
@@ -1433,7 +1433,7 @@
 
                                                                            
                                                                            
-                                                                      
+                                                                     
   .hp-druck { display: none; }
   .hp-gruppe { margin-bottom: 18px; }
   .hp-gruppe-kopf { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--fg); margin-bottom: 4px; }
@@ -1696,7 +1696,7 @@
       <span class="vb-fuss-leise">
         <button class="textbtn blau" type="button" id="vbZuSteckbriefen">Zu den Steckbriefen</button>
         
-        <button class="textbtn blau" type="button" id="vbDruckansicht">Druckansicht für StS</button>
+        <button class="textbtn blau" type="button" id="vbDruckansicht">Druckansicht für ST</button>
         
         <button class="textbtn blau" type="button" id="vbPortfolioDruck">Portfolio drucken</button>
       </span>
@@ -2562,7 +2562,7 @@
 
                                                                                       
                                                                                          
-                                                                            
+                                                                           
                                                                          
                                                                      
   const PORTFOLIO = {
@@ -5684,7 +5684,7 @@
                                              
   function abwaegung(v) {
     const e = empfehlung(v, S.vorhaben);
-                                                                              
+                                                                             
                                                                            
                                
     if (e.wert === 'offen' && v.ruhen === RUHEN[6]) return { wort: 'keine Empfehlung möglich', satz: 'Die Folgen sind noch nicht bekannt. Die Runde kann trotzdem entscheiden; bis dahin steht das Vorhaben unter Erst klären.', offen: true };
@@ -7039,7 +7039,7 @@
     const zone = (korb, label) => {
       const drin = imKorb(korb);
       return `<div class="mx-zelle pf-gebunden pf-zone" role="cell" data-wahl="prio" data-zone="${korb}">
-        <span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))} VZÄ${korb === 'haus' ? '<span class="pf-richtwert">StS und BM wählen hausweit ca. 8 bis 10 Vorhaben</span>' : ''}</span>
+        <span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))} VZÄ${korb === 'haus' ? '<span class="pf-richtwert">ST und BM wählen hausweit ca. 8 bis 10 Vorhaben</span>' : ''}</span>
         ${korb === 'fach' ? tgKarte : ''}
         ${drin.map(v => kachel(v, true)).join('')}</div>`;
     };
@@ -7679,7 +7679,7 @@
     renderBriefingAll();
   }
 
-                                                                                
+                                                                               
 
   const heuteText = () => new Date().toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -7688,7 +7688,7 @@
                                                                               
                                                                              
                                                                              
-                                                               
+                                                              
   const dpDatum = () => new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
   function dpSeitenregel(an) {
@@ -7824,7 +7824,7 @@
     const korbText = korb => PORTFOLIO[korb] || korb;
     const wahlText = wahl => ENTSCHEIDUNG[wahl] || (wahl === 'offen' ? 'erst klären' : wahl);
     const zeile = (name, text, klasse) => `<div class="druck-kompakt-zeile${klasse ? ' ' + klasse : ''}"><span>${esc(name)}</span><span>${esc(text)}</span></div>`;
-                                                                            
+                                                                           
                                                                       
                                                     
     const zeilen = []
@@ -9005,7 +9005,7 @@
                                                                         
                                                                          
                                                                          
-                                                              
+                                                             
   function hpItemHtml(eintrag, mitKuerzel) {
     const v = eintrag.v;
     const vzae = vzaeWert(v);
@@ -9305,7 +9305,7 @@
     document.getElementById('vbZuEntscheiden').addEventListener('click', () => wechsle('priorisieren'));
     document.getElementById('vbZuSteckbriefen').addEventListener('click', zurUebersicht);
                                                                                  
-                                                                              
+                                                                             
                                                     
     document.getElementById('vbDruckansicht').addEventListener('click', () => wechsle('druck'));
     document.getElementById('druckZurueck').addEventListener('click', () => wechsle('vorbereiten'));
