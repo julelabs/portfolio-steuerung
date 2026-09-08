@@ -3527,6 +3527,16 @@
     if (!Number.isFinite(unten)) return false;
     return (unten & 8) === 8;
   }
+                                                                             
+                                                                            
+                                                                       
+                                                                 
+  function spDarfLesen(rechte) {
+    if (!rechte) return false;
+    const unten = Number(rechte.Low || rechte.low || 0);
+    if (!Number.isFinite(unten)) return false;
+    return (unten & 1) === 1;
+  }
 
                                                                               
                                                                            
@@ -3564,8 +3574,33 @@
         titel: l.Title,
         id: String(l.Id || ''),
         kuerzel: spKuerzel(l.Title),
+        lesen: spDarfLesen(l.EffectiveBasePermissions),
         schreiben: spDarfSchreiben(l.EffectiveBasePermissions)
-      })));
+      }))
+                                                                                
+                                                                               
+                                                                              
+        .filter(l => l.lesen));
+  }
+
+                                                                    
+                                                                               
+                                                                              
+                                      
+  function nebenRechte(hole, site) {
+    const url = site + "/_api/web/lists?$filter=Title eq 'Vorhabensnamen' or Title eq 'Referate'&$select=Title,EffectiveBasePermissions";
+    const leer = { namen: { lesen: false, schreiben: false }, referate: { lesen: false } };
+    return hole(url, { headers: spKopfLesen(), credentials: 'same-origin' })
+      .then(antwort => (antwort.ok ? antwort.json() : null))
+      .then(d => {
+        const rechte = JSON.parse(JSON.stringify(leer));
+        ((d && d.d && d.d.results) || []).forEach(l => {
+          if (l.Title === 'Vorhabensnamen') rechte.namen = { lesen: spDarfLesen(l.EffectiveBasePermissions), schreiben: spDarfSchreiben(l.EffectiveBasePermissions) };
+          if (l.Title === 'Referate') rechte.referate = { lesen: spDarfLesen(l.EffectiveBasePermissions) };
+        });
+        return rechte;
+      })
+      .catch(() => leer);
   }
 
   function listenTypHolen(hole, site, titel) {
@@ -4777,6 +4812,7 @@
   let spSchnappschuss = {};                                                            
   let spReferate = null;                                                                            
   let spNamenDa = false;
+  let spNamenSchreibbar = false;                                                         
   let spNamen = null;                                                                             
   let spPaarStand = null;                                                                                     
   let spStandZeit = '';
@@ -4827,6 +4863,13 @@
     else if (!spListe.schreiben) text = 'Nur lesen: Portfolio der Abteilung ' + spListe.kuerzel;
     else text = 'verbunden';
     if (speicherArt === 'liste' && spReferate === null && spListe.schreiben) text += ' · Referatsliste fehlt';
+                                                                              
+                                                                              
+                                              
+    if (speicherArt === 'liste' && spListe.schreiben && !spImportStand && !spOffline) {
+      if (!spNamenDa) text += ' · Namensliste nicht lesbar';
+      else if (!spNamenSchreibbar) text += ' · Namensliste ohne Schreibrecht';
+    }
     el.textContent = text ? ' · ' + text : '';
     el.classList.toggle('verborgen', !text);
   }
@@ -5119,7 +5162,7 @@
   }
 
   function spNamenLoeschen(kennung, digest) {
-    if (!spNamenDa) return Promise.resolve(null);
+    if (!spNamenDa || !spNamenSchreibbar) return Promise.resolve(null);
                                                                             
                                                                            
                                                                    
@@ -5298,7 +5341,8 @@
                                                                        
                                                                         
                                              
-          return namenLesen(spHole, spSite)
+                                                                                
+          return (spNamenDa ? namenLesen(spHole, spSite) : Promise.resolve(null))
             .then(namen => { if (namen) spNamen = namen; return null; })
             .then(() => spAbgleich());
         }
@@ -5425,12 +5469,19 @@
       offenId = null;
       spSchnappschussSetzen(ergebnis);
       if (!S.abteilung) S.abteilung = 'Abteilung ' + spListe.kuerzel;
-      return Promise.all([
-        referateLesen(spHole, spSite),
-        namenLesen(spHole, spSite),
-        spListe.schreiben ? listenTypHolen(spHole, spSite, spListe.titel).catch(() => null) : Promise.resolve(null),
-        spListe.schreiben ? namenTypHolen(spHole, spSite) : Promise.resolve(null)
-      ]).then(([referate, namen, typ, namenTyp]) => {
+                                                                            
+                                                                        
+                                                                          
+                                           
+      return nebenRechte(spHole, spSite).then(rechte => {
+        spNamenSchreibbar = !!(rechte.namen.schreiben && spListe.schreiben);
+        return Promise.all([
+          rechte.referate.lesen ? referateLesen(spHole, spSite) : Promise.resolve(null),
+          rechte.namen.lesen ? namenLesen(spHole, spSite) : Promise.resolve(null),
+          spListe.schreiben ? listenTypHolen(spHole, spSite, spListe.titel).catch(() => null) : Promise.resolve(null),
+          spNamenSchreibbar ? namenTypHolen(spHole, spSite) : Promise.resolve(null)
+        ]);
+      }).then(([referate, namen, typ, namenTyp]) => {
         spReferate = referate ? referateFuerKuerzel(referate, spListe.kuerzel) : null;
         if (spReferate && !spReferate.length) spReferate = null;
         spNamenDa = !!namen;
@@ -8782,7 +8833,7 @@
     const zielEigene = zielListe.titel === spListe.titel;
     Promise.all([hausTypHolen(quellListe.titel), hausTypHolen(zielListe.titel), spDigestSichern()])
       .then(([quellTyp, zielTyp, digest]) => {
-        const typen = { quelle: quellTyp, ziel: zielTyp, namen: spNamenDa ? spNamenTyp : null };
+        const typen = { quelle: quellTyp, ziel: zielTyp, namen: spNamenDa && spNamenSchreibbar ? spNamenTyp : null };
         return vorhabenVerschieben(spHole, spSite, quellListe.titel, zielListe.titel, eintrag.v.kennung, digest, typen,
           eintrag.kuerzel, zielKuerzel, heuteTag(), quelleEigene ? { quelleEigene: true } : undefined);
       })
