@@ -282,6 +282,13 @@
   footer.site .inner { width: min(1120px, 92vw); margin: 0 auto; display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
   footer.site a { color: var(--blau-20); }
   footer.site a:hover { color: var(--weiss); }
+                                                          
+  .impressum-dialog { border: 1px solid var(--line); border-radius: var(--r-panel); padding: 24px 28px 20px; max-width: 440px; width: min(440px, 92vw); color: var(--fg); font-family: var(--body); box-shadow: 0 18px 40px rgba(13,12,43,0.18); }
+  .impressum-dialog::backdrop { background: rgba(13,12,43,0.35); }
+  .impressum-dialog p { margin: 0 0 6px; font-size: 15px; line-height: 1.5; }
+  .impressum-dialog .impressum-kicker { font-family: var(--display); font-weight: 800; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--blau); margin-bottom: 12px; }
+  .impressum-dialog form { margin-top: 14px; }
+  .impressum-schliessen { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--blau); background: none; border: 0; padding: 0; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -470,9 +477,18 @@
 <footer class="site">
   <div class="inner">
     <div id="fussSpeicher">Gemeinsam gespeichert in SharePoint, jede Abteilung sieht ihr eigenes Portfolio.</div>
-    <div>Portfolio-Steuerung</div>
+    <div>Portfolio-Steuerung · <a href="#impressum" data-impressum>Impressum</a></div>
   </div>
 </footer>
+
+<dialog class="impressum-dialog" id="impressum" aria-labelledby="impressumTitel">
+  <p class="impressum-kicker" id="impressumTitel">Impressum</p>
+  <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
+  <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
+  <p>Konzeption und Entwicklung: Julia Breyer</p>
+  <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
+</dialog>
+
 
 <script>
                                                                                 
@@ -579,6 +595,15 @@
   (function () {
     var f = document.getElementById('fussSpeicher');
     if (f && location.hostname === 'julelabs.github.io') f.textContent = 'Demo: gespeichert nur in diesem Browser.';
+  })();
+</script>
+<script>
+                                                                 
+  (function () {
+    var d = document.getElementById('impressum');
+    document.querySelectorAll('[data-impressum]').forEach(function (a) {
+      a.addEventListener('click', function (e) { e.preventDefault(); if (d && d.showModal) d.showModal(); });
+    });
   })();
 </script>
 </body>

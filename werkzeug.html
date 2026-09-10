@@ -1483,6 +1483,15 @@
     body.druck-haus tr.gewaehlt .hs-haken-druck { display: inline; }
     body.druck-haus .flaeche, body.druck-haus .fl-teil { box-shadow: none; padding: 0; margin: 0; }
   }
+                                                          
+  .impressum-dialog { border: 1px solid var(--line); border-radius: 10px; padding: 24px 28px 20px; max-width: 440px; width: min(440px, 92vw); color: var(--fg); box-shadow: 0 18px 40px rgba(13,12,43,0.18); }
+  .impressum-dialog::backdrop { background: rgba(13,12,43,0.35); }
+  .impressum-dialog p { margin: 0 0 6px; font-size: 15px; line-height: 1.5; }
+  .impressum-dialog .impressum-kicker { font-family: var(--display); font-weight: 800; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--blau); margin-bottom: 12px; }
+  .impressum-dialog form { margin-top: 14px; }
+  .impressum-schliessen { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--blau); background: none; border: 0; padding: 0; cursor: pointer; }
+  .fusszeile .impressum-link, .vb-fuss-leise .impressum-link { font-family: var(--display); font-weight: 600; font-size: 13px; color: var(--fg-muted); background: none; border: 0; padding: 0; cursor: pointer; }
+  .fusszeile .impressum-link:hover, .vb-fuss-leise .impressum-link:hover { color: var(--blau); }
 </style>
 </head>
 <body>
@@ -1661,7 +1670,7 @@
 
     <div class="fusszeile">
       
-      <span><span id="fussSpeicher">Gespeichert in diesem Browser.</span><span id="fussStand"></span></span>
+      <span><span id="fussSpeicher">Gespeichert in diesem Browser.</span><span id="fussStand"></span> <button type="button" class="impressum-link" data-impressum>Impressum</button></span>
       
       <span class="fuss-rechts">
         <button class="textbtn blau" type="button" id="copy">Als Tabelle kopieren</button>
@@ -1681,6 +1690,15 @@
   </dialog>
 
   
+
+  <dialog class="impressum-dialog" id="impressum" aria-labelledby="impressumTitel">
+    <p class="impressum-kicker" id="impressumTitel">Impressum</p>
+    <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
+    <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
+    <p>Konzeption und Entwicklung: Julia Breyer</p>
+    <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
+  </dialog>
+  
   <dialog class="vorschau-dialog" id="tgDialog" aria-labelledby="tgTitel">
     <div id="tgInhalt"></div>
   </dialog>
@@ -1695,6 +1713,7 @@
 
     <div class="vb-fuss">
       <span class="vb-fuss-leise">
+        <button type="button" class="impressum-link" data-impressum>Impressum</button>
         <button class="textbtn blau" type="button" id="vbZuSteckbriefen">Zu den Steckbriefen</button>
         
         <button class="textbtn blau" type="button" id="vbDruckansicht">Druckansicht für ST</button>
@@ -1770,7 +1789,7 @@
     
     <div class="haus-leiste verborgen" id="hausLeiste"></div>
     <div class="fusszeile">
-      <span id="hausFussHinweis">Die Vormerkung bleibt in diesem Browser, bis sie bestätigt wird.</span>
+      <span id="hausFussHinweis">Die Vormerkung bleibt in diesem Browser, bis sie bestätigt wird.</span> <button type="button" class="impressum-link" data-impressum>Impressum</button>
       <span class="fuss-rechts">
         <button class="textbtn blau" type="button" id="hausPortfolioDruck">Portfolio drucken</button>
         <button class="textbtn blau" type="button" id="hausDruck">Liste drucken</button>
@@ -9502,6 +9521,16 @@
 
   start();
 })();
+
+                                                                             
+                                                                           
+                                     </script> lädt.
+  (function () {
+    const d = document.getElementById('impressum');
+    document.querySelectorAll('[data-impressum]').forEach(a => {
+      a.addEventListener('click', e => { e.preventDefault(); if (d && d.showModal) d.showModal(); });
+    });
+  })();
 </script>
 </body>
 </html>
