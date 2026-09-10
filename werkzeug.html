@@ -3830,11 +3830,18 @@
     }).then(antwort => ({ status: antwort.status, ok: antwort.ok }));
   }
 
-  function eintragLoeschen(hole, site, titel, id, digest) {
-    return hole(spListenUrl(site, titel) + '/items(' + id + ')', {
+                                                                     
+                                                                        
+                                                                               
+                                                                        
+                                                                            
+                                 
+  function eintragLoeschen(hole, site, titel, id, digest, endgueltig) {
+    const ziel = spListenUrl(site, titel) + '/items(' + id + ')' + (endgueltig ? '' : '/recycle()');
+    return hole(ziel, {
       method: 'POST',
       credentials: 'same-origin',
-      headers: spKopfSchreiben(digest, { 'X-HTTP-Method': 'DELETE', 'IF-MATCH': '*' })
+      headers: endgueltig ? spKopfSchreiben(digest, { 'X-HTTP-Method': 'DELETE', 'IF-MATCH': '*' }) : spKopfSchreiben(digest, {})
     }).then(antwort => ({ status: antwort.status, ok: antwort.ok || antwort.status === 404 }));
   }
 
@@ -4003,7 +4010,7 @@
     return namenEintragSuchen(hole, site, kennung).then(treffer => {
       if (!treffer) return null;
       if (kuerzel && treffer.abteilung && treffer.abteilung !== kuerzel) return null;
-      return eintragLoeschen(hole, site, 'Vorhabensnamen', treffer.id, digest).then(() => null);
+      return eintragLoeschen(hole, site, 'Vorhabensnamen', treffer.id, digest, true).then(() => null);
     }).catch(() => null);
   }
 
@@ -4082,7 +4089,7 @@
             }
             return eintragLoeschen(hole, site, quellTitel, eintrag.id, digest).then(loeschErgebnis => {
               if (!loeschErgebnis.ok) {
-                return eintragLoeschen(hole, site, zielTitel, zielId, digest).then(rollback => {
+                return eintragLoeschen(hole, site, zielTitel, zielId, digest, true).then(rollback => {
                   if (!rollback.ok) {
                     throw new Error('Das Vorhaben steht jetzt in beiden Listen (Quelle: ' + quellTitel + ', Ziel: ' + zielTitel + '). Bitte in der Quell-Liste von Hand entfernen.');
                   }
