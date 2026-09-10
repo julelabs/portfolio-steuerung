@@ -1660,7 +1660,8 @@
     </div>
 
     <div class="fusszeile">
-      <span>Speicherung in der Demo: lokal im Browser. Bei SharePoint-Verbindung: gemeinsam im Haus.<span id="fussStand"></span></span>
+      
+      <span><span id="fussSpeicher">Gespeichert in diesem Browser.</span><span id="fussStand"></span></span>
       
       <span class="fuss-rechts">
         <button class="textbtn blau" type="button" id="copy">Als Tabelle kopieren</button>
@@ -5455,6 +5456,8 @@
         spListen = listen;
         spListe = spListeWaehlen(listen);
         speicherArt = 'liste';
+        const fussSpeicher = document.getElementById('fussSpeicher');
+        if (fussSpeicher) fussSpeicher.textContent = 'Gemeinsam gespeichert in SharePoint.';
         return spErstesLesen().catch(() => {
                                                                          
                                                                                 
@@ -5906,7 +5909,7 @@
             
             <label for="veraenderung">Beschreibe die angestrebte Veränderung<span class="pflichtzeichen" aria-hidden="true">*</span></label>
             <textarea id="veraenderung" data-id="${v.id}" data-feld="veraenderung" required aria-required="true" maxlength="240" placeholder="Was machen oder erleben Menschen dadurch künftig anders?">${esc(v.veraenderung)}</textarea>
-            ${v.veraenderung.trim() ? '' : `<p class="feld-hilfe wv-hinweis">Neues Vorhaben? Das Denkwerkzeug <a href="https://julelabs.github.io/wirkungswerkstatt/wirkungsversprechen.html" target="_blank" rel="noopener">Wirkungsversprechen</a> zeigt die Logik hinter dieser Frage. Es ist ein ungetesteter Prototyp, keine abgestimmte Vorgabe des Hauses.</p>`}
+            
           </div>
         </div>
       </div>

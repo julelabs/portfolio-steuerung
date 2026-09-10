@@ -469,8 +469,8 @@
 
 <footer class="site">
   <div class="inner">
-    <div>Speicherung in der Demo: lokal im Browser. Bei SharePoint-Verbindung: gemeinsam im Haus.</div>
-    <div>Portfolio-Priorisierung · Arbeitsstand</div>
+    <div id="fussSpeicher">Gemeinsam gespeichert in SharePoint.</div>
+    <div>Portfolio-Steuerung</div>
   </div>
 </footer>
 
@@ -571,6 +571,14 @@
       window.scrollTo({ top: 0, behavior: reduziert ? 'auto' : 'smooth' });
     });
     sichtbarSetzen();
+  })();
+</script>
+<script>
+                                                                                  
+                                              
+  (function () {
+    var f = document.getElementById('fussSpeicher');
+    if (f && location.hostname === 'julelabs.github.io') f.textContent = 'Demo: gespeichert nur in diesem Browser.';
   })();
 </script>
 </body>
