@@ -2483,14 +2483,17 @@
   function empfehlung(v, liste) {
     let ergebnis;
     if (!v.veraenderung.trim()) {
-      ergebnis = { wert: 'offen', regel: 'Die angestrebte Veränderung fehlt noch. Ohne diese Angabe kann das Werkzeug keine Empfehlung geben.' };
+                                                                                 
+                                                                               
+                                
+      ergebnis = { wert: 'offen', regel: 'Das Feld „Beschreibe die angestrebte Veränderung“ ist noch leer. Sobald dort etwas steht, gibt die Regel eine Empfehlung.' };
     } else if (v.ruhen === RUHEN[6]) {
                                                                        
                                                                             
                                                                                  
       ergebnis = { wert: 'offen', regel: 'Die Folgen des Ruhenlassens sind nicht bekannt. Ohne sie gibt die Regel keine Empfehlung; die Runde kann trotzdem entscheiden.' };
     } else if (v.ruhen === WAEHLEN) {
-      ergebnis = { wert: 'offen', regel: 'Die Folgen des Ruhenlassens sind noch offen. Erst klären, dann entscheiden.' };
+      ergebnis = { wert: 'offen', regel: 'Die Frage nach den Folgen des Ruhenlassens ist noch nicht beantwortet. Mit der Antwort gibt die Regel eine Empfehlung.' };
     } else if (v.ruhen === RUHEN[1]) {
       ergebnis = { wert: 'prio', regel: 'Beim Ruhenlassen wird eine Frist verpasst oder eine rechtliche Pflicht verletzt.' };
     } else if (v.ruhen === RUHEN[2]) {
@@ -5698,7 +5701,18 @@
                                                                            
                                
     if (e.wert === 'offen' && v.ruhen === RUHEN[6]) return { wort: 'keine Empfehlung möglich', satz: 'Die Folgen sind noch nicht bekannt. Die Runde kann trotzdem entscheiden; bis dahin steht das Vorhaben unter Erst klären.', offen: true };
-    if (e.wert === 'offen') return { wort: 'noch unvollständig', satz: e.regel, offen: true };
+    if (e.wert === 'offen') {
+                                                                               
+                                                                           
+                                                                           
+                                                          
+      const offen = luecken(v);
+      if (offen.length > 1) {
+        const blocker = ['Veränderung', 'Folgen'].filter(b => offen.includes(b));
+        return { wort: 'noch unvollständig', satz: 'Noch offen: ' + offen.join(', ') + '. Ohne ' + blocker.join(' und ') + ' gibt die Regel keine Empfehlung.', offen: true };
+      }
+      return { wort: 'noch unvollständig', satz: e.regel, offen: true };
+    }
                                                                     
                                                                            
                                                                            
