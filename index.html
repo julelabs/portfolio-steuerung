@@ -290,6 +290,9 @@
   .impressum-dialog a { color: var(--blau); text-decoration: underline; text-decoration-color: rgba(54,52,157,0.35); text-underline-offset: 3px; }
   .impressum-dialog a:hover { text-decoration-color: var(--blau); }
   .impressum-dialog form { margin-top: 14px; }
+                                                                                                                           
+  footer.site .impressum-link { background: none; border: 0; padding: 0; font: inherit; color: var(--blau-20); text-decoration: underline; cursor: pointer; }
+  footer.site .impressum-link:hover { color: var(--weiss); }
   .impressum-schliessen { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--blau); background: none; border: 0; padding: 0; cursor: pointer; }
 </style>
 </head>
@@ -479,7 +482,7 @@
 <footer class="site">
   <div class="inner">
     <div id="fussSpeicher">Gemeinsam gespeichert in SharePoint, jede Abteilung sieht ihr eigenes Portfolio.</div>
-    <div>Portfolio-Steuerung · <a href="#impressum" data-impressum>Impressum</a></div>
+    <div>Portfolio-Steuerung · <button type="button" class="impressum-link" data-impressum>Impressum</button></div>
   </div>
 </footer>
 
