@@ -6812,7 +6812,9 @@
       : '';
     const wahlKnopf = (wert, titel, unter) =>
       `<button type="button" data-wahl="${wert}" aria-pressed="${wahl === wert}">${esc(titel)}<small>${esc(unter)}</small></button>`;
-    const nominierungGesperrt = v.entscheidung === 'wartet' || v.entscheidung === 'nicht';
+                                                                          
+                                                                              
+    const nominierungGesperrt = wahl === 'wartet' || wahl === 'nicht';
     const nominierung = v.leitung === 'offen'
       ? 'Nominierung noch offen.'
       : !IST_NOMINIERT(v.leitung)
