@@ -1257,6 +1257,18 @@
   .wahl button[aria-pressed="true"] { background: var(--blau); border-color: var(--blau); color: var(--weiss); }
   .wahl button small { display: block; font-family: var(--body); font-weight: 400; font-size: 12px; line-height: 1.35; opacity: .78; margin-top: 2px; }
 
+                                                                             
+                                                                      
+                                                                            
+                                                                           
+  .vs-nominierung { margin-top: 16px; }
+  .vs-nominierung h4 { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); margin: 0 0 7px; }
+  .wahl-nominierung button[data-nominierung="nominiert"][aria-pressed="true"] { background: var(--weiss); border-color: var(--blau); color: var(--fg); box-shadow: inset 4px 0 0 var(--minze); }
+  .wahl-nominierung button[data-nominierung="nominiert"][aria-pressed="true"] small { opacity: .9; color: var(--fg-2); }
+  .wahl-nominierung button[data-nominierung="keine"][aria-pressed="true"] { background: var(--blau-10); border-color: var(--blau-40); color: var(--fg); }
+  .wahl button:disabled { opacity: .45; cursor: not-allowed; }
+  .vs-gesperrt { color: var(--fg-muted); font-size: 13px; margin: 8px 0 0; }
+
                                                                               
                                                                           
                                                                   
@@ -6131,12 +6143,14 @@
       <div class="block">
         <span class="block-nr">5</span>
         <div>
-          <label class="frage" for="leitung">Für Leitung nominieren?<span class="pflichtzeichen" aria-hidden="true">*</span></label>
+          <span class="frage" id="leitung">Für Leitung nominieren?<span class="pflichtzeichen" aria-hidden="true">*</span></span>
           <p class="hilfe">Nominiert nur Vorhaben, die für das ganze Haus strategisch wichtig sind.</p>
+          
           <div class="feld">
-            <select id="leitung" data-id="${v.id}" data-feld="leitung" required aria-required="true">
-              ${LEITUNG.map(o => `<option value="${o.wert}" ${o.wert === v.leitung ? 'selected' : ''}>${esc(o.text)}</option>`).join('')}
-            </select>
+            <div class="wahl wahl-nominierung">
+              <button type="button" data-nominierung="nominiert" data-id="${v.id}" aria-pressed="${v.leitung === 'nominiert'}">Für Leitungsportfolio nominieren<small>kommt in die hausweite Auswahl von ST und BM</small></button>
+              <button type="button" data-nominierung="keine" data-id="${v.id}" aria-pressed="${v.leitung === 'keine'}">Nicht nominieren, selbst steuern<small>bleibt im Abteilungsportfolio</small></button>
+            </div>
           </div>
         ${nominiert ? `<div class="feld">
             <label for="bmWarum">Warum ist dieses Vorhaben für das Haus strategisch wichtig?<span class="pflichtzeichen" aria-hidden="true">*</span></label>
@@ -6203,6 +6217,16 @@
                                                                                     
       if (el.tagName !== 'SELECT') el.addEventListener('change', renderStand);
     });
+                                                                            
+                                                                           
+                                    
+    wurzel.querySelectorAll('[data-nominierung]').forEach(el => el.addEventListener('click', () => {
+      const ziel = nachId(el.dataset.id);
+      if (!ziel) return;
+      nominierungSetzen(ziel, ziel.leitung === el.dataset.nominierung ? 'offen' : el.dataset.nominierung);
+      speichern();
+      renderErfassen();
+    }));
                                                                       
                                                                         
     wurzel.querySelectorAll('[data-haken]').forEach(el => el.addEventListener('change', event => {
@@ -6788,6 +6812,7 @@
       : '';
     const wahlKnopf = (wert, titel, unter) =>
       `<button type="button" data-wahl="${wert}" aria-pressed="${wahl === wert}">${esc(titel)}<small>${esc(unter)}</small></button>`;
+    const nominierungGesperrt = v.entscheidung === 'wartet' || v.entscheidung === 'nicht';
     const nominierung = v.leitung === 'offen'
       ? 'Nominierung noch offen.'
       : !IST_NOMINIERT(v.leitung)
@@ -6844,6 +6869,16 @@
           ${wahlKnopf('wartet', 'Wartet', 'gewollt, startet erst bei einer benannten Bedingung')}
           ${wahlKnopf('nicht', 'Eingestellt', 'wird nicht weiterverfolgt')}
         </div>
+        
+        <div class="vs-nominierung">
+          <h4>Nominierung für die hausweite Auswahl</h4>
+          <p class="vs-empfehlung">${istZurueckgestellt(v) ? esc(nominierung) : 'ST und BM wählen hausweit ca. 8 bis 10 Vorhaben.'}</p>
+          <div class="wahl wahl-nominierung">
+            <button type="button" data-nominierung="nominiert" aria-pressed="${v.leitung === 'nominiert'}"${nominierungGesperrt ? ' disabled' : ''}>Für Leitungsportfolio nominieren<small>kommt in die hausweite Auswahl von ST und BM</small></button>
+            <button type="button" data-nominierung="keine" aria-pressed="${v.leitung === 'keine'}"${nominierungGesperrt ? ' disabled' : ''}>Nicht nominieren, selbst steuern<small>bleibt im Abteilungsportfolio</small></button>
+          </div>
+          ${nominierungGesperrt ? '<p class="vs-gesperrt">Nominiert werden kann nur, was eingeplant ist.</p>' : ''}
+        </div>
         ${abweichend ? `<div class="vs-feld">
           <label for="begruendung">${esc(OFFENE_PFLICHT.begruendung.frage)}<span class="pflichtzeichen" aria-hidden="true">*</span></label>
           <textarea rows="2" id="begruendung" data-res="begruendung" required aria-required="true">${esc(v.begruendung)}</textarea>
@@ -6873,6 +6908,15 @@
                                                                             
     wurzel.querySelectorAll('[data-wahl]').forEach(el => el.addEventListener('click', () => {
       feldSetzen(v, 'entscheidung', v.entscheidung === el.dataset.wahl ? 'offen' : el.dataset.wahl);
+      speichern();
+      renderPriorisieren();
+      vorschauOeffnen(v.id);
+    }));
+                                                                              
+                                                                               
+                                               
+    wurzel.querySelectorAll('[data-nominierung]').forEach(el => el.addEventListener('click', () => {
+      nominierungSetzen(v, v.leitung === el.dataset.nominierung ? 'offen' : el.dataset.nominierung);
       speichern();
       renderPriorisieren();
       vorschauOeffnen(v.id);
