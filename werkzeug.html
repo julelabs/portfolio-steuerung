@@ -1010,6 +1010,107 @@
   .pt-wrap:hover .pt-lupe, .pt-lupe:focus-visible { opacity: 1; }
                                                                     
   @media (hover: none) { .pt-lupe { opacity: 1; } }
+                                                                                                        
+  @media (hover: none) and (pointer: coarse) {
+                                                                                                                                                                                              
+    .pt-lupe::before { content: ''; position: absolute; inset: -8px; pointer-events: auto; }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+    .pt-haken { position: relative; }
+    .pt-haken::before { content: ''; position: absolute; inset: -11px; }
+                                                                                                                                                                                   
+    .textbtn { padding: 12px 0; }
+                                                                                                                                                                            
+    .sichten button, .haus-sichten button, .haus-schalter button { min-height: 44px; }
+                                                                  
+    .schritt, .schritt-haus, .top-link { padding: 12px 0; }
+                                                                                                                                                    
+    .nav-item { padding: 12px 10px 12px 13px; }
+                                                                                                                                                                                          
+    .vs-schliessen { position: relative; }
+    .vs-schliessen::before { content: ''; position: absolute; inset: -5px; }
+                                                                                                    
+    button, [role="button"], select, input[type="checkbox"], input[type="radio"], label { touch-action: manipulation; }
+                                                                               
+    .pt { -webkit-touch-callout: none; }
+  }
+
+                                                                                                              
+  @media (max-width: 600px) {
+                                                                           
+                                                                             
+                                                                            
+                                                                     
+                                                                       
+    .schritte {
+      flex-basis: 100%;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+                                                                             
+                                                                     
+                                                        
+      justify-content: flex-start;
+    }
+    .schritte::-webkit-scrollbar { display: none; }
+    .schritte > * { flex: none; white-space: nowrap; }
+
+                                                                          
+                                                                             
+    .erfassen:not(.hat-offen) .listen-aktionsleiste { flex-direction: column; align-items: stretch; gap: 8px; }
+    .erfassen:not(.hat-offen) .listen-aktionsleiste button { width: 100%; }
+    .listen-suche { width: 100%; margin: 0; }
+
+                                                                            
+                                                                          
+                                                                            
+                                                                             
+                                                                        
+                                                                        
+                                                                             
+                                                                          
+                  
+    .matrix.pf { display: flex; flex-direction: column; min-width: 0; }
+    .matrix.pf .mx-reihe:nth-of-type(1) > .mx-kopf:nth-child(1) { order: 1; }
+    .matrix.pf .mx-reihe:nth-of-type(2) > .mx-zelle[data-wahl="nicht"] { order: 2; }
+    .matrix.pf .mx-reihe:nth-of-type(1) > .mx-kopf:nth-child(2) { order: 3; }
+    .matrix.pf .mx-reihe:nth-of-type(2) > .mx-zelle[data-wahl="wartet"] { order: 4; }
+    .matrix.pf .mx-reihe:nth-of-type(1) > .mx-kopf:nth-child(3) { order: 5; }
+    .matrix.pf .mx-reihe:nth-of-type(2) > .pf-stapel { order: 6; }
+
+                                                                      
+                                                                       
+                                                           
+    .budget-band { flex-direction: column; align-items: stretch; }
+    .bd-skala { flex: none; width: 100%; max-width: none; min-width: 0; }
+
+                                                                             
+                                                                             
+                                                                     
+                                                                     
+                                                                         
+    .reiter-zeile:has(button[data-sicht="ziele"][aria-pressed="true"]) ~ #telefonHinweis,
+    .reiter-zeile:has(button[data-sicht="laufzeiten"][aria-pressed="true"]) ~ #telefonHinweis {
+      display: block !important;
+      margin: 12px 0 0;
+      padding: 10px 12px;
+      background: var(--blau-10);
+      border-radius: 6px;
+      font-family: var(--display);
+      font-size: 13px;
+      color: var(--fg-2);
+    }
+                                                                                           
+                                                                                          
+                                                                                         
+                                                                   
+    .reiter-zeile { flex-wrap: wrap; row-gap: 0; }
+    .reiter-linse { flex-basis: 100%; margin-left: 0; align-self: stretch; padding: 8px 0 0; }
+    .reiter-linse .bild-steuer { flex-wrap: wrap; gap: 8px; }
+    .reiter-linse .bild-suche { width: 100%; margin-right: 0; }
+    .pf-richtwert { display: block; margin-left: 0; white-space: normal; }
+    .matrix.pf .pt-wrap { flex-basis: 100%; width: 100%; }
+  }
+
   .pt-lupe:hover { background: var(--blau-10); transform: translateY(-1px); }
   .pt-lupe:active { transform: translateY(1px); }
   .pt-lupe:focus-visible { outline: 2px solid var(--blau); outline-offset: 1px; }
@@ -1645,6 +1746,8 @@
           </div>
           <div class="reiter-linse" id="reiterLinse"></div>
         </div>
+        
+        <p id="telefonHinweis" style="display:none">Diese Sicht ist für große Bildschirme gebaut.</p>
         
         <div class="briefing-komp verborgen" id="bfKomponente">
           <div class="bf-kacheln" id="bfKacheln"></div>
