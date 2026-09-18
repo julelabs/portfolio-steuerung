@@ -2661,13 +2661,27 @@
     return { neu, quelleRest };
   }
 
-  function abhaengigkeitenBereinigen(liste) {
+                                                                             
+                                                                             
+                                                                           
+                                                                              
+                                                                        
+                                                                      
+                                                                      
+                                                                             
+                                                                         
+                                                               
+  function abhaengigkeitenBereinigen(liste, kontext) {
+    const teil = !!(kontext && kontext.teil);
+    const umfeld = (kontext && Array.isArray(kontext.vorhaben)) ? kontext.vorhaben : [];
     const ids = new Set((liste || []).map(v => v.id));
+    umfeld.forEach(v => ids.add(v.id));
                                                                            
                                                                         
                                                                 
     const nachKennung = new Map();
     (liste || []).forEach(v => { if (kennungGueltig(v.kennung)) nachKennung.set(v.kennung, v.id); });
+    umfeld.forEach(v => { if (kennungGueltig(v.kennung) && !nachKennung.has(v.kennung)) nachKennung.set(v.kennung, v.id); });
     (liste || []).forEach(v => {
       const gesehen = new Set();
       v.haengtAn = (v.haengtAn || []).map(a => {
@@ -2675,7 +2689,7 @@
         return a;
       }).filter(a => {
         if (!a || a.typ !== 'v' || a.id === v.id) return false;
-        if (!ids.has(a.id) && !istKennungsVerweis(a)) return false;
+        if (!ids.has(a.id) && !istKennungsVerweis(a) && !teil) return false;
         if (gesehen.has(a.id)) return false;
         gesehen.add(a.id);
         return true;
@@ -2763,12 +2777,12 @@
     return zahl >= 3 ? `Mit ${zahl} Vorhaben verknüpft: ein zentraler Knoten im Portfolio.` : '';
   };
 
-  function migriereExterneAbhaengigkeiten(stand) {
+  function migriereExterneAbhaengigkeiten(stand, kontext) {
     if (!stand || !Array.isArray(stand.vorhaben)) return stand;
     const liste = stand.vorhaben;
     const externe = Array.isArray(stand.externe) ? stand.externe : [];
     if (!externe.length) {
-      abhaengigkeitenBereinigen(liste);
+      abhaengigkeitenBereinigen(liste, kontext);
       delete stand.externe;
       return stand;
     }
@@ -2796,7 +2810,7 @@
         return a;
       });
     });
-    abhaengigkeitenBereinigen(liste);
+    abhaengigkeitenBereinigen(liste, kontext);
     delete stand.externe;
     return stand;
   }
@@ -4238,7 +4252,9 @@
                                                                             
                                                                             
                                                                            
-  function standAusEintraegen(zeilen) {
+                                                                             
+                                                                               
+  function standAusEintraegen(zeilen, kontext) {
     const stand = { v: 3, abteilung: '', verfuegbar: '', schreibstand: 0, tagesgeschaeft: [], vorhaben: [] };
     const eintraege = [];
     let neuester = '';
@@ -4313,7 +4329,7 @@
         return a;
       });
     });
-    migriereExterneAbhaengigkeiten(stand);
+    migriereExterneAbhaengigkeiten(stand, kontext);
     const unfertigKennungen = new Set(unfertig.map(v => v.kennung));
     const repariert = stand.vorhaben
       .filter(v => unfertigKennungen.has(v.kennung) || vorher[v.kennung || v.id] !== JSON.stringify(v.haengtAn || []))
@@ -5921,9 +5937,11 @@
         syncZeichnen();
         return null;
       }
+                                                                     
+                                                                    
       const ergebnis = standAusEintraegen([{
         Id: zeile.id, Title: zeile.titel, Kennung: zeile.kennung, Stand: zeile.stand, Modified: zeile.modified
-      }]);
+      }], { teil: true, vorhaben: S.vorhaben });
       const neu = ergebnis.stand.vorhaben[0];
       if (neu) {
         const index = S.vorhaben.findIndex(v => v.kennung === kennung);
@@ -6074,7 +6092,10 @@
                                                                             
                                                       
       if (vorhanden && spSchnappschuss[kennung] !== JSON.stringify(vorhanden)) return;
-      const ergebnis = standAusEintraegen([zeile]);
+                                                                           
+                                                                             
+                                                                  
+      const ergebnis = standAusEintraegen([zeile], { teil: true, vorhaben: S.vorhaben });
       const neu = ergebnis.stand.vorhaben[0];
       if (!neu) return;
       const index = S.vorhaben.findIndex(v => v.kennung === kennung);
@@ -10812,6 +10833,9 @@
                                                                           
                                                                               
       window.__syncVeralten = () => { S.schreibstand = 0; };
+                                                                             
+                                               
+      window.__listeAktualisieren = spAktualisieren;
                                                                                
       window.__hausDateien = hausDateienUebernehmen;
     }
