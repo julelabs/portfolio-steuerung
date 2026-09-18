@@ -480,21 +480,25 @@
                                                                         
                                                                                 
   .bd-titel { display: none; }
-  .bd-kurz { order: 2; margin-left: -8px; font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg-2); }
-                                                        
-  .bd-info { order: 2; flex: none; width: 18px; height: 18px; display: inline-grid; place-items: center; margin-left: -8px;
-    background: transparent; border: 1px solid var(--blau-40); border-radius: 50%; color: var(--blau);
-    font: 700 11px/1 var(--display); cursor: pointer; padding: 0; }
-  .bd-info:hover { border-color: var(--blau); background: var(--weiss); }
-  .bd-info[aria-expanded="true"] { background: var(--blau); border-color: var(--blau); color: var(--weiss); }
-                                                                              
-                                                       
-  .bd-eingabe { order: 3; }
-                                                                  
+                                                                            
                                                                           
+                                                                    
+  .bd-lage { order: 2; margin-left: -14px; padding: 5px 8px; border: 0; border-radius: 5px; background: transparent; cursor: pointer;
+    display: inline-flex; align-items: baseline; gap: 5px; font-family: var(--display); font-size: 13.5px; color: var(--fg-2); }
+  .bd-lage::before { content: ''; align-self: center; width: 6px; height: 6px; margin: -3px 5px 0 0;
+    border-right: 1.5px solid var(--blau); border-bottom: 1.5px solid var(--blau); transform: rotate(45deg); transition: transform .2s var(--ease); }
+  .bd-lage[aria-expanded="true"]::before { transform: rotate(-135deg); margin-top: 3px; }
+  .bd-lage:hover, .bd-lage[aria-expanded="true"] { background: var(--weiss); color: var(--fg); }
+  .bd-kurz { font-weight: 700; }
+  .bd-bei { font-weight: 400; }
+                                                                           
+                                                                            
                                                               
+  #bdStand .bd-eingabe { display: block; margin: 12px 0 0; }
   .bd-tg { font-size: 13.5px; padding: 0; }
   .bd-trenn { color: var(--fg-muted); font-weight: 400; margin: 0 3px 0 10px; }
+                                                                
+  .bd-seit-wort { font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); }
 
                                                                             
                                                                                
@@ -558,6 +562,46 @@
   .bf-gross .bf-kachel .haken { width: 34px; height: 34px; }
   .bf-gross .bf-kachel .wort { font-size: 17px; }
   .bf-gross .bf-kachel .unter { font-size: 14px; }
+
+                                                                         
+                                                                   
+                                                                      
+                                                                    
+                                               
+  .vg-komp { margin-top: 16px; }
+  .vg-kopf { font-family: var(--display); font-size: 17px; font-weight: 800; color: var(--fg); margin: 0 0 4px; }
+  .vg-lage { font-size: 14px; color: var(--fg-2); line-height: 1.5; margin: 0 0 14px; max-width: 76ch; }
+                                                                          
+                                                                      
+                                                                        
+                                                                  
+  .wanderung { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .wanderung svg { width: 100%; height: auto; display: block; font-family: var(--display); }
+  .wanderung .wd-segment { fill: var(--blau-20); cursor: pointer; }
+  .wanderung .wd-segment.haus { fill: var(--blau); }
+  .wanderung .wd-segment.rand { fill: none; stroke: var(--blau-40); stroke-dasharray: 3 3; cursor: default; }
+  .wanderung .wd-strom { fill: var(--blau-40); opacity: .55; cursor: pointer; }
+  .wanderung .wd-strom.bleibt { fill: var(--blau-20); opacity: .35; cursor: default; }
+  .wanderung .wd-strom:hover, .wanderung .wd-strom.aktiv { opacity: .95; }
+  .wanderung .wd-strom.bleibt:hover { opacity: .35; }
+  .wanderung .wd-achse { font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; fill: var(--fg-muted); }
+  .wanderung .wd-korb { font-size: 12.5px; font-weight: 700; fill: var(--fg); }
+  .wanderung .wd-korb.rand { fill: var(--fg-muted); }
+  .wanderung .wd-zahl { font-size: 12.5px; font-weight: 800; fill: var(--blau); }
+  .wd-namen { border-left: 1px solid var(--line); padding-left: 20px; min-height: 160px; }
+  .wd-namen h3 { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); margin: 0 0 8px; }
+  .wd-namen h3 .bf-zahl { margin-left: 6px; }
+  .wd-namen ul { list-style: none; margin: 0; padding: 0; }
+  .wd-namen li { border-bottom: 1px solid var(--line); }
+  .wd-eintrag { display: block; width: 100%; text-align: left; background: none; border: 0; padding: 7px 6px; margin-left: -6px; border-radius: 5px; font: inherit; color: var(--fg); }
+  button.wd-eintrag { cursor: pointer; }
+  button.wd-eintrag:hover { background: var(--blau-10); }
+  .wd-eintrag b { display: block; font-family: var(--display); font-weight: 700; font-size: 14px; }
+  .wd-eintrag b small { font-weight: 400; color: var(--fg-muted); }
+  .wd-eintrag span { display: block; font-size: 13px; color: var(--fg-2); }
+  .wd-hinweis { font-size: 13px; color: var(--fg-muted); padding: 8px 0; }
+  @media (max-width: 900px) { .wanderung { grid-template-columns: 1fr; } .wd-namen { border-left: 0; padding-left: 0; } }
+  .sichten .bf-zahl { margin-left: 6px; }
 
                                                                        
                                                         
@@ -841,6 +885,15 @@
   .sichten button[aria-pressed="true"]:hover, .haus-sichten button[aria-pressed="true"]:hover { background: var(--weiss); color: var(--fg); }
                                                                  
   .reiter-linse { margin-left: auto; align-self: center; padding-bottom: 8px; }
+                                                                           
+                                                                              
+                                                                 
+  @media (max-width: 900px) {
+    .reiter-zeile { flex-wrap: wrap; row-gap: 0; }
+    .sichten { flex-wrap: wrap; row-gap: 4px; }
+    .reiter-linse { flex-basis: 100%; margin-left: 0; align-self: stretch; padding: 8px 0 8px; }
+    .reiter-linse .bild-steuer, .reiter-linse .lz-steuer { justify-content: flex-start; flex-wrap: wrap; }
+  }
   .reiter-linse .bild-steuer, .reiter-linse .lz-steuer { margin-bottom: 0; }
                                                                           
   .reiter-linse .bild-suche { margin-right: 10px; }
@@ -1104,6 +1157,9 @@
                                                                                          
                                                                    
     .reiter-zeile { flex-wrap: wrap; row-gap: 0; }
+                                                                         
+                                                   
+    .sichten { flex-wrap: wrap; row-gap: 4px; }
     .reiter-linse { flex-basis: 100%; margin-left: 0; align-self: stretch; padding: 8px 0 0; }
     .reiter-linse .bild-steuer { flex-wrap: wrap; gap: 8px; }
     .reiter-linse .bild-suche { width: 100%; margin-right: 0; }
@@ -1122,13 +1178,40 @@
                                                                            
                 
   .pt-foot-links { display: inline-flex; align-items: baseline; gap: 8px; min-width: 0; }
-  .pt-stand { font-size: 12px; color: var(--fg-muted); }
+                                                                            
+                                                                              
+                           
+  .pt-ref, .pt-stand { font-size: 12px; color: var(--fg-muted); white-space: nowrap; }
                                                                            
                                                                            
                                
-  .pt-seit { font-size: 12px; color: var(--fg-muted); white-space: nowrap; }
+                                                                          
+                                                                           
+  .pt-seit { font-size: 12px; color: var(--fg-muted); white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .pt-foot-links { flex: 1 1 auto; overflow: hidden; }
   .pt-vzae { white-space: nowrap; }
   .pt-seit::before { content: '· '; }
+
+                                                                          
+                                                                          
+                                                  
+                                                                            
+                                                                           
+                                                                          
+                                                                           
+                                                                          
+                                                                          
+                                                                         
+  #bildKoerper .pt-seit { display: none; }
+  #bildKoerper.seit-an .pt-wrap:not(.bewegt) { opacity: .16; }
+  #bildKoerper.seit-an .pt-wrap:not(.bewegt):hover { opacity: .48; }
+  #bildKoerper.seit-an .pt-wrap.bewegt { transform: translateY(-3px); z-index: 4; }
+  #bildKoerper.seit-an .pt-wrap.bewegt .pt { box-shadow: 0 0 0 2px var(--blau), 0 12px 26px rgba(13,12,43,.16); }
+  @keyframes seit-heben { from { transform: translateY(0) scale(1); } 55% { transform: translateY(-6px) scale(1.015); } to { transform: translateY(-3px) scale(1); } }
+  #bildKoerper.seit-an.seit-frisch .pt-wrap.bewegt { animation: seit-heben .45s var(--ease) backwards; }
+  #bildKoerper.seit-an .pt-wrap.bewegt .pt-seit { display: inline; color: var(--blau); font-family: var(--display); font-weight: 700; }
+  @media (prefers-reduced-motion: reduce) { #bildKoerper.seit-an.seit-frisch .pt-wrap.bewegt { animation: none; } }
+  #bildKoerper .pt-wrap.weg .pt { border-style: dashed; }
 
                                                                             
                                                                          
@@ -1217,7 +1300,10 @@
   .vs-feld textarea:hover { border-color: var(--blau-60); }
   .vs-feld textarea:focus { outline: 2px solid var(--blau); outline-offset: 1px; border-color: var(--blau); }
   .vs-feld .vs-auto { color: var(--fg-muted); font-size: 12.5px; margin-top: 5px; }
-  .vs-fuss { display: flex; justify-content: flex-end; padding-top: 24px; }
+                                                                           
+                                                                              
+                         
+  .vs-fuss { display: flex; justify-content: flex-end; align-items: center; gap: 18px; padding-top: 24px; }
                                                                               
                                                                                 
                              
@@ -1473,6 +1559,61 @@
   .haus-klappe svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s ease; }
   .haus-klappe[aria-expanded="true"] svg { transform: rotate(180deg); }
   .haus-klappe:hover { background: var(--blau-10); color: var(--fg); }
+                                                                          
+                                                                       
+                                                            
+                                                                       
+                                                                           
+                                                                   
+  .haus-abt { flex-wrap: wrap; }
+  .haus-seit-zahl { flex-basis: 100%; font-family: var(--display); font-size: 12.5px; font-weight: 700; color: var(--blau); }
+                                                                         
+                                                                            
+                                                                             
+                                           
+  .pt-haus-seit { display: block; font-family: var(--display); font-size: 12px; font-weight: 700; color: var(--blau); }
+  .haus-seit-schalter { padding: 6px 9px; border-radius: 5px; }
+  .haus-seit-schalter:hover { background: var(--blau-10); }
+  .haus-seit-schalter[aria-pressed="true"] { background: var(--blau); color: var(--weiss) !important; }
+                                                                        
+                                                                
+                                                                   
+                     
+  .haus-lp-koepfe, .haus-lp-spalten { display: grid; grid-template-columns: minmax(0, 2.15fr) minmax(0, 1fr) minmax(0, 1fr); gap: 0 18px; }
+  .haus-lp-koepfe { margin: 8px 0 2px 238px; }
+  .haus-lp-koepfe .pf-korb { margin: 0; }
+  .haus-lp-spalte { display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; min-height: 40px; padding: 4px 0; }
+  .haus-lp-spalte.bleibt, .haus-lp-spalte.neu { border-right: 1px dashed var(--blau-20); padding-right: 18px; }
+  .haus-lp-leer { font-size: 12.5px; color: var(--fg-muted); padding: 6px 0; }
+  #hausKoerper .pt-haus-wrap.lp-neu .pt { box-shadow: 0 0 0 2px var(--blau); }
+  #hausKoerper .pt-haus-wrap.lp-raus .pt { border-style: dashed; border-color: var(--blau-40); border-width: 1.5px; background: #FAFAFE; }
+  #hausKoerper .pt-haus-wrap.lp-raus .pt-name, #hausKoerper .pt-haus-wrap.lp-raus .pt-haus-info, #hausKoerper .pt-haus-wrap.lp-raus .pt-foot { color: var(--fg-muted); }
+  #hausKoerper .pt-haus-wrap.lp-raus .pt-haus-seit { color: var(--blau-60); }
+  #hausKoerper .pt-haus-wrap.lp-weg .pt { cursor: default; }
+  @media (max-width: 860px) { .haus-lp-koepfe { margin-left: 0; } .haus-lp-koepfe, .haus-lp-spalten { grid-template-columns: 1fr; gap: 6px 0; } .haus-lp-spalte.bleibt, .haus-lp-spalte.neu { border-right: 0; padding-right: 0; } }
+
+                                                                           
+                                                                            
+                    
+                                                                            
+                                                                                 
+  .vs-kopf:has(.vs-kicker) { flex-wrap: wrap; }
+  .vs-kicker { flex-basis: 100%; order: -1; font-family: var(--display); font-size: 11.5px; font-weight: 800;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 2px; }
+  .ab-art { margin-top: 14px; }
+  .ab-liste { display: flex; flex-direction: column; gap: 2px; }
+  .ab-zeile { display: flex; align-items: center; gap: 10px; padding: 7px 6px; margin-left: -6px; border-radius: 5px;
+    font-size: 14.5px; color: var(--fg-2); cursor: pointer; }
+  .ab-zeile:hover { background: var(--blau-10); }
+  .ab-zeile input { width: 16px; height: 16px; accent-color: var(--blau); cursor: pointer; }
+  .ab-zeile.gesperrt { color: var(--fg-muted); cursor: default; }
+  .ab-zeile.gesperrt:hover { background: none; }
+  .ab-grund { margin-left: auto; font-family: var(--display); font-size: 12.5px; color: var(--fg-muted); }
+  .ab-fehler { border-left: 4px solid var(--kirsche); padding-left: 14px; }
+  .ab-fehler p { color: var(--fg); }
+  .ab-fehler strong { font-family: var(--display); color: var(--kirsche-text); }
+  .ab-fortschritt:empty { display: none; }
+  .ab-fortschritt { font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--blau); }
                                                                            
                                                                            
                                               
@@ -1742,9 +1883,7 @@
       
       <div class="fl-teil budget-band">
         <div class="budget" id="budget"></div>
-        <span class="bd-kurz" id="bdKurz"></span>
-        
-        <button class="bd-info verborgen" id="bdInfo" type="button" aria-expanded="false">i</button>
+        <button class="bd-lage" id="bdLage" type="button" aria-expanded="false" aria-controls="bdStand"><span class="bd-kurz" id="bdKurz"></span><span class="bd-bei" id="bdBei"></span></button>
       </div>
       <div class="fl-teil">
         <div id="bdStand" class="verborgen"></div>
@@ -1755,6 +1894,7 @@
             <button type="button" data-sicht="ziele">Ziele</button>
             <button type="button" data-sicht="laufzeiten">Laufzeiten</button>
             <button type="button" data-sicht="briefing">Briefing</button>
+            
           </div>
           <div class="reiter-linse" id="reiterLinse"></div>
         </div>
@@ -1898,6 +2038,7 @@
           <button type="button" data-haus-reiter="ziele">Ziele</button>
           <button type="button" data-haus-reiter="laufzeiten">Laufzeiten</button>
           <button type="button" data-haus-reiter="liste">Liste</button>
+          <button type="button" data-haus-reiter="veraenderung">Veränderung</button>
         </div>
         <div class="reiter-linse" id="hausLinse"></div>
       </div>
@@ -1940,6 +2081,11 @@
   
   <dialog class="vorschau-dialog" id="hausVerschieben" aria-labelledby="hausVerschiebenTitel">
     <div id="hausVerschiebenInhalt"></div>
+  </dialog>
+
+  
+  <dialog class="vorschau-dialog" id="hausAbschlussDialog" aria-labelledby="hausAbschlussTitel">
+    <div id="hausAbschlussInhalt"></div>
   </dialog>
 
   
@@ -3265,7 +3411,10 @@
                                                                       
                                                                                 
                                                                               
-  const SCHEMAVERSION = '6';
+                                                                           
+                                                                        
+                                                                  
+  const SCHEMAVERSION = '7';
 
   function exportDatum(zeitpunkt) {
     const datum = zeitpunkt === undefined ? new Date() : new Date(zeitpunkt);
@@ -3527,11 +3676,38 @@
                                                                         
                                                                         
                                                                            
-  const STAENDE_MAX = 12;
-  function standEinfrieren(stand, zeitpunkt) {
+                                                                           
+                                                                             
+                                                                          
+  const STAENDE_MAX = { runde: 12, quartal: 12, abteilung: 6 };
+                                                                            
+                                                                          
+  function standDatumAusZeitpunkt(zeitpunkt) {
+    const treffer = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(zeitpunkt || ''));
+    return treffer ? { jahr: treffer[1], monat: treffer[2], tag: treffer[3] } : null;
+  }
+  function standNameAusDatum(zeitpunkt) {
+    const teile = standDatumAusZeitpunkt(zeitpunkt);
+    return teile ? 'Stand vom ' + teile.tag + '.' + teile.monat + '.' + teile.jahr : 'Stand ohne Datum';
+  }
+                                                                              
+                                                                             
+                                       
+  function standNormieren(s) {
+    if (!s) return null;
+    const art = STAENDE_MAX[s.art] ? s.art : 'runde';
+    const name = String(s.name || '').trim() || standNameAusDatum(s.zeitpunkt);
+    if (s.art === art && s.name === name) return s;
+    return Object.assign({}, s, { art: art, name: name });
+  }
+  function standEinfrieren(stand, zeitpunkt, meta) {
     const liste = (stand && Array.isArray(stand.vorhaben)) ? stand.vorhaben : [];
+    const angabe = meta || {};
+    const art = STAENDE_MAX[angabe.art] ? angabe.art : 'runde';
     return {
       zeitpunkt: String(zeitpunkt || ''),
+      name: String(angabe.name || '').trim() || standNameAusDatum(zeitpunkt),
+      art: art,
       verfuegbar: String((stand && stand.verfuegbar) || ''),
       tagesgeschaeft: tagesgeschaeftSumme(tagesgeschaeftZeilen(stand)),
       vorhaben: liste.map(v => ({
@@ -3549,22 +3725,45 @@
       }))
     };
   }
-                                                                         
-                                                                       
-                                                                       
+                                                                           
+                                                                          
+                                                                           
+                                                                               
+                                                                              
+                           
   function standAblegen(stand, eingefroren) {
-    const staende = Array.isArray(stand.staende) ? stand.staende.slice() : [];
-    const tag = String(eingefroren.zeitpunkt).slice(0, 10);
-    const letzter = staende[staende.length - 1];
-    if (letzter && String(letzter.zeitpunkt).slice(0, 10) === tag) staende[staende.length - 1] = eingefroren;
-    else staende.push(eingefroren);
-    while (staende.length > STAENDE_MAX) staende.shift();
+    const neu = standNormieren(eingefroren);
+    const staende = (Array.isArray(stand.staende) ? stand.staende : []).map(standNormieren);
+    const tag = String(neu.zeitpunkt).slice(0, 10);
+    const stelle = staende.findIndex(s =>
+      String(s.zeitpunkt).slice(0, 10) === tag && s.art === neu.art && s.name === neu.name);
+    if (stelle >= 0) staende[stelle] = neu; else staende.push(neu);
+    const grenze = STAENDE_MAX[neu.art] || 12;
+    const derArt = staende.filter(s => s.art === neu.art)
+      .sort((a, b) => String(a.zeitpunkt).localeCompare(String(b.zeitpunkt)));
+    while (derArt.length > grenze) {
+      const aeltester = derArt.shift();
+      const weg = staende.indexOf(aeltester);
+      if (weg >= 0) staende.splice(weg, 1);
+    }
     stand.staende = staende;
-    return eingefroren;
+    return neu;
   }
+                                            
+  function staendeSortiert(stand) {
+    const staende = (stand && Array.isArray(stand.staende) ? stand.staende : []).map(standNormieren);
+    return staende.sort((a, b) => String(b.zeitpunkt).localeCompare(String(a.zeitpunkt)));
+  }
+                                                                             
+                                                              
   function letzterStand(stand) {
-    const staende = stand && Array.isArray(stand.staende) ? stand.staende : [];
-    return staende.length ? staende[staende.length - 1] : null;
+    const alle = staendeSortiert(stand);
+    return alle.find(s => s.art === 'runde') || alle[0] || null;
+  }
+  function standNachName(stand, name) {
+    const gesucht = String(name || '');
+    if (!gesucht) return null;
+    return staendeSortiert(stand).find(s => s.name === gesucht) || null;
   }
                                                                         
                                             
@@ -3609,8 +3808,12 @@
     return { neu, weg, entscheidung, nominierung, bedarf,
       summe: neu.length + weg.length + entscheidung.length + nominierung.length + bedarf.length };
   }
-                                                                      
-                                                                         
+                                                                             
+                                                                            
+                                                                           
+                                                                                
+                                                                               
+                                                                       
   function seitText(eingefroren, v, liste) {
     if (!eingefroren) return '';
     const e = standEintrag(eingefroren, v);
@@ -3618,7 +3821,212 @@
     const wahl = gewaehlt(v, liste);
     if (wahl !== e.wahl && ENTSCHEIDUNG[e.wahl]) return 'war ' + ENTSCHEIDUNG[e.wahl];
     if (wahl !== e.wahl && e.wahl === 'offen') return 'war erst klären';
+    const nominiert = wirksamNominiert(v);
+                                                                             
+                                                         
+    if (nominiert !== !!e.nominiert) return e.nominiert ? 'war nominiert' : 'jetzt nominiert';
+    const wert = vzaeWert(v);
+    const damals = Number(e.vzae) || 0;
+    if (Math.abs(wert - damals) >= 0.05) return 'war ' + zahlText(damals) + ' VZÄ';
     return '';
+  }
+
+                                                                         
+                                                                        
+                                                                            
+                                                        
+  const VERAENDERUNG_GRUPPEN = [
+    { schluessel: 'entscheidung', titel: 'Entscheidung' },
+    { schluessel: 'nominierung', titel: 'Nominierung' },
+    { schluessel: 'neu', titel: 'Neu' },
+    { schluessel: 'weg', titel: 'Nicht mehr in der Liste' },
+    { schluessel: 'bedarf', titel: 'Bedarf' }
+  ];
+  function veraenderungText(diff) {
+    const d = diff || {};
+    const wahlText = wahl => ENTSCHEIDUNG[wahl] || (wahl === 'offen' ? 'erst klären' : String(wahl || ''));
+    const korbText = korb => PORTFOLIO[korb] || String(korb || '');
+    const roh = {
+                                                                              
+                                                                                
+      entscheidung: (d.entscheidung || []).map(e => ({
+        id: e.v.id, name: e.v.name,
+        text: e.vonWahl !== e.nachWahl
+          ? wahlText(e.vonWahl) + ' → ' + wahlText(e.nachWahl)
+          : korbText(e.vonKorb) + ' → ' + korbText(e.nachKorb)
+      })),
+      nominierung: (d.nominierung || []).map(e => ({
+        id: e.v.id, name: e.v.name,
+        text: e.nach ? 'neu für das Leitungsportfolio nominiert' : 'Nominierung zurückgenommen'
+      })),
+      neu: (d.neu || []).map(v => ({ id: v.id, name: v.name, text: 'neu in der Liste' })),
+                                                                           
+                                      
+      weg: (d.weg || []).map(e => ({ id: null, name: e.name || '', text: 'nicht mehr in der Liste' })),
+      bedarf: (d.bedarf || []).map(e => ({
+        id: e.v.id, name: e.v.name,
+        text: 'Bedarf ' + zahlText(e.von) + ' → ' + zahlText(e.nach) + ' VZÄ'
+      }))
+    };
+    return VERAENDERUNG_GRUPPEN.map(g => ({
+      schluessel: g.schluessel,
+      titel: g.titel,
+      zahl: roh[g.schluessel].length,
+      zeilen: roh[g.schluessel].map(z => ({ id: z.id, name: z.name, text: z.text, zeile: z.name + ': ' + z.text }))
+    }));
+  }
+
+                                                                           
+                                                                            
+                                                                           
+                                                                         
+                                                                            
+                                                                      
+                                                                        
+                                                                           
+                                                                        
+  function referenzListe(eingefroren, liste) {
+    const gesehen = new Set();
+    const bedarfText = wert => String(wert == null ? '' : wert).replace('.', ',');
+    const ausEintrag = (ziel, e) => Object.assign(ziel, {
+      entscheidung: e.wahl,
+      leitung: e.nominiert ? 'nominiert' : 'keine',
+      zurueckgestellt: null,
+      vzae: bedarfText(e.vzae)
+    });
+    const heute = (liste || []).map(v => {
+      const e = standEintrag(eingefroren, v);
+      if (!e) return null;
+      gesehen.add(e);
+      return ausEintrag(Object.assign({}, v), e);
+    }).filter(Boolean);
+    const weg = ((eingefroren && Array.isArray(eingefroren.vorhaben)) ? eingefroren.vorhaben : [])
+      .filter(e => !gesehen.has(e))
+      .map(e => {
+        const platz = neuesVorhaben('weg:' + String(e.kennung || e.id || ''), e.name || '');
+        platz.kennung = String(e.kennung || '');
+        platz.referat = e.referat || '';
+        platz.laeuft = e.laeuft || '';
+        platz.weg = true;
+        return ausEintrag(platz, e);
+      });
+    return heute.concat(weg);
+  }
+
+                                                                     
+                                                              
+                                                                           
+                                                                    
+                                                                         
+                                                                         
+                                                                        
+                                      
+  const KORB_REIHE = ['haus', 'fach', 'warte', 'nicht', 'offen'];
+  const KORB_KURZ = {
+    haus: 'Leitungsportfolio', fach: 'Restliches Abteilungsportfolio', warte: 'wartet', nicht: 'eingestellt', offen: 'Erst klären',
+    neu: 'neu in der Liste', weg: 'nicht mehr in der Liste'
+  };
+  const korbWort = korb => korb === 'warte' ? 'wartet' : korb === 'nicht' ? 'eingestellt' : korb === 'offen' ? 'erst klären'
+    : korb === 'haus' ? 'im Leitungsportfolio' : 'restliches Abteilungsportfolio';
+  const korbBekannt = korb => KORB_REIHE.indexOf(korb) >= 0 ? korb : 'offen';
+  function leitungsportfolioWandel(eingefroren, liste) {
+    const bleibt = [], neu = [], raus = [];
+    const gesehen = new Set();
+    (liste || []).forEach(v => {
+      const heute = portfolio(v, liste).wert;
+      if (!eingefroren) { if (heute === 'haus') bleibt.push({ v }); return; }
+      const e = standEintrag(eingefroren, v);
+      if (e) gesehen.add(e);
+      const damals = e ? korbBekannt(e.korb) : null;
+      if (heute === 'haus' && damals === 'haus') bleibt.push({ v });
+      else if (heute === 'haus') {
+        neu.push({ v, grund: !e ? 'neu in der Liste' : damals === 'fach' ? 'jetzt nominiert' : 'war ' + korbWort(damals) });
+      } else if (damals === 'haus') {
+        raus.push({ v, name: v.name, kennung: String(v.kennung || ''), weg: false,
+          grund: heute === 'fach' ? 'jetzt restliches Abteilungsportfolio' : 'jetzt ' + korbWort(heute) });
+      }
+    });
+    if (eingefroren && Array.isArray(eingefroren.vorhaben)) eingefroren.vorhaben.forEach(e => {
+      if (gesehen.has(e) || korbBekannt(e.korb) !== 'haus') return;
+      raus.push({ v: null, name: e.name || '', kennung: String(e.kennung || ''), weg: true, grund: 'nicht mehr in der Liste' });
+    });
+    return { bleibt, neu, raus, summe: neu.length + raus.length };
+  }
+  function korbWanderung(eingefroren, liste) {
+    const diff = veraenderung(eingefroren, liste);
+    const gruppen = veraenderungText(diff);
+    const textNach = schluessel => {
+      const karte = {};
+      (gruppen.find(g => g.schluessel === schluessel) || { zeilen: [] }).zeilen.forEach(z => { if (z.id) karte[z.id] = z.text; });
+      return karte;
+    };
+    const entText = textNach('entscheidung'), nomText = textNach('nominierung'), bedText = textNach('bedarf');
+    const koerbe = KORB_REIHE.map(k => ({ korb: k, name: KORB_KURZ[k], damals: 0, heute: 0 }));
+    const nach = {};
+    koerbe.forEach(k => { nach[k.korb] = k; });
+    const stroeme = new Map();
+    const strom = (von, ziel) => {
+      const key = von + '>' + ziel;
+      if (!stroeme.has(key)) stroeme.set(key, { von, nach: ziel, n: 0, eintraege: [] });
+      return stroeme.get(key);
+    };
+    const ohneStrom = [];
+    const gesehen = new Set();
+    (liste || []).forEach(v => {
+      const heute = portfolio(v, liste).wert;
+      nach[heute].heute++;
+      if (!eingefroren) return;
+      const e = standEintrag(eingefroren, v);
+      if (e) gesehen.add(e);
+      const damals = e ? korbBekannt(e.korb) : 'neu';
+      if (e) nach[damals].damals++;
+      const s = strom(damals, heute);
+      s.n++;
+      const bedarf = bedText[v.id];
+      if (damals !== heute) {
+        let text = !e ? 'neu in der Liste' : (entText[v.id] || nomText[v.id] || (korbWort(damals) + ' → ' + korbWort(heute)));
+        if (bedarf) text += ' · ' + bedarf;
+        s.eintraege.push({ id: v.id, name: v.name, text });
+      } else {
+        const teile = [nomText[v.id], bedarf].filter(Boolean);
+        if (teile.length) ohneStrom.push({ id: v.id, name: v.name, text: teile.join(' · ') });
+      }
+    });
+    if (eingefroren && Array.isArray(eingefroren.vorhaben)) eingefroren.vorhaben.forEach(e => {
+      if (gesehen.has(e)) return;
+      const damals = korbBekannt(e.korb);
+      nach[damals].damals++;
+      const s = strom(damals, 'weg');
+      s.n++;
+      s.eintraege.push({ id: null, name: e.name || '', text: 'nicht mehr in der Liste' });
+    });
+                                                                          
+                           
+    return { koerbe, stroeme: [...stroeme.values()], ohneStrom, summe: eingefroren ? diff.summe : 0 };
+  }
+                                                                         
+                                                                         
+                                       
+  function korbWanderungSumme(teile) {
+    const koerbe = KORB_REIHE.map(k => ({ korb: k, name: KORB_KURZ[k], damals: 0, heute: 0 }));
+    const stroeme = new Map();
+    const ohneStrom = [];
+    let summe = 0;
+    (teile || []).forEach(t => {
+      const w = t && t.wanderung;
+      if (!w) return;
+      w.koerbe.forEach((k, i) => { koerbe[i].damals += k.damals; koerbe[i].heute += k.heute; });
+      w.stroeme.forEach(s => {
+        const key = s.von + '>' + s.nach;
+        if (!stroeme.has(key)) stroeme.set(key, { von: s.von, nach: s.nach, n: 0, eintraege: [] });
+        const z = stroeme.get(key);
+        z.n += s.n;
+        s.eintraege.forEach(e => z.eintraege.push(Object.assign({}, e, { kuerzel: t.kuerzel })));
+      });
+      w.ohneStrom.forEach(e => ohneStrom.push(Object.assign({}, e, { kuerzel: t.kuerzel })));
+      summe += w.summe;
+    });
+    return { koerbe, stroeme: [...stroeme.values()], ohneStrom, summe };
   }
 
                 
@@ -4046,6 +4454,65 @@
       .then(antwort => (antwort.status === 412 ? null : antwort));
   }
 
+                                                                             
+                                                                             
+                                                                            
+                                                                             
+                                                                          
+                  
+                                                                           
+                                                                          
+                                                                           
+                                                                             
+                                                                          
+                                                                     
+  function sonderLesen(hole, site, titel) {
+    const url = spListenUrl(site, titel) + '/items?$select=Id,Title,Kennung,Stand,Modified&$filter='
+      + encodeURIComponent("Kennung eq '" + SP_SONDER + "'") + '&$top=5';
+    return hole(url, { headers: spKopfLesen(), credentials: 'same-origin' })
+      .then(antwort => {
+        if (!antwort.ok) throw new Error('Lesen ' + antwort.status);
+        return antwort.json();
+      })
+      .then(d => {
+        const zeilen = (d.d && d.d.results) || [];
+        const zeile = zeilen.find(z => String(z.Kennung || '') === SP_SONDER) || null;
+        if (!zeile) return { eintrag: null, stand: null };
+        const gelesen = standAusEintraegen([zeile]);
+        return {
+          eintrag: {
+            id: zeile.Id,
+            etag: (zeile.__metadata && zeile.__metadata.etag) || '',
+            modified: zeile.Modified || ''
+          },
+          stand: gelesen.stand
+        };
+      });
+  }
+
+  function sonderStandAblegen(hole, site, titel, digest, typ, eingefroren, zweiterVersuch) {
+    return sonderLesen(hole, site, titel).then(gelesen => {
+                                                                           
+      const basis = gelesen.stand || { v: 3, abteilung: '', verfuegbar: '', schreibstand: 0, tagesgeschaeft: [], vorhaben: [], staende: [] };
+      standAblegen(basis, eingefroren);
+      basis.schreibstand = (Number(basis.schreibstand) || 0) + 1;
+      if (!gelesen.eintrag) {
+        return eintragAnlegen(hole, site, titel, digest, eintragAusSonder(basis, typ))
+          .then(() => ({ ok: true, titel: titel, fehler: '' }));
+      }
+      return eintragAendern(hole, site, titel, gelesen.eintrag.id, gelesen.eintrag.etag, digest, eintragAusSonder(basis, typ))
+        .then(antwort => {
+          if (antwort.status === 412 && !zweiterVersuch) {
+            return sonderStandAblegen(hole, site, titel, digest, typ, eingefroren, true);
+          }
+          if (!antwort.ok && antwort.status !== 204) {
+            return { ok: false, titel: titel, fehler: 'Schreiben ' + antwort.status };
+          }
+          return { ok: true, titel: titel, fehler: '' };
+        });
+    }).catch(fehler => ({ ok: false, titel: titel, fehler: String((fehler && fehler.message) || fehler) }));
+  }
+
   function aenderungenSeit(hole, site, titel, seit) {
     const filter = "Modified gt datetime'" + String(seit || '1900-01-01T00:00:00Z') + "'";
     const url = spListenUrl(site, titel) + '/items?$filter=' + encodeURIComponent(filter)
@@ -4322,9 +4789,14 @@
     (abteilungen || []).forEach(a => {
       const stand = (a && a.stand) || {};
       const liste = Array.isArray(stand.vorhaben) ? stand.vorhaben : [];
+                                                                            
+                                                                            
+                                                    
+      const referenz = letzterStand(stand);
       hausSortiert(liste).forEach(v => {
         const wahl = gewaehlt(v, liste);
         eintraege.push({
+          seit: referenz ? seitText(referenz, v, liste) : '',
           schluessel: hausSchluessel(a.kuerzel, v),
           kuerzel: a.kuerzel,
           abteilung: a.name,
@@ -4477,7 +4949,9 @@
     folgen: e => e.folgen,
     koav: e => e.v.koav ? 'ja' : '',
     stand: e => e.stand,
-    verknuepft: e => e.verknuepft || 0
+    verknuepft: e => e.verknuepft || 0,
+                                                                                   
+    seit: e => e.seit || ''
   };
 
                                                                            
@@ -4571,6 +5045,89 @@
     if (!quelle || !quelle.schreiben) return [];
     return listen.filter(l => l.schreiben && l.kuerzel !== eintrag.kuerzel)
       .map(l => ({ kuerzel: l.kuerzel, name: l.name, titel: l.titel }));
+  }
+
+                                                                             
+                                                                              
+                                                                          
+                                                                      
+                                              
+  function hausDarfAbschliessen(umgebung) {
+    const u = umgebung || {};
+    if (u.speicherArt === 'lokal') return true;
+    if (u.speicherArt !== 'liste') return false;
+    return (u.listen || []).some(l => l.schreiben);
+  }
+                                                                 
+                                                                
+  function hausStandName(art, datum) {
+    const teile = standDatumAusZeitpunkt(datum);
+    if (!teile) return art === 'quartal' ? 'Quartals-Checkpoint' : 'Portfoliorunde';
+    if (art === 'quartal') return 'Q' + (Math.floor((Number(teile.monat) - 1) / 3) + 1) + ' ' + teile.jahr;
+    return 'Portfoliorunde ' + teile.tag + '.' + teile.monat + '.';
+  }
+                                                                       
+                                                                             
+                                                                           
+                                                                          
+                              
+  function hausAbschlussAuswahl(abteilungen, umgebung) {
+    const u = umgebung || {};
+    const listen = u.listen || [];
+    return (abteilungen || []).map(a => {
+      if (a.quelle === 'eigene' || u.speicherArt === 'lokal') {
+        return { kuerzel: a.kuerzel, name: a.name, titel: '', schreiben: true, gewaehlt: true, grund: '' };
+      }
+      const liste = listen.find(l => l.kuerzel === a.kuerzel);
+      const schreiben = !!(liste && liste.schreiben);
+      return {
+        kuerzel: a.kuerzel, name: a.name, titel: (liste && liste.titel) || '',
+        schreiben: schreiben, gewaehlt: schreiben,
+        grund: schreiben ? '' : 'kein Schreibrecht'
+      };
+    });
+  }
+                                                                             
+                                                         
+  const HAUS_ABSCHLUSS_FRISCH = 5 * 60 * 1000;
+  function hausStandFrisch(geladen, jetzt) {
+    const alt = Date.parse(String(geladen || ''));
+    const nun = jetzt === undefined ? Date.now() : Number(jetzt);
+    if (!Number.isFinite(alt)) return false;
+    return (nun - alt) <= HAUS_ABSCHLUSS_FRISCH;
+  }
+
+                                                                          
+                                                                              
+                                                                          
+                                                                       
+  function hausVeraenderungZaehler(abteilungen) {
+    return (abteilungen || []).map(a => {
+      const stand = (a && a.stand) || {};
+      const liste = Array.isArray(stand.vorhaben) ? stand.vorhaben : [];
+      const referenz = letzterStand(stand);
+      const diff = referenz ? veraenderung(referenz, liste) : null;
+                                                               
+                                                                            
+      const lp = leitungsportfolioWandel(referenz, liste);
+      return {
+        kuerzel: a.kuerzel,
+        name: a.name,
+        referenz: referenz,
+        referenzName: referenz ? referenz.name : '',
+        summe: diff ? diff.summe : 0,
+        neu: lp.neu.length,
+        raus: lp.raus.length
+      };
+    });
+  }
+                                                                             
+                                                            
+  function hausReferenzName(abteilungen) {
+    const namen = [...new Set(hausVeraenderungZaehler(abteilungen)
+      .map(z => z.referenzName).filter(Boolean))];
+    if (!namen.length) return '';
+    return namen.length === 1 ? namen[0] : '';
   }
 
                                                                              
@@ -5597,6 +6154,10 @@
         speicherArt = 'liste';
         const fussSpeicher = document.getElementById('fussSpeicher');
         if (fussSpeicher) fussSpeicher.textContent = 'Gemeinsam gespeichert in SharePoint, jede Abteilung sieht ihr eigenes Portfolio.';
+                                                                       
+                                                                             
+                                                    
+        einfrierenSichtbarkeit();
         return spErstesLesen().catch(() => {
                                                                          
                                                                                 
@@ -5719,6 +6280,40 @@
     try { sessionStorage.removeItem(RUNDE_SPEICHER); } catch (fehler) {                           }
   }
   rundeStartLaden();
+
+                                                                       
+                                                                         
+                                                                             
+                                                              
+                                                                           
+                                                    
+  let seitReferenzName = '', seitAn = false;
+  let bildListe = null;
+  const bildVorhaben = () => bildListe || S.vorhaben;
+  const seitSchluessel = teil => SPEICHER + '-seit-' + teil + '-' + String((S && S.abteilung) || '');
+  function seitLies(teil) {
+    try { return sessionStorage.getItem(seitSchluessel(teil)) || ''; } catch (fehler) { return ''; }
+  }
+  function seitSchreib(teil, wert) {
+    try { sessionStorage.setItem(seitSchluessel(teil), String(wert)); } catch (fehler) {                           }
+  }
+  function seitZustandLaden() {
+    seitReferenzName = seitLies('referenz');
+    seitAn = seitLies('an') === 'ja';
+  }
+                                                                         
+                                                                             
+                                          
+  function seitReferenz() {
+    return (seitReferenzName ? standNachName(S, seitReferenzName) : null) || letzterStand(S);
+  }
+  function seitDiff() {
+    const referenz = seitReferenz();
+    return referenz ? veraenderung(referenz, S.vorhaben) : null;
+  }
+                                                                     
+                                                                           
+                      
   const nachId = id => S.vorhaben.find(v => v.id === id) || null;
   const verfuegbarWert = () => {
     const zahl = parseFloat(String(S.verfuegbar || '').replace(',', '.'));
@@ -6384,21 +6979,24 @@
     return { html, skala, marke: pct(kap.verfuegbar), ende: pct(kap.gesamt) };
   }
 
-                                                                          
+                                                                            
+                                                                        
                                                                          
-                                                                             
-                                                                     
+                                                                          
+                               
   function bdStandSichtbarkeit() {
     const stand = document.getElementById('bdStand');
     if (!stand) return;
-    stand.classList.toggle('verborgen', !bdStandOffen || (briefingKategorie === 'kapazitaet' && sicht === 'briefing'));
+    stand.classList.toggle('verborgen', !bdStandOffen);
   }
 
                                                                              
                                                                              
                                              
+                                                                         
+                                                                 
   function standReferenz() {
-    const eingefroren = letzterStand(S);
+    const eingefroren = seitReferenz();
     if (eingefroren) return { start: startAusStand(eingefroren, S.vorhaben), eingefroren };
     rundeStartSetzen();
     return { start: rundeStart, eingefroren: null };
@@ -6407,11 +7005,36 @@
     const d = new Date(String(zeitpunkt || ''));
     return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
   };
+                                                                     
+                                                                              
+                                                                           
+  function einfrierenSichtbarkeit() {
+    const knopf = document.getElementById('standEinfrieren');
+    if (knopf) knopf.classList.toggle('verborgen', speicherArt === 'liste');
+  }
+
   function renderFussStand() {
     const fuss = document.getElementById('fussStand');
     if (!fuss) return;
     const eingefroren = letzterStand(S);
-    fuss.textContent = eingefroren ? ' Letzter eingefrorener Stand: ' + standDatumText(eingefroren.zeitpunkt) + '.' : '';
+                                                                   
+    fuss.textContent = eingefroren ? ' Referenz: ' + (eingefroren.name || standDatumText(eingefroren.zeitpunkt)) + '.' : '';
+  }
+
+                                                                            
+                                                                          
+                                                                           
+                                                                
+                                                                       
+                                                                             
+                                                           
+  let seitFrisch = false;
+  function seitSchalten(an) {
+    seitFrisch = !!an && !seitAn;
+    seitAn = !!an;
+    seitSchreib('an', seitAn ? 'ja' : 'nein');
+    if (!seitAn) document.getElementById('bildKoerper').classList.remove('seit-an');
+    renderPriorisieren();
   }
 
   function renderBudget() {
@@ -6442,8 +7065,6 @@
     document.getElementById('budget').innerHTML = `
       <div class="bd-kopf">
         <span class="bd-titel">Kapazität im nächsten Halbjahr · Vollzeitäquivalente</span>
-        
-        <span class="bd-eingabe">Die Abteilung hat<input type="text" inputmode="decimal" id="verfuegbar" value="${esc(S.verfuegbar)}" maxlength="6" aria-label="Verfügbare Vollzeitäquivalente"> VZÄ<span class="bd-trenn" aria-hidden="true">·</span><button class="textbtn blau bd-tg" type="button" id="tgOeffnen">Tagesgeschäft erfassen</button></span>
       </div>
       <div class="bd-skala" role="img" aria-label="${vorlesen}" title="${vorlesen}">
         ${geo.html}
@@ -6451,18 +7072,21 @@
         ${belohnung ? `<span class="bd-belohnung" style="left:${Math.min(90, Math.max(10, geo.ende))}%">−${zahlText(belohnung)} VZÄ</span>` : ''}
       </div>
       `;
-    document.getElementById('bdStand').innerHTML = standHinweis + tgHinweis;
-                                                                  
+                                                                          
+                                                                            
                                                                            
+                                                               
+    const eingabe = `<span class="bd-eingabe">Die Abteilung hat<input type="text" inputmode="decimal" id="verfuegbar" value="${esc(S.verfuegbar)}" maxlength="6" aria-label="Verfügbare Vollzeitäquivalente"> VZÄ<span class="bd-trenn" aria-hidden="true">·</span><button class="textbtn blau bd-tg" type="button" id="tgOeffnen">Tagesgeschäft erfassen</button></span>`;
+    document.getElementById('bdStand').innerHTML = eingabe + standHinweis + tgHinweis;
+                                                                           
+                                                
     const hinweise = [];
     if (kap.standOffen > 0) hinweise.push(`${zahlText(kap.standOffen)} VZÄ ohne Stand: bei diesen Vorhaben fehlt die Angabe, ob sie schon laufen.`);
     if (tg.offen.length > 0) hinweise.push(`Das Tagesgeschäft von ${tg.offen.join(', ')} fehlt. Die Gesamtlage liegt entsprechend höher, als die Leiste zeigt.`);
-    const info = document.getElementById('bdInfo');
-    if (!hinweise.length) bdStandOffen = false;
-    info.classList.toggle('verborgen', hinweise.length === 0);
-    info.title = hinweise.join(' ');
-    info.setAttribute('aria-label', 'Hinweise zur Kapazitätslage: ' + hinweise.join(' '));
-    info.setAttribute('aria-expanded', String(bdStandOffen));
+    const lage = document.getElementById('bdLage');
+    lage.title = hinweise.length ? hinweise.join(' ') : 'Kapazität und Tagesgeschäft eintragen';
+    lage.setAttribute('aria-expanded', String(bdStandOffen));
+    document.getElementById('bdBei').textContent = String(S.verfuegbar || '').trim() ? 'bei ' + String(S.verfuegbar).trim() + ' VZÄ' : '';
     bdStandSichtbarkeit();
                                                                           
                                                                               
@@ -6728,21 +7352,29 @@
                                                                                
                                                                       
   function kachel(v, ohneWiederholung) {
-    const wahl = gewaehlt(v, S.vorhaben);
+    const wahl = gewaehlt(v, bildVorhaben());
     const vzae = vzaeWert(v);
     const nominiert = wirksamNominiert(v) && wahl !== 'nicht';
-    const korb = PORTFOLIO[portfolio(v, S.vorhaben).wert];
-    const pflicht = offenePflicht(v, S.vorhaben);
-    const zentralHinweis = wahl === 'nicht' && verknuepfungsZahl(v, S.vorhaben) >= 3
-      ? verknuepfungsRegeltext(v, S.vorhaben)
+    const korb = PORTFOLIO[portfolio(v, bildVorhaben()).wert];
+    const pflicht = offenePflicht(v, bildVorhaben());
+    const zentralHinweis = wahl === 'nicht' && verknuepfungsZahl(v, bildVorhaben()) >= 3
+      ? verknuepfungsRegeltext(v, bildVorhaben())
       : '';
-                                                                            
+                                                                           
+                                                                      
+                                                                        
+                                                                       
                                                                           
-                                                                            
-    const stand = v.laeuft === LAEUFT[1] ? 'läuft' : v.laeuft === LAEUFT[2] ? 'geplant' : '';
+    const referat = String(v.referat || '').trim();
                                                                              
-    const seit = seitText(letzterStand(S), v, S.vorhaben);
-    return `<div class="pt-wrap">
+                                                                           
+                                                        
+    const seit = seitText(seitReferenz(), v, bildVorhaben());
+                                                                               
+                                                                           
+                                                      
+    const weg = !!v.weg;
+    return `<div class="pt-wrap${weg ? ' weg' : ''}">
       <button class="pt ${wahl} ${nominiert ? 'lf' : ''} ${v.id === vorschauId ? 'aktiv' : ''}" type="button" data-kachel="${v.id}" title="${esc(v.name)} · ${esc(korb)}${pflicht ? ' · ' + OFFENE_PFLICHT[pflicht].kurz : ''}">
         <span class="pt-name">${esc(v.name)}${pflicht ? `<span class="nur-vorlesen">, ${esc(OFFENE_PFLICHT[pflicht].kurz)}</span>` : ''}</span>
         ${zentralHinweis ? `<span class="pt-hinweis">${esc(zentralHinweis)}</span>` : ''}
@@ -6751,15 +7383,15 @@
         <span class="pt-foot">
           <span class="pt-foot-links">
             ${ohneWiederholung ? '' : `<span class="pt-state">${esc(ENTSCHEIDUNG[wahl])}</span>`}
-            ${stand ? `<span class="pt-stand">${stand}</span>` : ''}
-            ${seit ? `<span class="pt-seit">${esc(seit)}</span>` : ''}
+            ${referat ? `<span class="pt-ref">${esc(referat)}</span>` : ''}
+            ${seit && !weg ? `<span class="pt-seit">${esc(seit)}</span>` : ''}
           </span>
           <span class="pt-vzae">${vzae ? zahlText(vzae) + ' VZÄ' : 'VZÄ offen'}</span>
         </span>
       </button>
-      <button class="pt-lupe" type="button" data-vorschau="${v.id}" aria-label="${esc(v.name)} kurz ansehen" title="Kurz ansehen">
+      ${weg ? '' : `<button class="pt-lupe" type="button" data-vorschau="${v.id}" aria-label="${esc(v.name)} kurz ansehen" title="Kurz ansehen">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 5 5"></path></svg>
-      </button>
+      </button>`}
     </div>`;
   }
 
@@ -6832,6 +7464,7 @@
       </div>
       <div class="vs-status">
         <span>${esc(ENTSCHEIDUNG[wahl])}</span>
+        ${v.laeuft === LAEUFT[1] || v.laeuft === LAEUFT[2] ? `<span>${esc(v.laeuft)}</span>` : ''}
         <span>${bedarf ? zahlText(bedarf) + ' VZÄ Bedarf' : 'Personalbedarf offen'}</span>
         ${v.ziel && v.ziel !== WAEHLEN ? `<span>${esc(v.ziel)}</span>` : ''}
         ${v.koav ? '<span>Bestandteil KoaV</span>' : ''}
@@ -6962,10 +7595,21 @@
                                                                            
                                                      
   const RANG = { prio: 0, wartet: 1, offen: 2, nicht: 3 };
+  const SEIT_WAHL = '__seit';
+  const REFERAT_ORDNUNG = new Intl.Collator('de', { numeric: true });
   function sortiert(liste) {
     return liste.slice().sort((a, b) => {
-      const stufe = RANG[gewaehlt(a, S.vorhaben)] - RANG[gewaehlt(b, S.vorhaben)];
+      const stufe = RANG[gewaehlt(a, bildVorhaben())] - RANG[gewaehlt(b, bildVorhaben())];
       if (stufe) return stufe;
+                                                                           
+                                                                     
+      const ra = String(a.referat || '').trim(), rb = String(b.referat || '').trim();
+      if (ra !== rb) {
+        if (!ra) return 1;
+        if (!rb) return -1;
+        const referat = REFERAT_ORDNUNG.compare(ra, rb);
+        if (referat) return referat;
+      }
       const nominiert = (wirksamNominiert(b) ? 1 : 0) - (wirksamNominiert(a) ? 1 : 0);
       if (nominiert) return nominiert;
       return String(a.name || '').localeCompare(String(b.name || ''), 'de');
@@ -6978,7 +7622,7 @@
                              
     document.getElementById('reiterLinse').innerHTML = `<div class="bild-steuer">${bildSucheHtml()}</div>`;
     document.getElementById('bildKoerper').innerHTML = bahnen.map(bahn => {
-      const drin = sortiert(S.vorhaben.filter(v => v.ziel === bahn));
+      const drin = sortiert(bildVorhaben().filter(v => v.ziel === bahn));
       if (bahn === WAEHLEN && !drin.length) return '';
       const summe = drin.reduce((wert, v) => wert + vzaeWert(v), 0);
       const name = bahn === WAEHLEN ? 'Ziel noch nicht gewählt' : bahn;
@@ -7023,7 +7667,7 @@
         if (ziel) ausgehend.push(ziel);
       }
     });
-    const eingehend = S.vorhaben.filter(v => v.id !== auswahl.id
+    const eingehend = bildVorhaben().filter(v => v.id !== auswahl.id
       && (v.haengtAn || []).some(ref => ref.typ === 'v' && ref.id === auswahl.id));
     const verbunden = new Set([auswahl.id]);
     ausgehend.forEach(v => {
@@ -7118,8 +7762,7 @@
       if (pfReferat === 'alle') return true;
       const v = nachId(id);
       if (!v) return false;
-      const referat = v.referat.trim();
-      return pfReferat === 'ohne' ? !referat : referat === pfReferat;
+      return v.referat.trim() === pfReferat;
     };
                                                                          
                                                                       
@@ -7181,20 +7824,29 @@
                                                                             
                                                                               
                                            
-    const referate = [...new Set(S.vorhaben.map(v => v.referat.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'de'));
-    if (pfReferat !== 'alle' && pfReferat !== 'ohne' && !referate.includes(pfReferat)) pfReferat = 'alle';
+    const referate = [...new Set(bildVorhaben().map(v => v.referat.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'de'));
+    if (pfReferat !== 'alle' && !referate.includes(pfReferat)) pfReferat = 'alle';
+                                                                              
+                                                                             
+                                                                          
+                                                                         
+                                 
+    const seitStand = seitReferenz();
+    const seitSumme = seitStand ? (seitDiff() || { summe: 0 }).summe : 0;
+    const seitWahl = seitStand ? `Verändert seit ${seitStand.name || standDatumText(seitStand.zeitpunkt)} (${seitSumme})` : '';
+    if (!seitStand) seitAn = false;
                                                                             
                                                          
     document.getElementById('reiterLinse').innerHTML = `<div class="bild-steuer">
         ${bildSucheHtml()}
-        ${referate.length ? `<label for="pfReferat">Referat</label>
+        ${referate.length || seitWahl ? `<label for="pfReferat">Hervorheben</label>
         <select id="pfReferat">
-          <option value="alle" ${pfReferat === 'alle' ? 'selected' : ''}>alle Referate</option>
-          ${referate.map(r => `<option value="${esc(r)}" ${pfReferat === r ? 'selected' : ''}>${esc(r)}</option>`).join('')}
-          <option value="ohne" ${pfReferat === 'ohne' ? 'selected' : ''}>ohne Referat</option>
+          <option value="alle" ${pfReferat === 'alle' && !seitAn ? 'selected' : ''}>alle Referate</option>
+          ${seitWahl ? `<option value="${SEIT_WAHL}" ${seitAn ? 'selected' : ''}>${esc(seitWahl)}</option>` : ''}
+          ${referate.map(r => `<option value="${esc(r)}" ${pfReferat === r && !seitAn ? 'selected' : ''}>${esc(r)}</option>`).join('')}
         </select>` : ''}
       </div>`;
-    const imKorb = korb => sortiert(S.vorhaben.filter(v => portfolio(v, S.vorhaben).wert === korb));
+    const imKorb = korb => sortiert(bildVorhaben().filter(v => portfolio(v, bildVorhaben()).wert === korb));
     const vzaeSumme = liste => liste.reduce((wert, v) => wert + vzaeWert(v), 0);
                                                                            
                                                                               
@@ -7239,7 +7891,7 @@
     };
 
     const koepfe = PF_SPALTEN.map((spalte, si) => {
-      const summe = vzaeSumme(S.vorhaben.filter(v => gewaehlt(v, S.vorhaben) === spalte.wahl));
+      const summe = vzaeSumme(bildVorhaben().filter(v => gewaehlt(v, bildVorhaben()) === spalte.wahl));
       return `<div class="mx-kopf ${spalte.gebunden ? 'pf-gebunden' : ''}" role="columnheader" style="grid-column:${si + 1}; grid-row:1">
         ${esc(ENTSCHEIDUNG[spalte.wahl])} <span class="pf-vzae">${zahlText(summe)} VZÄ</span>
         <small>${esc(spalte.sub)}</small></div>`;
@@ -7272,8 +7924,9 @@
       </div>` : ''}`;
     const pfSelect = document.getElementById('pfReferat');
     if (pfSelect) pfSelect.addEventListener('change', ev => {
-      pfReferat = ev.target.value;
-      renderBild();
+      const seit = ev.target.value === SEIT_WAHL;
+      pfReferat = seit ? 'alle' : ev.target.value;
+      seitSchalten(seit);
     });
     markiereAbhaengigkeiten(fokus);
     bildSucheMarkieren();
@@ -7331,9 +7984,9 @@
   function renderLaufzeiten() {
     const heute = new Date();
     const h0 = heute.getFullYear() * 12 + heute.getMonth();
-    const referate = [...new Set(S.vorhaben.map(v => v.referat.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'de'));
+    const referate = [...new Set(bildVorhaben().map(v => v.referat.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'de'));
     if (lzReferat !== 'alle' && lzReferat !== 'ohne' && !referate.includes(lzReferat)) lzReferat = 'alle';
-    const gefiltert = S.vorhaben.filter(v => (lzReferat === 'alle'
+    const gefiltert = bildVorhaben().filter(v => (lzReferat === 'alle'
       || (lzReferat === 'ohne' ? !v.referat.trim() : v.referat.trim() === lzReferat)) && bildSuchTreffer(v));
     const mitZeit = gefiltert.map(v => ({ v, z: zeitraum(v) }));
     const balken = mitZeit.filter(e => e.z.art !== 'offen');
@@ -7351,7 +8004,7 @@
 
     const zeile = e => {
       const { v, z } = e;
-      const b = lzBalken(z, gewaehlt(v, S.vorhaben), h0);
+      const b = lzBalken(z, gewaehlt(v, bildVorhaben()), h0);
       return `<div class="lz-zeile" data-lz-id="${v.id}">
         <div><button class="lz-name" type="button" data-lz-name="${v.id}">${esc(v.name)}</button>
           <span class="lz-meta">${esc((v.referat.trim() ? v.referat.trim() + ' · ' : '') + b.text + b.warnung)}</span></div>
@@ -7417,7 +8070,121 @@
     });
   }
 
-  function renderBild() {
+                                                                             
+                                                                    
+                                                                          
+                                                                        
+                                                                              
+                                                                           
+                                                                            
+                                                                            
+                       
+  const WD_H = 16, WD_LUECKE = 14, WD_OBEN = 40, WD_LINKS = 240, WD_RECHTS = 480, WD_BREITE = 26, WD_MIN = 6;
+  function wanderungSvg(w, referenzName) {
+    const summe = (korb, seite) => w.stroeme.filter(s => s[seite] === korb).reduce((x, s) => x + s.n, 0);
+    const lage = { von: {}, nach: {} };
+    let y1 = WD_OBEN, y2 = WD_OBEN;
+    w.koerbe.forEach(k => {
+      const ha = Math.max(k.damals * WD_H, WD_MIN), hb = Math.max(k.heute * WD_H, WD_MIN);
+      lage.von[k.korb] = { y: y1, h: ha, cursor: y1 }; y1 += ha + WD_LUECKE;
+      lage.nach[k.korb] = { y: y2, h: hb, cursor: y2 }; y2 += hb + WD_LUECKE;
+    });
+    const nNeu = summe('neu', 'von'), nWeg = summe('weg', 'nach');
+    lage.von.neu = { y: y1 + 4, h: nNeu * WD_H, cursor: y1 + 4 };
+    lage.nach.weg = { y: y2 + 4, h: nWeg * WD_H, cursor: y2 + 4 };
+    const hoehe = Math.max(y1 + (nNeu ? nNeu * WD_H + 4 : 0), y2 + (nWeg ? nWeg * WD_H + 4 : 0)) + 12;
+    let html = `<text class="wd-achse" x="${WD_LINKS + WD_BREITE}" y="20" text-anchor="end">${esc(referenzName)}</text>
+      <text class="wd-achse" x="${WD_RECHTS}" y="20">heute</text>`;
+    const reihe = KORB_REIHE.concat(['neu']), reiheNach = KORB_REIHE.concat(['weg']);
+    const stroeme = w.stroeme.slice().sort((a, b) =>
+      (reihe.indexOf(a.von) - reihe.indexOf(b.von)) || (reiheNach.indexOf(a.nach) - reiheNach.indexOf(b.nach)));
+    stroeme.forEach(s => {
+      const von = lage.von[s.von], nach = lage.nach[s.nach];
+      if (!von || !nach) return;
+      const h = s.n * WD_H;
+      const ya = von.cursor, yb = nach.cursor;
+      von.cursor += h; nach.cursor += h;
+      const x0 = WD_LINKS + WD_BREITE, x1 = WD_RECHTS, cx = (x0 + x1) / 2;
+      const d = `M ${x0} ${ya} C ${cx} ${ya} ${cx} ${yb} ${x1} ${yb} L ${x1} ${yb + h} C ${cx} ${yb + h} ${cx} ${ya + h} ${x0} ${ya + h} Z`;
+      const bleibt = s.von === s.nach;
+      html += `<path class="wd-strom${bleibt ? ' bleibt' : ''}" data-von="${s.von}" data-nach="${s.nach}" d="${d}"><title>${s.n} ${bleibt ? 'geblieben' : 'bewegt'}</title></path>`;
+    });
+    w.koerbe.forEach(k => {
+      const a = lage.von[k.korb], b = lage.nach[k.korb];
+      html += `<rect class="wd-segment ${k.korb}" data-segment="${k.korb}" x="${WD_LINKS}" y="${a.y}" width="${WD_BREITE}" height="${a.h}" rx="3"></rect>
+        <text class="wd-korb" x="${WD_LINKS - 10}" y="${a.y + a.h / 2 + 4}" text-anchor="end">${esc(k.name)}</text>
+        <text class="wd-zahl" x="${WD_LINKS - 10}" y="${a.y + a.h / 2 + 18}" text-anchor="end">${k.damals}</text>
+        <rect class="wd-segment ${k.korb}" data-segment="${k.korb}" x="${WD_RECHTS}" y="${b.y}" width="${WD_BREITE}" height="${b.h}" rx="3"></rect>
+        <text class="wd-korb" x="${WD_RECHTS + WD_BREITE + 10}" y="${b.y + b.h / 2 + 4}">${esc(k.name)}</text>
+        <text class="wd-zahl" x="${WD_RECHTS + WD_BREITE + 10}" y="${b.y + b.h / 2 + 18}">${k.heute}</text>`;
+    });
+    if (nNeu) html += `<rect class="wd-segment rand" x="${WD_LINKS}" y="${lage.von.neu.y}" width="${WD_BREITE}" height="${lage.von.neu.h}" rx="3"></rect>
+      <text class="wd-korb rand" x="${WD_LINKS - 10}" y="${lage.von.neu.y + lage.von.neu.h / 2 + 4}" text-anchor="end">${esc(KORB_KURZ.neu)}</text>
+      <text class="wd-zahl" x="${WD_LINKS - 10}" y="${lage.von.neu.y + lage.von.neu.h / 2 + 18}" text-anchor="end">${nNeu}</text>`;
+    if (nWeg) html += `<rect class="wd-segment rand" x="${WD_RECHTS}" y="${lage.nach.weg.y}" width="${WD_BREITE}" height="${lage.nach.weg.h}" rx="3"></rect>
+      <text class="wd-korb rand" x="${WD_RECHTS + WD_BREITE + 10}" y="${lage.nach.weg.y + lage.nach.weg.h / 2 + 4}">${esc(KORB_KURZ.weg)}</text>
+      <text class="wd-zahl" x="${WD_RECHTS + WD_BREITE + 10}" y="${lage.nach.weg.y + lage.nach.weg.h / 2 + 18}">${nWeg}</text>`;
+    return `<svg viewBox="0 0 740 ${hoehe}" role="img" aria-label="Wanderung der Vorhaben zwischen den Körben seit ${esc(referenzName)}">${html}</svg>`;
+  }
+                                                                           
+                                                                  
+  function wanderungEintraege(w) {
+    const alle = [];
+    w.stroeme.forEach(s => s.eintraege.forEach(e => alle.push(e)));
+    w.ohneStrom.forEach(e => alle.push(e));
+    return alle;
+  }
+  function wanderungListeHtml(eintraege, titel) {
+    const zeile = e => {
+      const name = esc(e.name) + (e.kuerzel ? ` <small>(${esc(e.kuerzel)})</small>` : '');
+      return e.id != null
+        ? `<li><button class="wd-eintrag" type="button" data-wd-vorschau="${esc(String(e.id))}" data-wd-kuerzel="${esc(e.kuerzel || '')}"><b>${name}</b><span>${esc(e.text)}</span></button></li>`
+        : `<li><span class="wd-eintrag"><b>${name}</b><span>${esc(e.text)}</span></span></li>`;
+    };
+    return `<h3>${esc(titel)}<span class="bf-zahl">${eintraege.length}</span></h3>
+      <ul>${eintraege.length ? eintraege.map(zeile).join('') : '<li class="wd-hinweis">Keine Bewegung hier.</li>'}</ul>`;
+  }
+  function wanderungHtml(w, referenzName) {
+    return `<div class="wanderung">${wanderungSvg(w, referenzName)}<div class="wd-namen">${wanderungListeHtml(wanderungEintraege(w), 'Alle Veränderungen')}</div></div>`;
+  }
+  function wanderungVerdrahten(wurzel, w, oeffnen) {
+    const namen = wurzel.querySelector('.wd-namen');
+    const korbName = korb => KORB_KURZ[korb] || korb;
+    let aktiv = null;
+    const zeige = (eintraege, titel) => {
+      namen.innerHTML = wanderungListeHtml(eintraege, titel);
+      namen.querySelectorAll('[data-wd-vorschau]').forEach(el => el.addEventListener('click', () => oeffnen(el.dataset.wdVorschau, el.dataset.wdKuerzel)));
+    };
+    const zuruecksetzen = () => {
+      aktiv = null;
+      wurzel.querySelectorAll('.aktiv').forEach(x => x.classList.remove('aktiv'));
+      zeige(wanderungEintraege(w), 'Alle Veränderungen');
+    };
+    zeige(wanderungEintraege(w), 'Alle Veränderungen');
+    wurzel.querySelectorAll('.wd-strom:not(.bleibt)').forEach(el => el.addEventListener('click', () => {
+      if (aktiv === el) { zuruecksetzen(); return; }
+      wurzel.querySelectorAll('.aktiv').forEach(x => x.classList.remove('aktiv'));
+      aktiv = el;
+      el.classList.add('aktiv');
+      const s = w.stroeme.find(x => x.von === el.dataset.von && x.nach === el.dataset.nach);
+      zeige(s ? s.eintraege : [], korbName(el.dataset.von) + ' → ' + korbName(el.dataset.nach));
+    }));
+    wurzel.querySelectorAll('.wd-segment[data-segment]').forEach(el => el.addEventListener('click', () => {
+      if (aktiv === el) { zuruecksetzen(); return; }
+      wurzel.querySelectorAll('.aktiv').forEach(x => x.classList.remove('aktiv'));
+      aktiv = el;
+      const korb = el.dataset.segment;
+      const treffer = [];
+      w.stroeme.filter(s => s.von !== s.nach && (s.von === korb || s.nach === korb)).forEach(s => s.eintraege.forEach(e => treffer.push(e)));
+      zeige(treffer, korbName(korb) + ': bewegt');
+    }));
+  }
+
+                                                                         
+                                                                          
+                                                       
+  function renderBild(liste) {
+    bildListe = liste || null;
     const imBriefing = sicht === 'briefing';
     document.getElementById('bfKomponente').classList.toggle('verborgen', !imBriefing);
     document.getElementById('bildKoerper').classList.toggle('verborgen', imBriefing);
@@ -7465,7 +8232,31 @@
       abhAktivId = null;
       vorschauOeffnen(el.dataset.kachel);
     }));
-    if (sicht === 'portfolio') verdrahteZiehen();
+                                                                            
+                                              
+    if (sicht === 'portfolio' && !bildListe) verdrahteZiehen();
+    seitKachelnMarkieren();
+  }
+
+                                                                          
+                                                                          
+                                                                              
+                                                                       
+  function seitKachelnMarkieren() {
+    const koerper = document.getElementById('bildKoerper');
+    if (!koerper) return;
+    const referenz = seitReferenz();
+                                                                          
+                                                           
+    const an = !!(seitAn && referenz && sicht === 'portfolio');
+    koerper.classList.toggle('seit-an', an);
+    koerper.classList.toggle('seit-frisch', an && seitFrisch);
+    seitFrisch = false;
+    koerper.querySelectorAll('.pt-wrap').forEach(wrap => {
+      const knopf = wrap.querySelector('[data-kachel]');
+      const v = knopf ? bildVorhaben().find(x => x.id === knopf.dataset.kachel) : null;
+      wrap.classList.toggle('bewegt', !!(referenz && v && seitText(referenz, v, bildVorhaben())));
+    });
   }
 
                                                       
@@ -8008,28 +8799,32 @@
     block.classList.toggle('verborgen', !eingefroren);
     if (!eingefroren) return;
     const diff = veraenderung(eingefroren, liste);
-    document.getElementById('druckSeitTitel').textContent = 'Seit dem eingefrorenen Stand vom ' + standDatumText(eingefroren.zeitpunkt);
+                                                                              
+                                                  
+    document.getElementById('druckSeitTitel').textContent = 'Seit „' + (standNormieren(eingefroren).name) + '“ (' + standDatumText(eingefroren.zeitpunkt) + ')';
     const lastSatz = kap.vorher !== kap.gesamt
       ? ` Gebunden waren damals ${zahlText(kap.vorher)} VZÄ, heute sind es ${zahlText(kap.gesamt)}.`
       : ' Die gebundene Kapazität ist unverändert.';
     document.getElementById('druckSeitHilfe').textContent = (diff.summe === 0
       ? 'Keine Veränderung.'
       : diff.summe === 1 ? 'Eine Veränderung.' : `${diff.summe} Veränderungen.`) + lastSatz;
-    const korbText = korb => PORTFOLIO[korb] || korb;
-    const wahlText = wahl => ENTSCHEIDUNG[wahl] || (wahl === 'offen' ? 'erst klären' : wahl);
     const zeile = (name, text, klasse) => `<div class="druck-kompakt-zeile${klasse ? ' ' + klasse : ''}"><span>${esc(name)}</span><span>${esc(text)}</span></div>`;
-                                                                           
-                                                                      
-                                                    
+                                                                              
+                                                                         
+                                                                              
+                                                                  
+                                                                    
+                      
+    const gruppen = {};
+    veraenderungText(diff).forEach(g => { gruppen[g.schluessel] = g.zeilen; });
+    const nominiertNach = new Set(diff.nominierung.filter(e => e.nach).map(e => e.v.id));
     const zeilen = []
-      .concat(diff.nominierung.filter(e => e.nach).map(e => zeile(e.v.name, 'neu für das Leitungsportfolio nominiert', 'nominiert')))
-      .concat(diff.entscheidung.map(e => zeile(e.v.name, e.vonWahl !== e.nachWahl
-        ? `${wahlText(e.vonWahl)} → ${wahlText(e.nachWahl)}`
-        : `${korbText(e.vonKorb)} → ${korbText(e.nachKorb)}`)))
-      .concat(diff.nominierung.filter(e => !e.nach).map(e => zeile(e.v.name, 'Nominierung zurückgenommen')))
-      .concat(diff.bedarf.map(e => zeile(e.v.name, `Bedarf ${zahlText(e.von)} → ${zahlText(e.nach)} VZÄ`)))
-      .concat(diff.neu.map(v => zeile(v.name, 'neu, ' + korbText(portfolio(v, liste).wert))))
-      .concat(diff.weg.map(e => zeile(e.name, 'nicht mehr in der Liste')));
+      .concat(gruppen.nominierung.filter(z => nominiertNach.has(z.id)).map(z => zeile(z.name, z.text, 'nominiert')))
+      .concat(gruppen.entscheidung.map(z => zeile(z.name, z.text)))
+      .concat(gruppen.nominierung.filter(z => !nominiertNach.has(z.id)).map(z => zeile(z.name, z.text)))
+      .concat(gruppen.bedarf.map(z => zeile(z.name, z.text)))
+      .concat(gruppen.neu.map(z => zeile(z.name, z.text)))
+      .concat(gruppen.weg.map(z => zeile(z.name, z.text)));
     document.getElementById('druckSeitListe').innerHTML = zeilen.join('');
   }
 
@@ -8047,10 +8842,14 @@
   const HAUS_AUSWAHL = SPEICHER + '-haus-auswahl';
   const HAUS_SICHT = SPEICHER + '-haus-sicht';
   const HAUS_OEFFNEN = SPEICHER + '-haus-oeffnen';                                                              
-  const HAUS_REITER = ['portfolio', 'ziele', 'laufzeiten', 'liste'];
+  const HAUS_REITER = ['portfolio', 'ziele', 'laufzeiten', 'liste', 'veraenderung'];
 
   let H = null;
   let hausReiter = 'portfolio', hausNurNominierte = true, hausAbteilung = 'alle';
+                                                                          
+                                                                
+  const HAUS_SEIT = SPEICHER + '-haus-seit';
+  let hausSeitAn = false;
                                                                              
                                                                          
                                                                   
@@ -8075,6 +8874,9 @@
 
   function hausSichtLaden() {
     hausAuswahl = hausLies(HAUS_AUSWAHL, {}) || {};
+                                                                      
+                                     
+    try { hausSeitAn = sessionStorage.getItem(HAUS_SEIT) === 'ja'; } catch (fehler) { hausSeitAn = false; }
     const sicht = hausLies(HAUS_SICHT, null);
     if (!sicht) return;
     if (HAUS_REITER.indexOf(sicht.reiter) >= 0) hausReiter = sicht.reiter;
@@ -8298,11 +9100,17 @@
     const knopf = speicherArt === 'liste'
       ? '<button class="textbtn hell" type="button" id="hausNeuLaden">Neu laden</button>'
       : '<button class="textbtn hell" type="button" id="hausEinlesen">Abteilungsstände einlesen</button>';
+                                                                              
+                                                                      
+                                                           
+    const abschluss = hausDarfAbschliessen(hausAbschlussUmgebung())
+      ? '<button class="textbtn hell" type="button" id="hausAbschluss">Runde abschließen</button>'
+      : '';
     const demoHinweis = bau.abteilungen.some(a => a.quelle === 'demo')
       ? '<span class="haus-lage-zahlen haus-demo" id="hausDemoHinweis">Demo: Die Abteilungen Z, V und G sind simuliert, die Sicht des Stabs und der Hausleitung ist hier nur nachgestellt.</span>'
       : '';
     document.getElementById('hausLage').innerHTML =
-      `<span class="haus-lage-zahlen">${esc(zahlen)}</span>${knopf}`
+      `<span class="haus-lage-zahlen">${esc(zahlen)}</span>${knopf}${abschluss}`
       + (hausHinweis ? `<span class="haus-lage-zahlen">${esc(hausHinweis)}</span>` : '')
       + demoHinweis;
     const kuerzel = bau.abteilungen.slice(0, 3).map(a => a.kuerzel);
@@ -8315,17 +9123,27 @@
     if (neuLaden) neuLaden.addEventListener('click', () => { hausHinweis = ''; hausLaden(); renderHaus(); });
     const einlesen = document.getElementById('hausEinlesen');
     if (einlesen) einlesen.addEventListener('click', () => document.getElementById('hausDatei').click());
+    const abschlussKnopf = document.getElementById('hausAbschluss');
+    if (abschlussKnopf) abschlussKnopf.addEventListener('click', () => hausAbschlussOeffnen());
   }
 
   function renderHausSteuer(bau) {
     if (hausAbteilung !== 'alle' && !bau.abteilungen.some(a => a.kuerzel === hausAbteilung)) hausAbteilung = 'alle';
     const zaehler = auswahlZaehler(hausAuswahl, bau.sichtbar);
+    const seitName = hausReferenzName(bau.abteilungen);
+                                                                              
+                                                                       
+                                                                              
+                                                                             
+                                                                               
+    const imWandel = hausReiter === 'veraenderung';
+    const lpSchalter = hausReiter === 'portfolio' && hausNurNominierte;
     document.getElementById('hausSteuer').innerHTML = `
       <div class="haus-steuer-teil">
-        <div class="haus-schalter" role="group" aria-label="Umfang">
+        ${imWandel ? '' : `<div class="haus-schalter" role="group" aria-label="Umfang">
           <button type="button" data-haus-umfang="nominiert" aria-pressed="${hausNurNominierte}">Nur nominierte</button>
           <button type="button" data-haus-umfang="alle" aria-pressed="${!hausNurNominierte}">Alle Vorhaben</button>
-        </div>
+        </div>`}
         <label for="hausAbteilungWahl">Abteilung</label>
         <select id="hausAbteilungWahl">
           <option value="alle" ${hausAbteilung === 'alle' ? 'selected' : ''}>alle Abteilungen</option>
@@ -8333,9 +9151,18 @@
         </select>
       </div>
       <div class="haus-steuer-teil">
+        
+        ${lpSchalter ? `<span class="bd-seit-wort">${esc(seitName ? 'seit ' + seitName : 'seit dem letzten Stand je Abteilung')}</span>
+        <button class="textbtn blau haus-seit-schalter" type="button" id="hausSeitSchalter" aria-pressed="${hausSeitAn}">Veränderung im Leitungsportfolio</button>` : ''}
         <input class="haus-suche" type="search" id="hausSuche" value="${esc(hausSuche)}" placeholder="Vorhaben suchen ..." aria-label="Vorhaben suchen" autocomplete="off">
         <span class="haus-auswahl-zahl"><span class="haus-zahl">${zaehler.gewaehlt}</span> von ${zaehler.gesamt} vorgemerkt</span>
       </div>`;
+    const seitSchalter = document.getElementById('hausSeitSchalter');
+    if (seitSchalter) seitSchalter.addEventListener('click', () => {
+      hausSeitAn = !hausSeitAn;
+      try { sessionStorage.setItem(HAUS_SEIT, hausSeitAn ? 'ja' : 'nein'); } catch (fehler) {                           }
+      renderHaus();
+    });
                                                                                
                                                                             
                                                                               
@@ -8444,13 +9271,20 @@
     const an = !!hausAuswahl[eintrag.schluessel];
     const zielText = eintrag.ziel === OHNE_ZIEL ? 'ohne Hausziel'
       : eintrag.ziel === WAEHLEN ? 'Ziel offen' : eintrag.ziel;
-    return `<div class="pt-wrap pt-haus-wrap">
-      <button class="pt pt-haus ${eintrag.wahl} ${eintrag.nominiert ? 'lf' : ''} ${opt.gedaempft ? 'abgewaehlt' : ''} ${eintrag.schluessel === hausVorschauSchluessel ? 'aktiv' : ''}"
+                                                                            
+                                                                  
+                                                                           
+                                                               
+    const lp = opt.lp || '';
+    const grund = lp ? (opt.grund || '') : '';
+    return `<div class="pt-wrap pt-haus-wrap${lp ? ' lp-' + lp : ''}">
+      <button class="pt pt-haus ${eintrag.wahl} ${eintrag.nominiert && lp !== 'raus' ? 'lf' : ''} ${opt.gedaempft ? 'abgewaehlt' : ''} ${eintrag.schluessel === hausVorschauSchluessel ? 'aktiv' : ''}"
         type="button" data-haus-kachel="${esc(eintrag.schluessel)}"
         title="${esc(v.name)} · ${esc(eintrag.abteilung)} · ${esc(PORTFOLIO[eintrag.korb])}">
         <span class="pt-name">${esc(v.name)}</span>
         ${eintrag.nominiert ? '<span class="nur-vorlesen">Für Leitungsportfolio nominiert</span>' : ''}
         <span class="pt-haus-info">${esc(eintrag.folgen)} · ${esc(zielText)}</span>
+        ${grund ? `<span class="pt-haus-seit">${esc(grund)}</span>` : ''}
         <span class="pt-foot">
           <span class="pt-foot-links">${esc(eintrag.kuerzel + ' · ' + (v.referat.trim() || 'ohne Referat'))}</span>
           <span class="pt-haus-rechts">${eintrag.stand ? `<span class="pt-stand">${eintrag.stand}</span>` : ''}${eintrag.verknuepft ? `<span class="pt-verknuepft">${eintrag.verknuepft} verknüpft</span>` : ''}</span>
@@ -8459,7 +9293,18 @@
       <button class="pt-lupe" type="button" data-haus-vorschau="${esc(eintrag.schluessel)}" aria-label="${esc(v.name)} kurz ansehen" title="Kurz ansehen">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 5 5"></path></svg>
       </button>
-      ${hausHakenHtml(eintrag, an)}
+      ${lp === 'raus' ? '' : hausHakenHtml(eintrag, an)}
+    </div>`;
+  }
+                                                                             
+                                                                    
+  function hausWegKachel(r, kuerzel) {
+    return `<div class="pt-wrap pt-haus-wrap lp-raus lp-weg">
+      <div class="pt pt-haus" title="${esc(r.name)} · ${esc(kuerzel)} · nicht mehr in der Liste">
+        <span class="pt-name">${esc(r.name)}</span>
+        <span class="pt-haus-seit">${esc(r.grund)}</span>
+        <span class="pt-foot"><span class="pt-foot-links">${esc(kuerzel)}</span></span>
+      </div>
     </div>`;
   }
 
@@ -8515,11 +9360,44 @@
       .map(e => e.kuerzel === eintrag.kuerzel ? e.v.name : e.v.name + ' (' + e.kuerzel + ')');
   }
 
+                                                                       
+                                                                    
+                                                                           
+                                                    
+  function hausLpSpaltenHtml(a, bau, gedaempft, summen) {
+    const stand = (a && a.stand) || {};
+    const liste = Array.isArray(stand.vorhaben) ? stand.vorhaben : [];
+    const lp = leitungsportfolioWandel(letzterStand(stand), liste);
+    const eintragZu = v => bau.alle.find(e => e.kuerzel === a.kuerzel && e.v === v)
+      || bau.alle.find(e => e.schluessel === hausSchluessel(a.kuerzel, v));
+    const kachel = (v, opt) => {
+      const e = eintragZu(v);
+      if (!e || !hausSuchTreffer(e)) return '';
+      return hausKachel(e, Object.assign({ gedaempft: gedaempft && !hausAuswahl[e.schluessel] }, opt || {}));
+    };
+    const bleibt = lp.bleibt.map(b => kachel(b.v)).join('');
+    const neu = lp.neu.map(n => kachel(n.v, { lp: 'neu', grund: n.grund })).join('');
+    const raus = lp.raus.map(r => (r.weg
+      ? (hausSuche && !String(r.name).toLowerCase().includes(hausSuche.toLowerCase()) ? '' : hausWegKachel(r, a.kuerzel))
+      : kachel(r.v, { lp: 'raus', grund: r.grund }))).join('');
+    summen.bleibt += lp.bleibt.length;
+    summen.neu += lp.neu.length;
+    summen.raus += lp.raus.length;
+    const spalte = (klasse, inhalt) => `<div class="haus-lp-spalte ${klasse}">${inhalt || '<span class="haus-lp-leer">keine</span>'}</div>`;
+    return `<div class="haus-lp-spalten">${spalte('bleibt', bleibt)}${spalte('neu', neu)}${spalte('raus', raus)}</div>`;
+  }
+
   function renderHausPortfolio(bau) {
     const gedaempft = hausGedaempft();
     const nach = {};
     bau.zaehler.forEach(z => { nach[z.kuerzel] = z; });
+                                                                             
+    const wandel = {};
+    hausVeraenderungZaehler(bau.abteilungen).forEach(z => { wandel[z.kuerzel] = z; });
     const abteilungen = bau.abteilungen.filter(a => hausAbteilung === 'alle' || a.kuerzel === hausAbteilung);
+                                                                         
+                       
+    const summen = { bleibt: 0, neu: 0, raus: 0 };
     const zeilen = abteilungen.map(a => {
       const z = nach[a.kuerzel] || { gesamt: 0, nominiert: 0, kurz: '' };
                                                                                
@@ -8534,21 +9412,41 @@
         `<button class="haus-klappe" type="button" data-haus-klappe="${esc(a.kuerzel)}" aria-expanded="${offen ? 'true' : 'false'}" aria-label="${offen ? 'Nur nominierte Vorhaben von ' + esc(a.name) + ' zeigen' : 'Alle ' + z.gesamt + ' Vorhaben von ' + esc(a.name) + ' zeigen'}" title="${offen ? 'nur nominierte' : 'alle ' + z.gesamt + ' Vorhaben'}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></button>`;
                                                                           
                                                     
+                                                                              
+                                                            
+      const w = wandel[a.kuerzel];
+                                                                         
+                                                                       
+      const spalten = hausSeitAn && hausNurNominierte && !hausOffen[a.kuerzel] && !a.fehler;
+      const teile = w ? [w.neu ? w.neu + ' neu' : '', w.raus ? w.raus + ' raus' : ''].filter(Boolean) : [];
+      const wandelZahl = spalten && teile.length ? `<span class="haus-seit-zahl">${teile.join(' · ')}</span>` : '';
       const kopf = `<div class="haus-kopfzelle">
-        <p class="haus-abt">${esc(a.name)}${klappe}</p>
+        <p class="haus-abt">${esc(a.name)}${klappe}${wandelZahl}</p>
         ${a.fehler
           ? '<p class="haus-meta">konnte nicht gelesen werden</p>'
           : `<p class="haus-meta">${z.nominiert} nominiert · ${z.gesamt} Vorhaben</p>`}
         ${a.quelle === 'datei' ? `<button class="textbtn haus-entfernen" type="button" data-haus-entfernen="${esc(a.name)}">entfernen</button>` : ''}
       </div>`;
-      const flaeche = !meine.length
-        ? `<div class="haus-flaeche"><p class="lane-leer">${offen ? 'Kein Vorhaben.' : 'Keine Nominierung gemeldet.'}</p></div>`
-        : !offen
-          ? `<div class="haus-flaeche">${meine.map(e => hausKachel(e, { gedaempft: gedaempft && !hausAuswahl[e.schluessel] })).join('')}</div>`
-          : `<div class="haus-gruppen">${hausGruppenHtml(meine)}</div>`;
-      return `<div class="haus-zeile${offen ? ' offen' : ''}">${kopf}${flaeche}</div>`;
+      const flaeche = spalten
+        ? hausLpSpaltenHtml(a, bau, gedaempft, summen)
+        : !meine.length
+          ? `<div class="haus-flaeche"><p class="lane-leer">${offen ? 'Kein Vorhaben.' : 'Keine Nominierung gemeldet.'}</p></div>`
+          : !offen
+            ? `<div class="haus-flaeche">${meine.map(e => hausKachel(e, { gedaempft: gedaempft && !hausAuswahl[e.schluessel] })).join('')}</div>`
+            : `<div class="haus-gruppen">${hausGruppenHtml(meine)}</div>`;
+      return `<div class="haus-zeile${offen ? ' offen' : ''}${spalten ? ' lp-spalten' : ''}">${kopf}${flaeche}</div>`;
     }).join('');
+                                                                             
+                                                                                
+    const koepfe = hausSeitAn && hausNurNominierte
+      ? `<div class="haus-lp-koepfe" aria-hidden="true">
+          <span class="pf-korb">Weiter dabei · ${summen.bleibt}</span>
+          <span class="pf-korb">Neu im Leitungsportfolio · ${summen.neu}</span>
+          <span class="pf-korb">Nicht mehr dabei · ${summen.raus}</span>
+        </div>`
+      : '';
     document.getElementById('hausKoerper').innerHTML = `
+      ${koepfe}
       <div class="haus-zeilen">${zeilen || '<p class="haus-leer">Keine Abteilung geladen.</p>'}</div>
       <p class="abh-info" aria-live="polite"><span>${esc(hausLinsenSatz(bau))}</span></p>`;
     document.getElementById('hausKoerper').querySelectorAll('[data-haus-klappe]').forEach(el => el.addEventListener('click', () => {
@@ -8638,6 +9536,11 @@
     { schluessel: 'stand', text: 'Stand' },
     { schluessel: 'verknuepft', text: 'Verknüpft' }
   ];
+                                                                         
+                                             
+  function hausSpalten() {
+    return hausSeitAn ? HAUS_SPALTEN.concat([{ schluessel: 'seit', text: 'Seit Referenz' }]) : HAUS_SPALTEN;
+  }
 
   function hausSuchTreffer(eintrag) {
     const suche = hausSuche.trim().toLowerCase();
@@ -8649,7 +9552,7 @@
   function renderHausListe(bau) {
     const gedaempft = hausGedaempft();
     const zeilen = hausTabelle(bau.sichtbar.filter(hausSuchTreffer), hausSortierung);
-    const kopf = HAUS_SPALTEN.map(spalte => {
+    const kopf = hausSpalten().map(spalte => {
       const aktiv = hausSortierung.spalte === spalte.schluessel;
       const sort = aktiv ? (hausSortierung.richtung === 'ab' ? 'descending' : 'ascending') : '';
       return `<th scope="col"${sort ? ` aria-sort="${sort}"` : ''}><button type="button" data-haus-sort="${spalte.schluessel}">${esc(spalte.text)}</button></th>`;
@@ -8670,6 +9573,7 @@
         <td>${e.v.koav ? 'ja' : ''}</td>
         <td>${esc(e.stand)}</td>
         <td>${e.verknuepft || ''}</td>
+        ${hausSeitAn ? `<td>${esc(e.seit || '')}</td>` : ''}
         <td class="hs-warum" title="${esc(warum)}">${esc(warum.length > 80 ? warum.slice(0, 80) + ' ...' : warum)}</td>
       </tr>`;
     }).join('');
@@ -8782,6 +9686,46 @@
     linse.innerHTML = '';
   }
 
+                                                                     
+                                                                          
+                                                                         
+                                      
+  function renderHausVeraenderung(bau) {
+    const abteilungen = bau.abteilungen.filter(a => hausAbteilung === 'alle' || a.kuerzel === hausAbteilung);
+    const teile = abteilungen.map(a => {
+      const stand = (a && a.stand) || {};
+      const liste = Array.isArray(stand.vorhaben) ? stand.vorhaben : [];
+      const referenz = letzterStand(stand);
+      return { kuerzel: a.kuerzel, wanderung: korbWanderung(referenz, liste), referenz };
+    });
+    const mitStand = teile.filter(t => t.referenz);
+    const wurzel = document.getElementById('hausKoerper');
+    if (!mitStand.length) {
+      wurzel.innerHTML = '<p class="haus-leer">Noch kein Stand abgelegt. Sobald eine Runde abgeschlossen ist, steht hier, was sich seither im Haus getan hat.</p>';
+      return;
+    }
+    const w = korbWanderungSumme(mitStand);
+    if (hausSuche) {
+      const treffer = e => String(e.name).toLowerCase().includes(hausSuche.toLowerCase());
+      w.stroeme.forEach(s => { s.eintraege = s.eintraege.filter(treffer); });
+      w.ohneStrom = w.ohneStrom.filter(treffer);
+    }
+    const seitName = hausReferenzName(bau.abteilungen);
+    const referenzText = seitName || 'dem letzten Stand je Abteilung';
+    const zaehlSatz = w.summe === 0 ? 'Keine Veränderung seit diesem Stand.'
+      : w.summe === 1 ? 'Eine Veränderung.' : w.summe + ' Veränderungen.';
+    const ohneStand = teile.filter(t => !t.referenz).map(t => t.kuerzel);
+    wurzel.innerHTML = `<div class="vg-komp">
+      <h2 class="vg-kopf">Seit ${esc(referenzText)}</h2>
+      <p class="vg-lage">${esc(zaehlSatz)} ${abteilungen.length === 1 ? 'Nur ' + esc(abteilungen[0].name) + '.' : abteilungen.length + ' Abteilungen.'}${ohneStand.length ? ' Ohne Stand: ' + esc(ohneStand.join(', ')) + '.' : ''}</p>
+      ${wanderungHtml(w, seitName || 'Referenz')}
+    </div>`;
+    wanderungVerdrahten(wurzel, w, (id, kuerzel) => {
+      const eintrag = bau.alle.find(e => e.kuerzel === kuerzel && String(e.v.id) === String(id));
+      if (eintrag) hausVorschauOeffnen(eintrag.schluessel);
+    });
+  }
+
   function renderHaus() {
     if (!H) return;
     const bau = hausAufbau();
@@ -8795,6 +9739,7 @@
     if (hausReiter === 'portfolio') renderHausPortfolio(bau);
     else if (hausReiter === 'ziele') renderHausZiele(bau);
     else if (hausReiter === 'laufzeiten') renderHausLaufzeiten(bau);
+    else if (hausReiter === 'veraenderung') renderHausVeraenderung(bau);
     else renderHausListe(bau);
                                                                          
                                                                          
@@ -8819,6 +9764,205 @@
 
   function hausDemoQuelle() {
     return !!(H && H.abteilungen && H.abteilungen.some(a => a.quelle === 'demo'));
+  }
+
+                                                                            
+                                                                            
+                                                                      
+                                                                           
+                                                                       
+  function hausAbschlussUmgebung() {
+    return { speicherArt: speicherArt, listen: spListen };
+  }
+
+  function hausAbschlussOeffnen(vorgabe) {
+    const dialog = document.getElementById('hausAbschlussDialog');
+    const wurzel = document.getElementById('hausAbschlussInhalt');
+    if (!dialog || !wurzel) return;
+    const stand = Object.assign({ art: 'runde', name: '', fehlende: null }, vorgabe || {});
+    if (!stand.name) stand.name = hausStandName(stand.art, new Date().toISOString());
+                                                                            
+                                                           
+    if (speicherArt === 'liste' && !hausStandFrisch(H && H.geladen)) {
+      wurzel.innerHTML = `<div class="vs-inhalt">
+        <div class="vs-kopf">
+          <p class="vs-kicker">Stand ablegen</p>
+          <h2 id="hausAbschlussTitel">Runde abschließen</h2>
+          <button class="vs-schliessen" type="button" aria-label="Dialog schließen">&times;</button>
+        </div>
+        <section class="vs-block"><p>Lade aktuelle Stände ...</p></section>
+      </div>`;
+      wurzel.querySelector('.vs-schliessen').addEventListener('click', () => dialog.close());
+      if (!dialog.open) dialog.showModal();
+      hausLaden().then(() => { renderHaus(); hausAbschlussOeffnen(stand); });
+      return;
+    }
+    const auswahl = hausAbschlussAuswahl((H && H.abteilungen) || [], hausAbschlussUmgebung());
+                                                                            
+                                                     
+    const offen = stand.fehlende ? auswahl.filter(a => stand.fehlende.indexOf(a.kuerzel) >= 0) : auswahl;
+                                                                             
+                                                                      
+                                                                   
+    const fehlerBlock = stand.fehlende ? `<section class="vs-block ab-fehler" role="alert">
+        <p><strong>Nicht vollständig abgelegt.</strong> Stand „${esc(stand.name)}“ liegt in ${stand.geschafft} von ${stand.gesamt} Abteilungen. Nicht geschrieben: ${esc(stand.fehlende.join(', '))}.</p>
+        <p>Mögliche Ursachen: Die Liste wurde umbenannt oder gelöscht, das Schreibrecht fehlt, oder die Verbindung war weg. „Erneut versuchen“ schreibt nur die fehlenden Abteilungen; die übrigen sind schon abgelegt.</p>
+      </section>` : '';
+    wurzel.innerHTML = `<div class="vs-inhalt">
+      <div class="vs-kopf">
+        <p class="vs-kicker">${stand.fehlende ? 'Nicht vollständig abgelegt' : 'Stand ablegen'}</p>
+        <h2 id="hausAbschlussTitel">${stand.fehlende ? 'Erneut versuchen' : 'Runde abschließen'}</h2>
+        <button class="vs-schliessen" type="button" aria-label="Dialog schließen">&times;</button>
+      </div>
+      ${fehlerBlock}
+      <section class="vs-block">
+        <div class="vs-feld">
+          <label for="hausAbschlussName">Name des Stands</label>
+          <input type="text" id="hausAbschlussName" value="${esc(stand.name)}" maxlength="60" autocomplete="off"${stand.fehlende ? ' readonly' : ''}>
+        </div>
+        <div class="haus-schalter ab-art" role="group" aria-label="Art des Stands">
+          <button type="button" data-abschluss-art="runde" aria-pressed="${stand.art === 'runde'}">Portfoliorunde</button>
+          <button type="button" data-abschluss-art="quartal" aria-pressed="${stand.art === 'quartal'}">Quartals-Checkpoint</button>
+        </div>
+      </section>
+      <section class="vs-block">
+        <h3>Abteilungen</h3>
+        <div class="ab-liste">${offen.map(a => `<label class="ab-zeile${a.schreiben ? '' : ' gesperrt'}">
+          <input type="checkbox" data-abschluss-abt="${esc(a.kuerzel)}" ${a.gewaehlt ? 'checked' : ''} ${a.schreiben ? '' : 'disabled'}>
+          <span>${esc(a.name)}</span>
+          ${a.grund ? `<span class="ab-grund">${esc(a.grund)}</span>` : ''}
+        </label>`).join('')}</div>
+      </section>
+      <section class="vs-block">
+        <p>Der Stand hält fest, was heute in jeder Liste steht. Er ist danach die Referenz für „seit der letzten Runde“.</p>
+        ${speicherArt === 'lokal' ? '<p class="vs-leer">Demo: Der Stand bleibt in diesem Browser.</p>' : ''}
+        <p class="ab-fortschritt" id="hausAbschlussFortschritt" aria-live="polite"></p>
+      </section>
+      <div class="vs-fuss">
+        <button class="textbtn blau" type="button" id="hausAbschlussAbbrechen">Abbrechen</button>
+        <button class="btn primary" type="button" id="hausAbschlussOk">${stand.fehlende ? 'Erneut versuchen' : 'Ablegen'}</button>
+      </div>
+    </div>`;
+    const nameFeld = document.getElementById('hausAbschlussName');
+    wurzel.querySelector('.vs-schliessen').addEventListener('click', () => dialog.close());
+    document.getElementById('hausAbschlussAbbrechen').addEventListener('click', () => dialog.close());
+    wurzel.querySelectorAll('[data-abschluss-art]').forEach(el => el.addEventListener('click', () => {
+      const neueArt = el.dataset.abschlussArt;
+                                                                              
+                       
+      const vorschlag = hausStandName(stand.art, new Date().toISOString());
+      const eigen = nameFeld.value.trim() && nameFeld.value.trim() !== vorschlag;
+      hausAbschlussOeffnen({
+        art: neueArt,
+        name: eigen ? nameFeld.value.trim() : hausStandName(neueArt, new Date().toISOString()),
+        fehlende: stand.fehlende
+      });
+    }));
+    document.getElementById('hausAbschlussOk').addEventListener('click', () => {
+      const gewaehlte = [...wurzel.querySelectorAll('[data-abschluss-abt]')]
+        .filter(el => el.checked && !el.disabled)
+        .map(el => el.dataset.abschlussAbt);
+      const art = stand.art;
+      const name = nameFeld.value.trim() || hausStandName(art, new Date().toISOString());
+      hausAbschlussAusfuehren(gewaehlte, { name: name, art: art });
+    });
+    dialog.onclick = event => { if (event.target === dialog) dialog.close(); };
+    if (!dialog.open) dialog.showModal();
+  }
+
+                                                                         
+                                                                         
+                                                          
+  function hausAbschlussAusfuehren(kuerzel, meta) {
+    const fortschritt = document.getElementById('hausAbschlussFortschritt');
+    const abteilungen = ((H && H.abteilungen) || []).filter(a => kuerzel.indexOf(a.kuerzel) >= 0);
+    const zeitpunkt = new Date().toISOString();
+    const fehlende = [];
+    let fertig = 0;
+    const melde = () => {
+      if (fortschritt) fortschritt.textContent = fertig + ' von ' + abteilungen.length + ' ...';
+    };
+    melde();
+    let kette = Promise.resolve();
+    abteilungen.forEach(a => {
+      kette = kette.then(() => {
+        const eingefroren = standEinfrieren(a.stand, zeitpunkt, meta);
+        if (a.quelle === 'eigene') {
+          standAblegen(S, standEinfrieren(S, zeitpunkt, meta));
+          rundeStartLoeschen();
+          speichern();
+          return true;
+        }
+        if (speicherArt !== 'liste') {
+                                                                             
+                                                                           
+                          
+          standAblegen(a.stand, eingefroren);
+          if (a.quelle === 'datei') hausDateiStandSichern(a);
+          return true;
+        }
+        const liste = spListen.find(l => l.kuerzel === a.kuerzel);
+        if (!liste || !liste.schreiben) return false;
+        return hausTypHolen(liste.titel)
+          .then(typ => spDigestSichern()
+            .then(digest => sonderStandAblegen(spHole, spSite, liste.titel, digest, typ, eingefroren)))
+          .then(erg => !!(erg && erg.ok));
+      }).then(gut => {
+        fertig += 1;
+        if (!gut) fehlende.push(a.kuerzel);
+        melde();
+      }).catch(() => {
+        fertig += 1;
+        fehlende.push(a.kuerzel);
+        melde();
+      });
+    });
+    return kette.then(() => {
+      const geschafft = abteilungen.length - fehlende.length;
+      hausHinweis = fehlende.length
+        ? `Stand „${meta.name}“ in ${geschafft} von ${abteilungen.length} Abteilungen abgelegt. ${fehlende.join(', ')}: konnte nicht geschrieben werden, bitte erneut versuchen.`
+        : `Stand „${meta.name}“ in ${geschafft} ${geschafft === 1 ? 'Abteilung' : 'Abteilungen'} abgelegt.`;
+      const dialog = document.getElementById('hausAbschlussDialog');
+      if (fehlende.length) {
+        hausAbschlussOeffnen({ art: meta.art, name: meta.name, fehlende: fehlende, geschafft: geschafft, gesamt: abteilungen.length });
+      } else if (dialog && dialog.open) {
+                                                                             
+                                                                           
+                                                               
+        const wurzel = document.getElementById('hausAbschlussInhalt');
+        if (wurzel) {
+          wurzel.innerHTML = `<div class="vs-inhalt">
+            <div class="vs-kopf">
+              <p class="vs-kicker">Stand abgelegt</p>
+              <h2 id="hausAbschlussTitel">${esc(meta.name)}</h2>
+              <button class="vs-schliessen" type="button" aria-label="Schließen">&times;</button>
+            </div>
+            <p class="vs-empfehlung">${esc(hausHinweis)}</p>
+            <ul class="vs-liste">${abteilungen.map(a => `<li>${esc(a.name)}</li>`).join('')}</ul>
+            <p class="vs-empfehlung">Der Stand ist ab jetzt die Referenz für „seit der letzten Runde“ in jeder dieser Abteilungen.</p>
+            <div class="vs-fuss"><button class="btn primary" type="button" id="hausAbschlussSchliessen">Schließen</button></div>
+          </div>`;
+          wurzel.querySelector('.vs-schliessen').addEventListener('click', () => dialog.close());
+          document.getElementById('hausAbschlussSchliessen').addEventListener('click', () => dialog.close());
+        } else {
+          dialog.close();
+        }
+      }
+                                                                           
+      if (speicherArt === 'liste') return hausLaden().then(() => { renderHaus(); return null; });
+      renderHaus();
+      return null;
+    });
+  }
+
+                                                                            
+                                                              
+  function hausDateiStandSichern(abteilung) {
+    const dateien = hausDateien();
+    const treffer = dateien.find(d => d.abteilung === abteilung.name);
+    if (!treffer) return;
+    treffer.stand = abteilung.stand;
+    hausSchreib(HAUS_DATEIEN, dateien);
   }
 
   function hausKuratierungOeffnen() {
@@ -9286,7 +10430,9 @@
   const ANKER_ANSICHT = {
     '#erfassen': 'erfassen', '#vorbereiten': 'vorbereiten', '#druck': 'druck', '#haus': 'haus',
     '#entscheiden': 'priorisieren', '#portfolio': 'priorisieren', '#matrix': 'priorisieren',
-    '#abhaengig': 'priorisieren', '#laufzeiten': 'priorisieren'
+    '#abhaengig': 'priorisieren', '#laufzeiten': 'priorisieren',
+                                                      
+    '#veraenderung': 'priorisieren'
   };
 
   function wechsle(neu, ohneAnker) {
@@ -9418,6 +10564,10 @@
                                                                                
       window.__hausDateien = hausDateienUebernehmen;
     }
+                                                                         
+                                                                           
+                                               
+    seitZustandLaden();
     document.getElementById('brandAbt').textContent = ' · ' + (S.abteilung || 'Abteilung');
                                                                    
                                                                               
@@ -9507,6 +10657,9 @@
     document.getElementById('portfolioDruck').addEventListener('click', portfolioDrucken);
     document.getElementById('vbPortfolioDruck').addEventListener('click', () => portfolioDruckenVon('vorbereiten'));
     document.getElementById('standEinfrieren').addEventListener('click', () => {
+                                                                          
+                                                                             
+                                                           
       standAblegen(S, standEinfrieren(S, new Date().toISOString()));
                                                                           
                                 
@@ -9514,6 +10667,7 @@
       speichern();
       wechsle(ansicht);
     });
+    einfrierenSichtbarkeit();
     document.querySelectorAll('.sichten button').forEach(el => el.addEventListener('click', () => sichtWechseln(el.dataset.sicht)));
     document.getElementById('neuZeigen').addEventListener('click', () => {
       document.getElementById('neuZeigen').classList.add('verborgen');
@@ -9535,9 +10689,9 @@
       && location.hash !== '#vorbereiten' && location.hash !== '#druck';
                                                                   
                                                                   
-    document.getElementById('bdInfo').addEventListener('click', () => {
+    document.getElementById('bdLage').addEventListener('click', () => {
       bdStandOffen = !bdStandOffen;
-      document.getElementById('bdInfo').setAttribute('aria-expanded', String(bdStandOffen));
+      document.getElementById('bdLage').setAttribute('aria-expanded', String(bdStandOffen));
       bdStandSichtbarkeit();
     });
     document.getElementById('copy').addEventListener('click', kopieren);
@@ -9567,7 +10721,7 @@
     });
                                                                             
                                                                                  
-    const sprung = { '#entscheiden': null, '#portfolio': 'portfolio', '#matrix': 'portfolio', '#abhaengig': 'portfolio', '#laufzeiten': 'laufzeiten' };
+    const sprung = { '#entscheiden': null, '#portfolio': 'portfolio', '#matrix': 'portfolio', '#abhaengig': 'portfolio', '#laufzeiten': 'laufzeiten', '#veraenderung': 'portfolio' };
                                                                              
                                                                                    
                                                                              
@@ -9584,6 +10738,9 @@
     } else if (location.hash in sprung) {
       if (briefingSichtDeepLink) sicht = 'briefing';
       else if (sprung[location.hash]) sicht = sprung[location.hash];
+                                                                     
+                                                                  
+      if (location.hash === '#veraenderung') { seitAn = true; seitFrisch = true; seitSchreib('an', 'ja'); }
       wechsle('priorisieren');
     } else {
                                                                               
