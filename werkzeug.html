@@ -859,9 +859,9 @@
   .linse-eintrag:hover { background: var(--blau-10); }
   .linse-eintrag[aria-pressed="true"] { font-family: var(--display); font-weight: 700; color: var(--blau); }
   .linse-gruppe { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 6px; }
-  .bild-steuer .linse-haken { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 5px; cursor: pointer;
+  .bild-steuer .linse-haken, .haus-steuer .linse-haken { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 5px; cursor: pointer;
     font-family: var(--body); font-size: 14px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--fg); }
-  .bild-steuer .linse-haken:hover { background: var(--blau-10); }
+  .bild-steuer .linse-haken:hover, .haus-steuer .linse-haken:hover { background: var(--blau-10); }
   .linse-haken input { width: 16px; height: 16px; margin: 0; accent-color: var(--blau); }
   .lz-steuer select, .bild-steuer select { background: var(--weiss); border: 1px solid var(--feldkante); border-radius: 6px; color: var(--fg); font-family: var(--body); font-size: 14px; padding: 6px 10px; cursor: pointer; }
   .lz-zeile { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 16px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
@@ -1560,7 +1560,8 @@
 
                                                                              
                                                     
-  .haus-steuer { display: flex; align-items: center; justify-content: space-between; gap: 10px 20px; flex-wrap: wrap; min-height: 58px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .haus-steuer { display: flex; align-items: center; justify-content: flex-end; gap: 8px 14px; flex-wrap: wrap; }
+  .linse-notiz { margin: -2px 10px 6px; font-size: 12.5px; color: var(--fg-muted); }
   .haus-steuer-teil { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .haus-schalter { display: flex; gap: 6px; }
   .haus-schalter button { background: var(--blau-10); border: 1.5px solid transparent; border-radius: 6px; padding: 7px 14px; cursor: pointer; font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--fg-2); }
@@ -2088,7 +2089,7 @@
     
     <div class="hs-druck-kopf" id="hausDruckKopf" aria-hidden="true"><h2 id="hausDruckTitel"></h2></div>
     <div class="flaeche">
-      <div class="haus-steuer" id="hausSteuer"></div>
+      
       <div class="reiter-zeile">
         <div class="haus-sichten" id="hausReiterZeile">
           <button type="button" data-haus-reiter="portfolio">Portfolio</button>
@@ -2097,7 +2098,7 @@
           <button type="button" data-haus-reiter="liste">Liste</button>
           <button type="button" data-haus-reiter="veraenderung">Veränderung</button>
         </div>
-        <div class="reiter-linse" id="hausLinse"></div>
+        <div class="reiter-linse haus-steuer" id="hausSteuer"></div>
       </div>
       <div id="hausKoerper"></div>
     </div>
@@ -7699,10 +7700,14 @@
     if (menue) menue.classList.toggle('verborgen', !linseOffen);
   }
   document.addEventListener('click', ev => {
-    if (linseOffen && !(ev.target.closest && ev.target.closest('.linse'))) linseSchalten(false);
+    const innen = ev.target.closest && ev.target.closest('.linse');
+    if (linseOffen && !innen) linseSchalten(false);
+    if (typeof hausLinseOffen !== 'undefined' && hausLinseOffen && !innen) hausLinseSchalten(false);
   });
   document.addEventListener('keydown', ev => {
-    if (ev.key !== 'Escape' || !linseOffen) return;
+    if (ev.key !== 'Escape') return;
+    if (hausLinseOffen) { hausLinseSchalten(false); const haus = document.getElementById('hausAnzeigen'); if (haus) haus.focus(); }
+    if (!linseOffen) return;
     linseSchalten(false);
     const knopf = document.getElementById('pfReferat');
     if (knopf) knopf.focus();
@@ -9012,7 +9017,8 @@
   const HAUS_REITER = ['portfolio', 'ziele', 'laufzeiten', 'liste', 'veraenderung'];
 
   let H = null;
-  let hausReiter = 'portfolio', hausNurNominierte = true, hausAbteilung = 'alle';
+  let hausReiter = 'portfolio', hausNurNominierte = true, hausAbteilungen = [], hausLinseOffen = false;
+  const hausAbtGewaehlt = kuerzel => !hausAbteilungen.length || hausAbteilungen.includes(kuerzel);
                                                                           
                                                                 
   const HAUS_SEIT = SPEICHER + '-haus-seit';
@@ -9048,11 +9054,13 @@
     if (!sicht) return;
     if (HAUS_REITER.indexOf(sicht.reiter) >= 0) hausReiter = sicht.reiter;
     if (typeof sicht.nurNominierte === 'boolean') hausNurNominierte = sicht.nurNominierte;
-    if (typeof sicht.abteilung === 'string') hausAbteilung = sicht.abteilung;
+                                                                 
+    if (Array.isArray(sicht.abteilungen)) hausAbteilungen = sicht.abteilungen.filter(k => typeof k === 'string');
+    else if (typeof sicht.abteilung === 'string' && sicht.abteilung !== 'alle') hausAbteilungen = [sicht.abteilung];
     if (sicht.offen && typeof sicht.offen === 'object') hausOffen = sicht.offen;
   }
   function hausSichtSichern() {
-    hausSchreib(HAUS_SICHT, { reiter: hausReiter, nurNominierte: hausNurNominierte, abteilung: hausAbteilung, offen: hausOffen });
+    hausSchreib(HAUS_SICHT, { reiter: hausReiter, nurNominierte: hausNurNominierte, abteilungen: hausAbteilungen, offen: hausOffen });
   }
 
                                                                              
@@ -9243,7 +9251,7 @@
                                                                          
                                                                             
                                                                        
-      sichtbar: hausFilter(alle, { nurNominierte: hausNurNominierte, abteilung: hausAbteilung }).filter(hausSuchTreffer),
+      sichtbar: hausFilter(alle, { nurNominierte: hausNurNominierte, abteilung: 'alle' }).filter(e => hausAbtGewaehlt(e.kuerzel)).filter(hausSuchTreffer),
       zaehler: hausZaehler(abteilungen, alle)
     };
   }
@@ -9294,43 +9302,83 @@
     if (abschlussKnopf) abschlussKnopf.addEventListener('click', () => hausAbschlussOeffnen());
   }
 
+                                                                            
+                                                                            
+                                                                             
+                                                                              
+                                                                              
+                                                                           
+                                                                           
+                                                                           
+                                                                  
+                                 
+  function hausLinseSchalten(offen) {
+    hausLinseOffen = !!offen;
+    const knopf = document.getElementById('hausAnzeigen'), menue = document.getElementById('hausAnzeigenMenue');
+    if (knopf) knopf.setAttribute('aria-expanded', String(hausLinseOffen));
+    if (menue) menue.classList.toggle('verborgen', !hausLinseOffen);
+  }
   function renderHausSteuer(bau) {
-    if (hausAbteilung !== 'alle' && !bau.abteilungen.some(a => a.kuerzel === hausAbteilung)) hausAbteilung = 'alle';
-    const zaehler = auswahlZaehler(hausAuswahl, bau.sichtbar);
+    hausAbteilungen = hausAbteilungen.filter(k => bau.abteilungen.some(a => a.kuerzel === k));
     const seitName = hausReferenzName(bau.abteilungen);
                                                                               
                                                                        
-                                                                              
-                                                                             
-                                                                               
+                                     
     const imWandel = hausReiter === 'veraenderung';
     const lpSchalter = hausReiter === 'portfolio' && hausNurNominierte;
+    const lpAn = lpSchalter && hausSeitAn;
+    const teile = [];
+    if (hausAbteilungen.length) teile.push(hausAbteilungen.length <= 3 ? hausAbteilungen.join(', ') : hausAbteilungen.length + ' Abteilungen');
+    if (lpAn) teile.push('Veränderung');
+    const leer = !teile.length;
     document.getElementById('hausSteuer').innerHTML = `
-      <div class="haus-steuer-teil">
         ${imWandel ? '' : `<div class="haus-schalter" role="group" aria-label="Umfang">
           <button type="button" data-haus-umfang="nominiert" aria-pressed="${hausNurNominierte}">Nur nominierte</button>
           <button type="button" data-haus-umfang="alle" aria-pressed="${!hausNurNominierte}">Alle Vorhaben</button>
         </div>`}
-        <label for="hausAbteilungWahl">Abteilung</label>
-        <select id="hausAbteilungWahl">
-          <option value="alle" ${hausAbteilung === 'alle' ? 'selected' : ''}>alle Abteilungen</option>
-          ${bau.abteilungen.map(a => `<option value="${esc(a.kuerzel)}" ${hausAbteilung === a.kuerzel ? 'selected' : ''}>${esc(a.kuerzel + ' · ' + a.name)}</option>`).join('')}
-        </select>
-      </div>
-      <div class="haus-steuer-teil">
-        
-        ${lpSchalter ? `<span class="bd-seit-wort">${esc(seitName ? 'seit ' + seitName : 'seit dem letzten Stand je Abteilung')}</span>
-        <button class="textbtn blau haus-seit-schalter" type="button" id="hausSeitSchalter" aria-pressed="${hausSeitAn}">Veränderung im Leitungsportfolio</button>` : ''}
         <input class="haus-suche" type="search" id="hausSuche" value="${esc(hausSuche)}" placeholder="Vorhaben suchen ..." aria-label="Vorhaben suchen" autocomplete="off">
-        <span class="haus-auswahl-zahl"><span class="haus-zahl">${zaehler.gewaehlt}</span> von ${zaehler.gesamt} vorgemerkt</span>
-      </div>`;
+        <span class="linse-wort" id="hausAnzeigenWort">Anzeigen</span>
+        <div class="linse">
+          <button class="linse-knopf${leer ? ' leer' : ''}" type="button" id="hausAnzeigen" aria-haspopup="true" aria-expanded="${hausLinseOffen}" aria-controls="hausAnzeigenMenue" aria-labelledby="hausAnzeigenWort hausAnzeigen">${esc(leer ? (lpSchalter ? 'Abteilung oder Veränderung' : 'alle Abteilungen') : teile.join(' · '))}</button>
+          <div class="linse-menue${hausLinseOffen ? '' : ' verborgen'}" id="hausAnzeigenMenue" role="group" aria-labelledby="hausAnzeigenWort">
+            <button class="linse-eintrag" type="button" data-haus-anzeigen="alle" aria-pressed="${leer}">alle Abteilungen</button>
+            ${lpSchalter ? `<button class="linse-eintrag" type="button" id="hausSeitSchalter" aria-pressed="${hausSeitAn}">Veränderung im Leitungsportfolio</button>
+            <p class="linse-notiz">${esc(seitName ? 'seit ' + seitName : 'seit dem letzten Stand je Abteilung')}</p>` : ''}
+            <div class="linse-gruppe">${bau.abteilungen.map(a => `<label class="linse-haken"><input type="checkbox" data-haus-abteilung="${esc(a.kuerzel)}" ${hausAbteilungen.includes(a.kuerzel) ? 'checked' : ''}>${esc(a.kuerzel + ' · ' + a.name)}</label>`).join('')}</div>
+          </div>
+        </div>`;
+    document.getElementById('hausAnzeigen').addEventListener('click', () => hausLinseSchalten(!hausLinseOffen));
+    const seitSetzen = an => {
+      hausSeitAn = !!an;
+      try { sessionStorage.setItem(HAUS_SEIT, hausSeitAn ? 'ja' : 'nein'); } catch (fehler) {                           }
+    };
+    const nachWahl = () => { const knopf = document.getElementById('hausAnzeigen'); if (knopf) knopf.focus(); };
+    document.querySelector('#hausAnzeigenMenue [data-haus-anzeigen="alle"]').addEventListener('click', () => {
+      hausAbteilungen = [];
+      seitSetzen(false);
+      hausAktiv = null;
+      hausLinseOffen = false;
+      hausSichtSichern();
+      renderHaus();
+      nachWahl();
+    });
     const seitSchalter = document.getElementById('hausSeitSchalter');
     if (seitSchalter) seitSchalter.addEventListener('click', () => {
-      hausSeitAn = !hausSeitAn;
-      try { sessionStorage.setItem(HAUS_SEIT, hausSeitAn ? 'ja' : 'nein'); } catch (fehler) {                           }
+      seitSetzen(!hausSeitAn);
+      hausLinseOffen = false;
       renderHaus();
+      nachWahl();
     });
-                                                                               
+    document.querySelectorAll('#hausAnzeigenMenue [data-haus-abteilung]').forEach(el => el.addEventListener('change', () => {
+      const kuerzel = el.dataset.hausAbteilung;
+      hausAbteilungen = el.checked ? hausAbteilungen.concat(kuerzel) : hausAbteilungen.filter(k => k !== kuerzel);
+      hausAktiv = null;
+      hausSichtSichern();
+      renderHaus();
+      const wieder = [...document.querySelectorAll('#hausAnzeigenMenue [data-haus-abteilung]')].find(feld => feld.dataset.hausAbteilung === kuerzel);
+      if (wieder) wieder.focus();
+    }));
+                                                                             
                                                                             
                                                                               
     const suche = document.getElementById('hausSuche');
@@ -9350,13 +9398,6 @@
       hausSichtSichern();
       renderHaus();
     }));
-    const wahl = document.getElementById('hausAbteilungWahl');
-    wahl.addEventListener('change', () => {
-      hausAbteilung = wahl.value;
-      hausAktiv = null;
-      hausSichtSichern();
-      renderHaus();
-    });
   }
 
   function hausAuswahlLeeren() {
@@ -9561,7 +9602,7 @@
                                                                              
     const wandel = {};
     hausVeraenderungZaehler(bau.abteilungen).forEach(z => { wandel[z.kuerzel] = z; });
-    const abteilungen = bau.abteilungen.filter(a => hausAbteilung === 'alle' || a.kuerzel === hausAbteilung);
+    const abteilungen = bau.abteilungen.filter(a => hausAbtGewaehlt(a.kuerzel));
                                                                          
                        
     const summen = { bleibt: 0, neu: 0, raus: 0 };
@@ -9660,7 +9701,7 @@
     const heute = new Date();
     const h0 = heute.getFullYear() * 12 + heute.getMonth();
     const raster = lzRaster(h0);
-    const abteilungen = bau.abteilungen.filter(a => hausAbteilung === 'alle' || a.kuerzel === hausAbteilung);
+    const abteilungen = bau.abteilungen.filter(a => hausAbtGewaehlt(a.kuerzel));
                                                                              
                                                                
     const offene = [];
@@ -9849,8 +9890,8 @@
                                                                             
                                                                           
   function renderHausLinse() {
-    const linse = document.getElementById('hausLinse');
-    linse.innerHTML = '';
+                                                                         
+                                                            
   }
 
                                                                      
@@ -9858,7 +9899,7 @@
                                                                          
                                       
   function renderHausVeraenderung(bau) {
-    const abteilungen = bau.abteilungen.filter(a => hausAbteilung === 'alle' || a.kuerzel === hausAbteilung);
+    const abteilungen = bau.abteilungen.filter(a => hausAbtGewaehlt(a.kuerzel));
     const teile = abteilungen.map(a => {
       const stand = (a && a.stand) || {};
       const liste = Array.isArray(stand.vorhaben) ? stand.vorhaben : [];
@@ -10498,9 +10539,9 @@
                       
   function hausDruckKopfSetzen(bau) {
     const filter = hausNurNominierte ? 'nur nominierte' : 'alle Vorhaben';
-    const abteilung = hausAbteilung === 'alle'
+    const abteilung = !hausAbteilungen.length
       ? 'alle Abteilungen'
-      : (bau.abteilungen.find(a => a.kuerzel === hausAbteilung) || {}).name || hausAbteilung;
+      : hausAbteilungen.map(k => (bau.abteilungen.find(a => a.kuerzel === k) || {}).name || k).join(', ');
     const zaehler = auswahlZaehler(hausAuswahl, bau.sichtbar);
     document.getElementById('hausDruckTitel').textContent =
       'Portfolio des Hauses · Stand ' + heuteText() + ' · ' + filter + ', ' + abteilung
