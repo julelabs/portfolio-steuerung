@@ -296,17 +296,22 @@
   button.vzeile { cursor: pointer; }
   button.vzeile:hover { background: var(--blau-10); }
   button.vzeile:hover .vz-name { color: var(--blau); }
+                                                                            
                                                                           
-                                                                              
-                                                                      
-                                                                           
-                                                                             
-                                                                     
+                                                                          
+                                                                         
+                                                                         
+                                                                 
   .vz-kopf { border-bottom: 2px solid var(--dunkel); padding-top: 0; padding-bottom: 10px; align-items: end; }
-  .vz-kopf span { font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--fg); line-height: 1.2; }
-  .vz-kopf > span:first-child { font-size: 19px; }
-  .vz-kopf .vz-count { font-size: 13px; font-weight: 400; color: var(--fg-muted); margin-left: 7px; font-variant-numeric: tabular-nums; }
-  .vz-kopf > span:first-child .vz-count { font-size: 14px; }
+  .vz-kopf span { font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--fg); line-height: 1.2; }
+  .vz-kopf .vz-count { font-size: 14px; font-weight: 400; color: var(--fg-muted); margin-left: 7px; font-variant-numeric: tabular-nums; }
+  .vz-sort { border: 0; background: transparent; padding: 0; margin: 0; cursor: pointer; font: inherit; color: inherit; }
+  .vz-sort:hover { color: var(--blau); }
+  .vz-sort::after { content: ''; display: inline-block; width: 0; height: 0; margin-left: 6px; vertical-align: middle;
+    border-left: 4px solid transparent; border-right: 4px solid transparent; border-bottom: 5px solid transparent; }
+  .vz-sort:hover::after { border-bottom-color: var(--blau-20); }
+  .vz-sort.aktiv::after { border-bottom-color: var(--blau); }
+  .vz-sort.aktiv.ab::after { border-bottom: 0; border-top: 5px solid var(--blau); }
   .vz-name { font-family: var(--display); font-weight: 600; font-size: 14.5px; color: var(--fg); line-height: 1.3; }
   .vz-ref, .vz-stand { font-size: 13px; color: var(--fg-muted); }
   .vz-bedarf { font-size: 13px; color: var(--fg-muted); text-align: right; }
@@ -833,6 +838,31 @@
                                                      
   .lz-steuer, .bild-steuer { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 12px; }
   .lz-steuer label, .bild-steuer label { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); }
+                                                                             
+                                                             
+  .linse-wort { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); }
+  .linse { position: relative; }
+  .linse-knopf { background: var(--weiss); border: 1px solid var(--feldkante); border-radius: 6px; color: var(--fg); font-family: var(--body); font-size: 14px;
+    padding: 6px 30px 6px 10px; cursor: pointer; min-width: 11em; max-width: 22em; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: relative; }
+  .linse-knopf::after { content: ''; position: absolute; right: 12px; top: 50%; width: 6px; height: 6px; margin-top: -5px;
+    border-right: 1.5px solid var(--fg); border-bottom: 1.5px solid var(--fg); transform: rotate(45deg); }
+  .linse-knopf.leer { color: var(--fg-muted); }
+  .linse-knopf:hover, .linse-knopf[aria-expanded="true"] { border-color: var(--blau); }
+  .linse-eintrag:disabled { color: var(--fg-muted); cursor: default; }
+  .linse-eintrag:disabled:hover { background: transparent; }
+  .linse-hinweis { font-size: 12.5px; margin-left: 6px; }
+  .linse-hinweis::before { content: '· '; }
+  .linse-menue { position: absolute; right: 0; top: calc(100% + 4px); z-index: 8; min-width: 100%; width: max-content; max-width: 24em; max-height: 60vh; overflow: auto;
+    background: var(--weiss); border: 1px solid var(--feldkante); border-radius: 8px; box-shadow: 0 12px 28px rgba(13,12,43,.16); padding: 6px; }
+  .linse-eintrag { display: block; width: 100%; text-align: left; border: 0; background: transparent; border-radius: 5px; padding: 8px 10px; cursor: pointer;
+    font-family: var(--body); font-size: 14px; color: var(--fg); }
+  .linse-eintrag:hover { background: var(--blau-10); }
+  .linse-eintrag[aria-pressed="true"] { font-family: var(--display); font-weight: 700; color: var(--blau); }
+  .linse-gruppe { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 6px; }
+  .bild-steuer .linse-haken { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 5px; cursor: pointer;
+    font-family: var(--body); font-size: 14px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--fg); }
+  .bild-steuer .linse-haken:hover { background: var(--blau-10); }
+  .linse-haken input { width: 16px; height: 16px; margin: 0; accent-color: var(--blau); }
   .lz-steuer select, .bild-steuer select { background: var(--weiss); border: 1px solid var(--feldkante); border-radius: 6px; color: var(--fg); font-family: var(--body); font-size: 14px; padding: 6px 10px; cursor: pointer; }
   .lz-zeile { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 16px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
   .lz-zeile:not(.lz-achse) { cursor: pointer; }
@@ -1433,6 +1463,30 @@
                                                                              
                                                                             
                                                                        
+                                                                            
+                                                                         
+                                                                              
+                                                                      
+  .dl-kopf { display: none; }
+  @media print {
+    body.druck-liste .dl-kopf { display: block; margin: 0 0 14px; }
+    body.druck-liste .dl-kopf h2 { font-family: var(--display); font-weight: 800; font-size: 16px; color: var(--fg); }
+    body.druck-liste .dl-kopf p { font-size: 12.5px; color: var(--fg-2); margin-top: 3px; }
+    body.druck-liste .auftakt,
+    body.druck-liste .listen-aktionsleiste,
+    body.druck-liste #neuForm,
+    body.druck-liste .fusszeile,
+    body.druck-liste dialog { display: none !important; }
+    body.druck-liste .buehne, body.druck-liste .erfassen, body.druck-liste .nav-sp { max-width: none; width: auto; margin: 0; padding: 0; box-shadow: none; }
+                                                                            
+                                                                              
+    body.druck-liste .vzeile { break-inside: avoid; padding: 7px 4px; gap: 10px; grid-template-columns: minmax(0, 2.4fr) 80px 66px 70px minmax(0, 1.5fr) !important; }
+    body.druck-liste .vz-ref, body.druck-liste .vz-stand, body.druck-liste .vz-bedarf { display: block !important; }
+    body.druck-liste .vz-fehlt { padding-left: 12px; }
+    body.druck-liste .vz-sort::after { display: none; }
+    body.druck-liste .vz-sort.aktiv::after { display: inline-block; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    body.druck-liste .reife { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  }
   .dp-kopf { display: none; }
   @media print {
     body.druck-portfolio .dp-kopf { display: block; margin-bottom: 10px; }
@@ -1856,12 +1910,15 @@
           <button class="nav-tg" type="button" id="einlesenZeigen" title="JSON-Dateien der Referate in diesen Stand übernehmen">Referatsstand einlesen</button>
           <input type="file" id="einlesenDatei" accept=".json,application/json" multiple hidden>
           
+          <button class="nav-tg" type="button" id="listeDrucken" title="Die Liste so drucken oder als PDF sichern, wie sie gerade sortiert ist">Liste drucken</button>
+          
           <input type="search" class="listen-suche" id="listeSuche" placeholder="Vorhaben suchen ..." aria-label="Vorhabenliste durchsuchen" autocomplete="off">
         </div>
         <div class="navfoot verborgen" id="neuForm">
           <input type="text" id="neuName" placeholder="Name des Vorhabens ..." autocomplete="off" aria-label="Name des neuen Vorhabens">
           <button class="btn primary" type="button" id="addBtn">Hinzufügen</button>
         </div>
+        <div class="dl-kopf" id="dlKopf"></div>
         <div id="nav"></div>
         <p class="reife-legende" id="reifeLegende"></p>
       </div>
@@ -5323,7 +5380,7 @@
                           
                                                                               
                                               
-  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, vorschauId = null, abhAktivId = null, ziehId = null, klickNachZugId = null, quittung = null, quittungUhr = null, belohnung = null, belohnungUhr = null, briefingKategorie = null, vbHereinTimer = null, naechste = 1, lzReferat = 'alle', pfReferat = 'alle', bdStandOffen = false;
+  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, vorschauId = null, abhAktivId = null, ziehId = null, klickNachZugId = null, quittung = null, quittungUhr = null, belohnung = null, belohnungUhr = null, briefingKategorie = null, vbHereinTimer = null, naechste = 1, lzReferat = 'alle', pfReferate = [], linseOffen = false, bdStandOffen = false;
 
   function laden() {
                                                                             
@@ -6354,10 +6411,37 @@
     return S.vorhaben.filter(v => (String(v.name || '') + ' ' + String(v.referat || '')).toLowerCase().indexOf(suche) >= 0);
   }
 
+                                                                             
+                                                                              
+                                                                              
+                                                                    
+  let listeSort = { spalte: '', ab: false };
+  const LISTE_SPALTEN = {
+    name: { leer: v => !String(v.name || '').trim(), vergleich: (a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'de') },
+    referat: { leer: v => !String(v.referat || '').trim(), vergleich: (a, b) => REFERAT_ORDNUNG.compare(String(a.referat || '').trim(), String(b.referat || '').trim()) },
+    stand: { leer: v => v.laeuft !== LAEUFT[1] && v.laeuft !== LAEUFT[2], vergleich: (a, b) => LAEUFT.indexOf(a.laeuft) - LAEUFT.indexOf(b.laeuft) },
+    bedarf: { leer: v => !String(v.vzae || '').trim(), vergleich: (a, b) => vzaeWert(a) - vzaeWert(b) },
+    fehlt: { leer: () => false, vergleich: (a, b) => luecken(b).length - luecken(a).length }
+  };
+  function listeSortiert(liste) {
+    const spalte = LISTE_SPALTEN[listeSort.spalte];
+    if (!spalte) return liste;
+    const richtung = listeSort.ab ? -1 : 1;
+    return liste.map((v, i) => [v, i]).sort((x, y) => {
+      const lx = spalte.leer(x[0]), ly = spalte.leer(y[0]);
+      if (lx !== ly) return lx ? 1 : -1;
+      return richtung * spalte.vergleich(x[0], y[0]) || x[1] - y[1];
+    }).map(paar => paar[0]);
+  }
+  function listeKopfHtml(spalte, klasse, wort, zusatz) {
+    const aktiv = listeSort.spalte === spalte;
+    return `<span${klasse ? ` class="${klasse}"` : ''} role="columnheader" aria-sort="${aktiv ? (listeSort.ab ? 'descending' : 'ascending') : 'none'}"><button class="vz-sort${aktiv ? ' aktiv' : ''}${aktiv && listeSort.ab ? ' ab' : ''}" type="button" data-sort="${spalte}" title="Nach „${wort}“ sortieren">${wort}</button>${zusatz || ''}</span>`;
+  }
+
   function renderNav() {
     const wurzel = document.getElementById('nav');
     const offenAnzahl = S.vorhaben.filter(v => luecken(v).length).length;
-    const treffer = listeTreffer();
+    const treffer = listeSortiert(listeTreffer());
     const sucht = !!listeSuche.trim();
     const zaehlText = sucht ? `${treffer.length} von ${S.vorhaben.length}` : String(S.vorhaben.length);
     const keinTreffer = sucht && S.vorhaben.length && !treffer.length
@@ -6378,13 +6462,22 @@
       </button>`).join('') + keinTreffer;
     } else {
       wurzel.innerHTML = `<div class="vzeile vz-kopf" role="row">
-          <span role="columnheader">Vorhaben <span class="vz-count">${zaehlText}</span></span>
-          <span class="vz-ref" role="columnheader">Referat</span>
-          <span class="vz-stand" role="columnheader">Stand</span>
-          <span class="vz-bedarf" role="columnheader">Bedarf</span>
-          <span class="vz-fehlt" role="columnheader">Was fehlt <span class="vz-count">${offenText}</span></span>
+          ${listeKopfHtml('name', '', 'Vorhaben', ` <span class="vz-count">${zaehlText}</span>`)}
+          ${listeKopfHtml('referat', 'vz-ref', 'Referat')}
+          ${listeKopfHtml('stand', 'vz-stand', 'Stand')}
+          ${listeKopfHtml('bedarf', 'vz-bedarf', 'Bedarf')}
+          ${listeKopfHtml('fehlt', 'vz-fehlt', 'Was fehlt', ` <span class="vz-count">${offenText}</span>`)}
         </div>` + treffer.map(vzeileHtml).join('') + keinTreffer;
     }
+    wurzel.querySelectorAll('[data-sort]').forEach(el => el.addEventListener('click', () => {
+      const spalte = el.dataset.sort;
+      if (listeSort.spalte !== spalte) listeSort = { spalte, ab: false };
+      else if (!listeSort.ab) listeSort = { spalte, ab: true };
+      else listeSort = { spalte: '', ab: false };
+      renderNav();
+      const wieder = document.querySelector(`#nav [data-sort="${spalte}"]`);
+      if (wieder) wieder.focus();
+    }));
     document.getElementById('nav').querySelectorAll('[data-nav]').forEach(el => el.addEventListener('click', () => {
       offenId = el.dataset.nav;
       renderErfassen();
@@ -7596,6 +7689,24 @@
                                                      
   const RANG = { prio: 0, wartet: 1, offen: 2, nicht: 3 };
   const SEIT_WAHL = '__seit';
+  const LINSE_LEER = 'Referat oder Veränderung';
+                                                                             
+                           
+  function linseSchalten(offen) {
+    linseOffen = !!offen;
+    const knopf = document.getElementById('pfReferat'), menue = document.getElementById('linseMenue');
+    if (knopf) knopf.setAttribute('aria-expanded', String(linseOffen));
+    if (menue) menue.classList.toggle('verborgen', !linseOffen);
+  }
+  document.addEventListener('click', ev => {
+    if (linseOffen && !(ev.target.closest && ev.target.closest('.linse'))) linseSchalten(false);
+  });
+  document.addEventListener('keydown', ev => {
+    if (ev.key !== 'Escape' || !linseOffen) return;
+    linseSchalten(false);
+    const knopf = document.getElementById('pfReferat');
+    if (knopf) knopf.focus();
+  });
   const REFERAT_ORDNUNG = new Intl.Collator('de', { numeric: true });
   function sortiert(liste) {
     return liste.slice().sort((a, b) => {
@@ -7758,17 +7869,18 @@
                                                                            
                                                                            
                                                                      
+                                                                           
     const imReferat = id => {
-      if (pfReferat === 'alle') return true;
+      if (!pfReferate.length) return true;
       const v = nachId(id);
       if (!v) return false;
-      return v.referat.trim() === pfReferat;
+      return pfReferate.includes(v.referat.trim());
     };
                                                                          
                                                                       
                                       
     const tg = wurzel.querySelector('.tg-wrap');
-    if (tg) tg.classList.toggle('abh-zurueck', !!fokus || pfReferat !== 'alle');
+    if (tg) tg.classList.toggle('abh-zurueck', !!fokus || pfReferate.length > 0);
     wurzel.querySelectorAll('[data-kachel]').forEach(el => {
       const verbunden = !!fokus && fokus.verbunden.has(el.dataset.kachel);
       const karte = el.closest('.pt-wrap') || el;
@@ -7824,8 +7936,8 @@
                                                                             
                                                                               
                                            
-    const referate = [...new Set(bildVorhaben().map(v => v.referat.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'de'));
-    if (pfReferat !== 'alle' && !referate.includes(pfReferat)) pfReferat = 'alle';
+    const referate = [...new Set(bildVorhaben().map(v => v.referat.trim()).filter(Boolean))].sort(REFERAT_ORDNUNG.compare);
+    pfReferate = pfReferate.filter(r => referate.includes(r));
                                                                               
                                                                              
                                                                           
@@ -7836,15 +7948,35 @@
     const seitWahl = seitStand ? `Verändert seit ${seitStand.name || standDatumText(seitStand.zeitpunkt)} (${seitSumme})` : '';
     if (!seitStand) seitAn = false;
                                                                             
+                                                                               
+                                                                              
+                                                                             
+                                                         
+                                                                       
+                                                                        
+                                                                       
+    const linseLeer = !seitAn && !pfReferate.length;
+    const linseText = seitAn ? seitWahl
+      : !pfReferate.length ? LINSE_LEER
+      : pfReferate.length <= 2 ? pfReferate.join(', ')
+      : pfReferate.length + ' Referate';
+                                                                            
                                                          
     document.getElementById('reiterLinse').innerHTML = `<div class="bild-steuer">
         ${bildSucheHtml()}
-        ${referate.length || seitWahl ? `<label for="pfReferat">Hervorheben</label>
-        <select id="pfReferat">
-          <option value="alle" ${pfReferat === 'alle' && !seitAn ? 'selected' : ''}>alle Referate</option>
-          ${seitWahl ? `<option value="${SEIT_WAHL}" ${seitAn ? 'selected' : ''}>${esc(seitWahl)}</option>` : ''}
-          ${referate.map(r => `<option value="${esc(r)}" ${pfReferat === r && !seitAn ? 'selected' : ''}>${esc(r)}</option>`).join('')}
-        </select>` : ''}
+        ${referate.length || seitWahl ? `<span class="linse-wort" id="linseWort">Hervorheben</span>
+        <div class="linse">
+          <button class="linse-knopf${linseLeer ? ' leer' : ''}" type="button" id="pfReferat" aria-haspopup="true" aria-expanded="${linseOffen}" aria-controls="linseMenue" aria-labelledby="linseWort pfReferat">${esc(linseText)}</button>
+          <div class="linse-menue${linseOffen ? '' : ' verborgen'}" id="linseMenue" role="group" aria-labelledby="linseWort">
+            <button class="linse-eintrag" type="button" data-linse="alle" aria-pressed="${!seitAn && !pfReferate.length}">alle Referate</button>
+            ${seitWahl
+              ? `<button class="linse-eintrag" type="button" data-linse="${SEIT_WAHL}" aria-pressed="${seitAn}">${esc(seitWahl)}</button>`
+                                                                              
+                                                                               
+              : '<button class="linse-eintrag" type="button" data-linse-gesperrt disabled>Verändert seit dem letzten Stand <span class="linse-hinweis">noch kein Stand</span></button>'}
+            ${referate.length ? `<div class="linse-gruppe">${referate.map(r => `<label class="linse-haken"><input type="checkbox" data-linse-referat="${esc(r)}" ${!seitAn && pfReferate.includes(r) ? 'checked' : ''}>${esc(r)}</label>`).join('')}</div>` : ''}
+          </div>
+        </div>` : ''}
       </div>`;
     const imKorb = korb => sortiert(bildVorhaben().filter(v => portfolio(v, bildVorhaben()).wert === korb));
     const vzaeSumme = liste => liste.reduce((wert, v) => wert + vzaeWert(v), 0);
@@ -7922,12 +8054,26 @@
         <p class="lane-sub">Noch nicht zugeordnet, es fehlen Antworten im Steckbrief.</p>
         <div class="mx-offen-body">${offen.map(v => kachel(v, true)).join('')}</div>
       </div>` : ''}`;
-    const pfSelect = document.getElementById('pfReferat');
-    if (pfSelect) pfSelect.addEventListener('change', ev => {
-      const seit = ev.target.value === SEIT_WAHL;
-      pfReferat = seit ? 'alle' : ev.target.value;
-      seitSchalten(seit);
-    });
+    const linseKnopf = document.getElementById('pfReferat');
+    if (linseKnopf) {
+      const menue = document.getElementById('linseMenue');
+      linseKnopf.addEventListener('click', () => linseSchalten(!linseOffen));
+      menue.querySelectorAll('[data-linse]').forEach(el => el.addEventListener('click', () => {
+        pfReferate = [];
+        linseOffen = false;
+        seitSchalten(el.dataset.linse === SEIT_WAHL);
+        const knopf = document.getElementById('pfReferat');
+        if (knopf) knopf.focus();
+      }));
+      menue.querySelectorAll('[data-linse-referat]').forEach(el => el.addEventListener('change', () => {
+        const referat = el.dataset.linseReferat;
+        pfReferate = el.checked ? pfReferate.concat(referat) : pfReferate.filter(r => r !== referat);
+                                                                           
+        if (seitAn) seitSchalten(false); else renderBild();
+        const wieder = [...document.querySelectorAll('#linseMenue [data-linse-referat]')].find(feld => feld.dataset.linseReferat === referat);
+        if (wieder) wieder.focus();
+      }));
+    }
     markiereAbhaengigkeiten(fokus);
     bildSucheMarkieren();
   }
@@ -8700,6 +8846,27 @@
       ? 'Kapazität ' + zahlText(kap.verfuegbar) + ' VZÄ, eingeplant ' + zahlText(kap.gesamt) + ', ' + lage
       : lage;
   }
+
+                                                                      
+                                                                      
+                                                                      
+  const LISTE_SPALTEN_WORT = { name: 'Vorhaben', referat: 'Referat', stand: 'Stand', bedarf: 'Bedarf', fehlt: 'Was fehlt' };
+  function listeDruckKopfText() {
+    const teile = [new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })];
+    teile.push(listeSort.spalte
+      ? `sortiert nach ${LISTE_SPALTEN_WORT[listeSort.spalte]}${listeSort.ab ? ' (absteigend)' : ''}`
+      : 'in der Reihenfolge des Eintragens');
+    const treffer = listeTreffer().length;
+    teile.push(listeSuche.trim() ? `${treffer} von ${S.vorhaben.length} Vorhaben, Suche „${listeSuche.trim()}“` : `${S.vorhaben.length} Vorhaben`);
+    return teile.join(' · ');
+  }
+  function listeDrucken() {
+    if (offenId) { offenId = null; renderErfassen(); }
+    document.getElementById('dlKopf').innerHTML = `<h2>Vorhaben · ${esc(S.abteilung || 'Abteilung')}</h2><p>${esc(listeDruckKopfText())}</p>`;
+    document.body.classList.add('druck-liste');
+    window.print();
+  }
+  window.addEventListener('afterprint', () => document.body.classList.remove('druck-liste'));
 
   function portfolioDrucken() {
     dpKopfSetzen();
@@ -10591,6 +10758,7 @@
       zurUebersicht();
     });
     document.getElementById('tgSchritt1').addEventListener('click', tgErfassenOeffnen);
+    document.getElementById('listeDrucken').addEventListener('click', listeDrucken);
                                                                              
     document.getElementById('listeSuche').addEventListener('input', event => {
       listeSuche = event.target.value;
