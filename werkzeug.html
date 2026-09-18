@@ -580,20 +580,22 @@
                                                                       
                                                                         
                                                                   
-  .wanderung { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .wanderung { display: grid; grid-template-columns: minmax(0, 660px) minmax(0, 1fr); gap: 24px; align-items: start; }
   .wanderung svg { width: 100%; height: auto; display: block; font-family: var(--display); }
   .wanderung .wd-segment { fill: var(--blau-20); cursor: pointer; }
   .wanderung .wd-segment.haus { fill: var(--blau); }
   .wanderung .wd-segment.rand { fill: none; stroke: var(--blau-40); stroke-dasharray: 3 3; cursor: default; }
-  .wanderung .wd-strom { fill: var(--blau-40); opacity: .55; cursor: pointer; }
-  .wanderung .wd-strom.bleibt { fill: var(--blau-20); opacity: .35; cursor: default; }
+                                                                            
+                                            
+  .wanderung .wd-strom { fill: var(--blau-40); opacity: .55; cursor: pointer; stroke: transparent; stroke-width: 8px; pointer-events: all; }
+  .wanderung .wd-strom.bleibt { fill: var(--blau-20); opacity: .35; cursor: default; stroke-width: 0; pointer-events: auto; }
   .wanderung .wd-strom:hover, .wanderung .wd-strom.aktiv { opacity: .95; }
   .wanderung .wd-strom.bleibt:hover { opacity: .35; }
   .wanderung .wd-achse { font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; fill: var(--fg-muted); }
   .wanderung .wd-korb { font-size: 12.5px; font-weight: 700; fill: var(--fg); }
   .wanderung .wd-korb.rand { fill: var(--fg-muted); }
   .wanderung .wd-zahl { font-size: 12.5px; font-weight: 800; fill: var(--blau); }
-  .wd-namen { border-left: 1px solid var(--line); padding-left: 20px; min-height: 160px; }
+  .wd-namen { border-left: 1px solid var(--line); padding-left: 20px; min-height: 160px; position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; }
   .wd-namen h3 { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); margin: 0 0 8px; }
   .wd-namen h3 .bf-zahl { margin-left: 6px; }
   .wd-namen ul { list-style: none; margin: 0; padding: 0; }
@@ -848,8 +850,8 @@
     border-right: 1.5px solid var(--fg); border-bottom: 1.5px solid var(--fg); transform: rotate(45deg); }
   .linse-knopf.leer { color: var(--fg-muted); }
   .linse-knopf:hover, .linse-knopf[aria-expanded="true"] { border-color: var(--blau); }
-  .linse-eintrag:disabled { color: var(--fg-muted); cursor: default; }
-  .linse-eintrag:disabled:hover { background: transparent; }
+  .linse-haken.gesperrt { color: var(--fg-muted) !important; cursor: default !important; }
+  .linse-haken.gesperrt:hover { background: transparent !important; }
   .linse-hinweis { font-size: 12.5px; margin-left: 6px; }
   .linse-hinweis::before { content: '· '; }
   .linse-menue { position: absolute; right: 0; top: calc(100% + 4px); z-index: 8; min-width: 100%; width: max-content; max-width: 24em; max-height: 60vh; overflow: auto;
@@ -1233,12 +1235,14 @@
                                                                           
                                                                          
   #bildKoerper .pt-seit { display: none; }
+  #bildKoerper .pt-verknuepft { font-size: 12px; white-space: nowrap; margin: 0 8px; }
+  #bildKoerper.seit-an .pt-wrap.bewegt .pt-verknuepft { display: none; }
   #bildKoerper.seit-an .pt-wrap:not(.bewegt) { opacity: .16; }
   #bildKoerper.seit-an .pt-wrap:not(.bewegt):hover { opacity: .48; }
-  #bildKoerper.seit-an .pt-wrap.bewegt { transform: translateY(-3px); z-index: 4; }
+  #bildKoerper.seit-an .pt-wrap.bewegt:not(.abh-zurueck) { transform: translateY(-3px); z-index: 4; }
   #bildKoerper.seit-an .pt-wrap.bewegt .pt { box-shadow: 0 0 0 2px var(--blau), 0 12px 26px rgba(13,12,43,.16); }
   @keyframes seit-heben { from { transform: translateY(0) scale(1); } 55% { transform: translateY(-6px) scale(1.015); } to { transform: translateY(-3px) scale(1); } }
-  #bildKoerper.seit-an.seit-frisch .pt-wrap.bewegt { animation: seit-heben .45s var(--ease) backwards; }
+  #bildKoerper.seit-an.seit-frisch .pt-wrap.bewegt:not(.abh-zurueck) { animation: seit-heben .45s var(--ease) backwards; }
   #bildKoerper.seit-an .pt-wrap.bewegt .pt-seit { display: inline; color: var(--blau); font-family: var(--display); font-weight: 700; }
   @media (prefers-reduced-motion: reduce) { #bildKoerper.seit-an.seit-frisch .pt-wrap.bewegt { animation: none; } }
   #bildKoerper .pt-wrap.weg .pt { border-style: dashed; }
@@ -1803,6 +1807,7 @@
   .impressum-schliessen { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--blau); background: none; border: 0; padding: 0; cursor: pointer; }
   .fusszeile .impressum-link, .vb-fuss-leise .impressum-link { font-family: var(--display); font-weight: 600; font-size: 13px; color: var(--fg-muted); background: none; border: 0; padding: 0; cursor: pointer; }
   .fusszeile .impressum-link:hover, .vb-fuss-leise .impressum-link:hover { color: var(--blau); }
+  .fuss-rechts .impressum-link { margin-left: 8px; padding-left: 22px; border-left: 1px solid var(--line); }
 </style>
 </head>
 <body>
@@ -1985,7 +1990,7 @@
 
     <div class="fusszeile">
       
-      <span><span id="fussSpeicher">Gespeichert in diesem Browser.</span><span id="fussStand"></span> <button type="button" class="impressum-link" data-impressum>Impressum</button></span>
+      <span><span id="fussSpeicher">Gespeichert in diesem Browser.</span><span id="fussStand"></span></span>
       
       <span class="fuss-rechts">
         <button class="textbtn blau" type="button" id="copy">Als Tabelle kopieren</button>
@@ -1996,6 +2001,8 @@
         <button class="textbtn blau" type="button" id="standEinfrieren">Stand einfrieren</button>
         <button class="textbtn blau" type="button" id="portfolioDruck">Portfolio drucken</button>
         <button class="textbtn" type="button" id="reset">Beispieldaten wiederherstellen</button>
+        
+        <button type="button" class="impressum-link" data-impressum>Impressum</button>
       </span>
     </div>
   </section>
@@ -2105,10 +2112,11 @@
     
     <div class="haus-leiste verborgen" id="hausLeiste"></div>
     <div class="fusszeile">
-      <span id="hausFussHinweis">Die Vormerkung bleibt in diesem Browser, bis sie bestätigt wird.</span> <button type="button" class="impressum-link" data-impressum>Impressum</button>
+      <span id="hausFussHinweis">Die Vormerkung bleibt in diesem Browser, bis sie bestätigt wird.</span>
       <span class="fuss-rechts">
         <button class="textbtn blau" type="button" id="hausPortfolioDruck">Portfolio drucken</button>
         <button class="textbtn blau" type="button" id="hausDruck">Liste drucken</button>
+        <button type="button" class="impressum-link" data-impressum>Impressum</button>
       </span>
     </div>
     
@@ -4826,10 +4834,21 @@
                                                                         
                   
   const HAUS_RANG = { prio: 0, wartet: 1, offen: 2, nicht: 3 };
+                                                                         
+                                                                           
+                  
+  const HAUS_REFERAT_ORDNUNG = new Intl.Collator('de', { numeric: true });
   function hausSortiert(liste) {
     return (liste || []).slice().sort((a, b) => {
       const stufe = HAUS_RANG[gewaehlt(a, liste)] - HAUS_RANG[gewaehlt(b, liste)];
       if (stufe) return stufe;
+      const ra = String(a.referat || '').trim(), rb = String(b.referat || '').trim();
+      if (ra !== rb) {
+        if (!ra) return 1;
+        if (!rb) return -1;
+        const referat = HAUS_REFERAT_ORDNUNG.compare(ra, rb);
+        if (referat) return referat;
+      }
       const nominiert = (wirksamNominiert(b) ? 1 : 0) - (wirksamNominiert(a) ? 1 : 0);
       if (nominiert) return nominiert;
       return String(a.name || '').localeCompare(String(b.name || ''), 'de');
@@ -7460,6 +7479,11 @@
                                                                        
                                                                           
     const referat = String(v.referat || '').trim();
+                                                                           
+                                                                           
+                                                                          
+                                                 
+    const verknuepft = verknuepfungsZahl(v, bildVorhaben());
                                                                              
                                                                            
                                                         
@@ -7480,6 +7504,7 @@
             ${referat ? `<span class="pt-ref">${esc(referat)}</span>` : ''}
             ${seit && !weg ? `<span class="pt-seit">${esc(seit)}</span>` : ''}
           </span>
+          ${verknuepft && !weg ? `<span class="pt-verknuepft">${verknuepft} verknüpft</span>` : ''}
           <span class="pt-vzae">${vzae ? zahlText(vzae) + ' VZÄ' : 'VZÄ offen'}</span>
         </span>
       </button>
@@ -7960,11 +7985,15 @@
                                                                        
                                                                         
                                                                        
+                                                                            
+                                                                        
+                                                                       
+                                                                              
     const linseLeer = !seitAn && !pfReferate.length;
-    const linseText = seitAn ? seitWahl
-      : !pfReferate.length ? LINSE_LEER
-      : pfReferate.length <= 2 ? pfReferate.join(', ')
-      : pfReferate.length + ' Referate';
+    const linseTeile = [];
+    if (pfReferate.length) linseTeile.push(pfReferate.length <= 2 ? pfReferate.join(', ') : pfReferate.length + ' Referate');
+    if (seitAn) linseTeile.push(pfReferate.length ? 'verändert' : seitWahl);
+    const linseText = linseLeer ? LINSE_LEER : linseTeile.join(' · ');
                                                                             
                                                          
     document.getElementById('reiterLinse').innerHTML = `<div class="bild-steuer">
@@ -7974,12 +8003,12 @@
           <button class="linse-knopf${linseLeer ? ' leer' : ''}" type="button" id="pfReferat" aria-haspopup="true" aria-expanded="${linseOffen}" aria-controls="linseMenue" aria-labelledby="linseWort pfReferat">${esc(linseText)}</button>
           <div class="linse-menue${linseOffen ? '' : ' verborgen'}" id="linseMenue" role="group" aria-labelledby="linseWort">
             <button class="linse-eintrag" type="button" data-linse="alle" aria-pressed="${!seitAn && !pfReferate.length}">alle Referate</button>
-            ${seitWahl
-              ? `<button class="linse-eintrag" type="button" data-linse="${SEIT_WAHL}" aria-pressed="${seitAn}">${esc(seitWahl)}</button>`
+            <div class="linse-gruppe">${seitWahl
+              ? `<label class="linse-haken"><input type="checkbox" data-linse-seit ${seitAn ? 'checked' : ''}>${esc(seitWahl)}</label>`
                                                                               
                                                                                
-              : '<button class="linse-eintrag" type="button" data-linse-gesperrt disabled>Verändert seit dem letzten Stand <span class="linse-hinweis">noch kein Stand</span></button>'}
-            ${referate.length ? `<div class="linse-gruppe">${referate.map(r => `<label class="linse-haken"><input type="checkbox" data-linse-referat="${esc(r)}" ${!seitAn && pfReferate.includes(r) ? 'checked' : ''}>${esc(r)}</label>`).join('')}</div>` : ''}
+              : '<label class="linse-haken gesperrt"><input type="checkbox" data-linse-seit disabled>Verändert seit dem letzten Stand <span class="linse-hinweis">noch kein Stand</span></label>'}</div>
+            ${referate.length ? `<div class="linse-gruppe">${referate.map(r => `<label class="linse-haken"><input type="checkbox" data-linse-referat="${esc(r)}" ${pfReferate.includes(r) ? 'checked' : ''}>${esc(r)}</label>`).join('')}</div>` : ''}
           </div>
         </div>` : ''}
       </div>`;
@@ -8028,9 +8057,13 @@
     };
 
     const koepfe = PF_SPALTEN.map((spalte, si) => {
-      const summe = vzaeSumme(bildVorhaben().filter(v => gewaehlt(v, bildVorhaben()) === spalte.wahl));
+                                                                           
+                                                                             
+                                                                           
+                                                                           
+      const anzahl = bildVorhaben().filter(v => gewaehlt(v, bildVorhaben()) === spalte.wahl).length;
       return `<div class="mx-kopf ${spalte.gebunden ? 'pf-gebunden' : ''}" role="columnheader" style="grid-column:${si + 1}; grid-row:1">
-        ${esc(ENTSCHEIDUNG[spalte.wahl])} <span class="pf-vzae">${zahlText(summe)} VZÄ</span>
+        ${esc(ENTSCHEIDUNG[spalte.wahl])} <span class="pf-vzae">${anzahl} Vorhaben</span>
         <small>${esc(spalte.sub)}</small></div>`;
     }).join('');
 
@@ -8066,15 +8099,20 @@
       menue.querySelectorAll('[data-linse]').forEach(el => el.addEventListener('click', () => {
         pfReferate = [];
         linseOffen = false;
-        seitSchalten(el.dataset.linse === SEIT_WAHL);
+        seitSchalten(false);
         const knopf = document.getElementById('pfReferat');
         if (knopf) knopf.focus();
       }));
+      const seitHaken = menue.querySelector('[data-linse-seit]:not(:disabled)');
+      if (seitHaken) seitHaken.addEventListener('change', () => {
+        seitSchalten(seitHaken.checked);
+        const wieder = document.querySelector('#linseMenue [data-linse-seit]');
+        if (wieder) wieder.focus();
+      });
       menue.querySelectorAll('[data-linse-referat]').forEach(el => el.addEventListener('change', () => {
         const referat = el.dataset.linseReferat;
         pfReferate = el.checked ? pfReferate.concat(referat) : pfReferate.filter(r => r !== referat);
-                                                                           
-        if (seitAn) seitSchalten(false); else renderBild();
+        renderBild();
         const wieder = [...document.querySelectorAll('#linseMenue [data-linse-referat]')].find(feld => feld.dataset.linseReferat === referat);
         if (wieder) wieder.focus();
       }));
@@ -8230,8 +8268,14 @@
                                                                             
                                                                             
                        
-  const WD_H = 16, WD_LUECKE = 14, WD_OBEN = 40, WD_LINKS = 240, WD_RECHTS = 480, WD_BREITE = 26, WD_MIN = 6;
+                                                                              
+                                                                            
+                                                                          
+                                                                    
+  const WD_LUECKE = 16, WD_OBEN = 40, WD_LINKS = 240, WD_RECHTS = 480, WD_BREITE = 26, WD_MIN = 6;
   function wanderungSvg(w, referenzName) {
+    const gesamt = Math.max(1, w.stroeme.reduce((x, s) => x + s.n, 0));
+    const WD_H = Math.max(3, Math.min(16, 300 / gesamt));
     const summe = (korb, seite) => w.stroeme.filter(s => s[seite] === korb).reduce((x, s) => x + s.n, 0);
     const lage = { von: {}, nach: {} };
     let y1 = WD_OBEN, y2 = WD_OBEN;
@@ -8263,18 +8307,14 @@
     w.koerbe.forEach(k => {
       const a = lage.von[k.korb], b = lage.nach[k.korb];
       html += `<rect class="wd-segment ${k.korb}" data-segment="${k.korb}" x="${WD_LINKS}" y="${a.y}" width="${WD_BREITE}" height="${a.h}" rx="3"></rect>
-        <text class="wd-korb" x="${WD_LINKS - 10}" y="${a.y + a.h / 2 + 4}" text-anchor="end">${esc(k.name)}</text>
-        <text class="wd-zahl" x="${WD_LINKS - 10}" y="${a.y + a.h / 2 + 18}" text-anchor="end">${k.damals}</text>
+        <text class="wd-korb" x="${WD_LINKS - 10}" y="${a.y + a.h / 2 + 4}" text-anchor="end">${esc(k.name)} <tspan class="wd-zahl">${k.damals}</tspan></text>
         <rect class="wd-segment ${k.korb}" data-segment="${k.korb}" x="${WD_RECHTS}" y="${b.y}" width="${WD_BREITE}" height="${b.h}" rx="3"></rect>
-        <text class="wd-korb" x="${WD_RECHTS + WD_BREITE + 10}" y="${b.y + b.h / 2 + 4}">${esc(k.name)}</text>
-        <text class="wd-zahl" x="${WD_RECHTS + WD_BREITE + 10}" y="${b.y + b.h / 2 + 18}">${k.heute}</text>`;
+        <text class="wd-korb" x="${WD_RECHTS + WD_BREITE + 10}" y="${b.y + b.h / 2 + 4}">${esc(k.name)} <tspan class="wd-zahl">${k.heute}</tspan></text>`;
     });
     if (nNeu) html += `<rect class="wd-segment rand" x="${WD_LINKS}" y="${lage.von.neu.y}" width="${WD_BREITE}" height="${lage.von.neu.h}" rx="3"></rect>
-      <text class="wd-korb rand" x="${WD_LINKS - 10}" y="${lage.von.neu.y + lage.von.neu.h / 2 + 4}" text-anchor="end">${esc(KORB_KURZ.neu)}</text>
-      <text class="wd-zahl" x="${WD_LINKS - 10}" y="${lage.von.neu.y + lage.von.neu.h / 2 + 18}" text-anchor="end">${nNeu}</text>`;
+      <text class="wd-korb rand" x="${WD_LINKS - 10}" y="${lage.von.neu.y + lage.von.neu.h / 2 + 4}" text-anchor="end">${esc(KORB_KURZ.neu)} <tspan class="wd-zahl">${nNeu}</tspan></text>`;
     if (nWeg) html += `<rect class="wd-segment rand" x="${WD_RECHTS}" y="${lage.nach.weg.y}" width="${WD_BREITE}" height="${lage.nach.weg.h}" rx="3"></rect>
-      <text class="wd-korb rand" x="${WD_RECHTS + WD_BREITE + 10}" y="${lage.nach.weg.y + lage.nach.weg.h / 2 + 4}">${esc(KORB_KURZ.weg)}</text>
-      <text class="wd-zahl" x="${WD_RECHTS + WD_BREITE + 10}" y="${lage.nach.weg.y + lage.nach.weg.h / 2 + 18}">${nWeg}</text>`;
+      <text class="wd-korb rand" x="${WD_RECHTS + WD_BREITE + 10}" y="${lage.nach.weg.y + lage.nach.weg.h / 2 + 4}">${esc(KORB_KURZ.weg)} <tspan class="wd-zahl">${nWeg}</tspan></text>`;
     return `<svg viewBox="0 0 740 ${hoehe}" role="img" aria-label="Wanderung der Vorhaben zwischen den Körben seit ${esc(referenzName)}">${html}</svg>`;
   }
                                                                            
@@ -9483,6 +9523,9 @@
                                                                   
                                                                            
                                                                
+                                                                          
+                                                                     
+                                                       
     const lp = opt.lp || '';
     const grund = lp ? (opt.grund || '') : '';
     return `<div class="pt-wrap pt-haus-wrap${lp ? ' lp-' + lp : ''}">
@@ -9494,7 +9537,7 @@
         <span class="pt-haus-info">${esc(eintrag.folgen)} · ${esc(zielText)}</span>
         ${grund ? `<span class="pt-haus-seit">${esc(grund)}</span>` : ''}
         <span class="pt-foot">
-          <span class="pt-foot-links">${esc(eintrag.kuerzel + ' · ' + (v.referat.trim() || 'ohne Referat'))}</span>
+          <span class="pt-foot-links">${esc((opt.ohneKuerzel ? '' : eintrag.kuerzel + ' · ') + (v.referat.trim() || 'ohne Referat'))}</span>
           <span class="pt-haus-rechts">${eintrag.stand ? `<span class="pt-stand">${eintrag.stand}</span>` : ''}${eintrag.verknuepft ? `<span class="pt-verknuepft">${eintrag.verknuepft} verknüpft</span>` : ''}</span>
         </span>
       </button>
@@ -9539,7 +9582,7 @@
       if (gruppe.nurGefuellt && !drin.length) return '';
       return `<div class="haus-gruppe${gruppe.klasse ? ' ' + gruppe.klasse : ''}">
         <p class="pf-korb haus-gruppe-kopf">${esc(gruppe.name)} · ${drin.length}</p>
-        <div class="haus-gruppe-body">${drin.map(e => hausKachel(e, { gedaempft: gedaempft && !hausAuswahl[e.schluessel] })).join('')}</div>
+        <div class="haus-gruppe-body">${drin.map(e => hausKachel(e, { gedaempft: gedaempft && !hausAuswahl[e.schluessel], ohneKuerzel: true })).join('')}</div>
       </div>`;
     }).join('');
   }
@@ -9581,7 +9624,7 @@
     const kachel = (v, opt) => {
       const e = eintragZu(v);
       if (!e || !hausSuchTreffer(e)) return '';
-      return hausKachel(e, Object.assign({ gedaempft: gedaempft && !hausAuswahl[e.schluessel] }, opt || {}));
+      return hausKachel(e, Object.assign({ gedaempft: gedaempft && !hausAuswahl[e.schluessel], ohneKuerzel: true }, opt || {}));
     };
     const bleibt = lp.bleibt.map(b => kachel(b.v)).join('');
     const neu = lp.neu.map(n => kachel(n.v, { lp: 'neu', grund: n.grund })).join('');
@@ -9640,7 +9683,7 @@
         : !meine.length
           ? `<div class="haus-flaeche"><p class="lane-leer">${offen ? 'Kein Vorhaben.' : 'Keine Nominierung gemeldet.'}</p></div>`
           : !offen
-            ? `<div class="haus-flaeche">${meine.map(e => hausKachel(e, { gedaempft: gedaempft && !hausAuswahl[e.schluessel] })).join('')}</div>`
+            ? `<div class="haus-flaeche">${meine.map(e => hausKachel(e, { gedaempft: gedaempft && !hausAuswahl[e.schluessel], ohneKuerzel: true })).join('')}</div>`
             : `<div class="haus-gruppen">${hausGruppenHtml(meine)}</div>`;
       return `<div class="haus-zeile${offen ? ' offen' : ''}${spalten ? ' lp-spalten' : ''}">${kopf}${flaeche}</div>`;
     }).join('');
