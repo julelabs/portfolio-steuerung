@@ -530,6 +530,8 @@
                                                                               
                                                     
   .bf-kacheln { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-items: stretch; position: relative; z-index: 2; }
+  .bf-kacheln.zwei { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bf-ohne-kap { margin: 14px 0 0; font-size: 13px; color: var(--fg-muted); }
   .bf-kacheln.hat-offen .bf-kachel:not(.offen) { margin-bottom: 8px; }
   @media (max-width: 760px) { .bf-kacheln { grid-template-columns: 1fr; } .bf-kacheln.hat-offen .bf-kachel:not(.offen) { margin-bottom: 0; } }
   .bf-kachel { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-align: left;
@@ -820,7 +822,8 @@
                                                                               
                                                       
   #bildKopf { margin-top: 18px; }
-  #bildKoerper { margin-top: 16px; }
+  #bildKoerper { margin-top: 16px; position: relative; }
+  #bildKoerper .mx-offen .pt-wrap { z-index: 3; }
   .bild-kopf h2 { font-size: 18px; }
   .einheit { color: var(--fg-muted); font-size: 13px; font-weight: 400; }
   .legende { display: flex; gap: 14px; flex-wrap: wrap; color: var(--fg-muted); font-size: 12.5px; align-items: center; }
@@ -1235,7 +1238,12 @@
                                                                           
                                                                          
   #bildKoerper .pt-seit { display: none; }
-  #bildKoerper .pt-verknuepft { font-size: 12px; white-space: nowrap; margin: 0 8px; }
+                                                                            
+                                                                          
+                                                                 
+  #bildKoerper .pt-foot-rechts { display: inline-flex; align-items: baseline; gap: 10px; white-space: nowrap; flex: none; }
+  #bildKoerper .pt-foot-rechts .pt-vzae { min-width: 54px; text-align: right; }
+  #bildKoerper .pt-verknuepft { font-size: 12px; white-space: nowrap; }
   #bildKoerper.seit-an .pt-wrap.bewegt .pt-verknuepft { display: none; }
   #bildKoerper.seit-an .pt-wrap:not(.bewegt) { opacity: .16; }
   #bildKoerper.seit-an .pt-wrap:not(.bewegt):hover { opacity: .48; }
@@ -1581,6 +1589,10 @@
 
                                                                             
   .haus-zeilen { position: relative; }
+                                                                             
+                                                                                
+  #hausKoerper { position: relative; }
+  #hausKoerper .pt-wrap { z-index: 3; }
   .haus-zeile { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 18px; align-items: start; border-bottom: 1px solid var(--line); padding: 14px 0; }
   .haus-zeile:first-child { border-top: 1px solid var(--line); }
   .haus-kopfzelle { min-width: 0; }
@@ -6729,11 +6741,19 @@
                                   
                                                                                
                                                                         
+                                                                           
+                                                                            
+                                                                     
+                                                             
+  function briefingLageAnzeige() {
+    const tg = tgLage();
+    const lage = briefingLage(S.vorhaben, verfuegbarWert(), tg.summe, tg.offen);
+    if (verfuegbarWert() > 0) return lage;
+    const kategorien = lage.kategorien.filter(k => k.key !== 'kapazitaet');
+    return Object.assign({}, lage, { kategorien: kategorien, gesamt: kategorien.reduce((x, k) => x + (k.zahl || 0), 0), ohneKapazitaet: true });
+  }
   function renderVorbereitenKopf(lage) {
-    if (!lage) {
-      const tg = tgLage();
-      lage = briefingLage(S.vorhaben, verfuegbarWert(), tg.summe, tg.offen);
-    }
+    if (!lage) lage = briefingLageAnzeige();
     document.getElementById('vbKarteKopf').textContent = lage.gesamt
       ? (lage.gesamt === 1 ? '1 offener Punkt' : lage.gesamt + ' offene Punkte')
       : 'nichts offen';
@@ -7094,6 +7114,11 @@
                                                                               
                                                          
   function kapSegmenteHtml(kap) {
+                                                                        
+                                                                              
+                                                                             
+                                            
+    if (!(kap.verfuegbar > 0)) return { html: '', marke: 0, ende: 0, leer: true };
     const skala = Math.max(kap.gesamt, kap.vorher, kap.verfuegbar, 1);
     const pct = wert => (wert / skala) * 100;
     const teile = [];
@@ -7202,7 +7227,7 @@
       </div>
       <div class="bd-skala" role="img" aria-label="${vorlesen}" title="${vorlesen}">
         ${geo.html}
-        <div class="bd-marke ${geo.marke > 88 ? 'rechts' : ''}" style="left:${geo.marke}%"><b>Grenze: ${zahlText(kap.verfuegbar)}</b></div>
+        ${geo.leer ? '' : `<div class="bd-marke ${geo.marke > 88 ? 'rechts' : ''}" style="left:${geo.marke}%"><b>Grenze: ${zahlText(kap.verfuegbar)}</b></div>`}
         ${belohnung ? `<span class="bd-belohnung" style="left:${Math.min(90, Math.max(10, geo.ende))}%">−${zahlText(belohnung)} VZÄ</span>` : ''}
       </div>
       `;
@@ -7211,12 +7236,18 @@
                                                                            
                                                                
     const eingabe = `<span class="bd-eingabe">Die Abteilung hat<input type="text" inputmode="decimal" id="verfuegbar" value="${esc(S.verfuegbar)}" maxlength="6" aria-label="Verfügbare Vollzeitäquivalente"> VZÄ<span class="bd-trenn" aria-hidden="true">·</span><button class="textbtn blau bd-tg" type="button" id="tgOeffnen">Tagesgeschäft erfassen</button></span>`;
-    document.getElementById('bdStand').innerHTML = eingabe + standHinweis + tgHinweis;
+                                                                      
+                                                                          
+                                          
+    const ohneKap = !(kap.verfuegbar > 0);
+    document.getElementById('bdStand').innerHTML = eingabe + (ohneKap
+      ? '<p class="bd-stand">Noch keine Kapazität eingetragen. Solange das Feld leer ist, rechnet das Werkzeug keine Auslastung und zeigt keine Kapazitätslücken.</p>'
+      : standHinweis + tgHinweis);
                                                                            
                                                 
     const hinweise = [];
-    if (kap.standOffen > 0) hinweise.push(`${zahlText(kap.standOffen)} VZÄ ohne Stand: bei diesen Vorhaben fehlt die Angabe, ob sie schon laufen.`);
-    if (tg.offen.length > 0) hinweise.push(`Das Tagesgeschäft von ${tg.offen.join(', ')} fehlt. Die Gesamtlage liegt entsprechend höher, als die Leiste zeigt.`);
+    if (!ohneKap && kap.standOffen > 0) hinweise.push(`${zahlText(kap.standOffen)} VZÄ ohne Stand: bei diesen Vorhaben fehlt die Angabe, ob sie schon laufen.`);
+    if (!ohneKap && tg.offen.length > 0) hinweise.push(`Das Tagesgeschäft von ${tg.offen.join(', ')} fehlt. Die Gesamtlage liegt entsprechend höher, als die Leiste zeigt.`);
     const lage = document.getElementById('bdLage');
     lage.title = hinweise.length ? hinweise.join(' ') : 'Kapazität und Tagesgeschäft eintragen';
     lage.setAttribute('aria-expanded', String(bdStandOffen));
@@ -7525,8 +7556,7 @@
             ${referat ? `<span class="pt-ref">${esc(referat)}</span>` : ''}
             ${seit && !weg ? `<span class="pt-seit">${esc(seit)}</span>` : ''}
           </span>
-          ${verknuepft && !weg ? `<span class="pt-verknuepft">${verknuepft} verknüpft</span>` : ''}
-          <span class="pt-vzae">${vzae ? zahlText(vzae) + ' VZÄ' : 'VZÄ offen'}</span>
+          <span class="pt-foot-rechts">${verknuepft && !weg ? `<span class="pt-verknuepft">${verknuepft} verknüpft</span>` : ''}<span class="pt-vzae">${vzae ? zahlText(vzae) + ' VZÄ' : 'VZÄ offen'}</span></span>
         </span>
       </button>
       ${weg ? '' : `<button class="pt-lupe" type="button" data-vorschau="${v.id}" aria-label="${esc(v.name)} kurz ansehen" title="Kurz ansehen">
@@ -7888,9 +7918,12 @@
     };
   }
 
+                                                                              
+                                                                          
+                                          
   function zeichneAbhaengigkeitsLinien(fokus) {
-    const matrix = document.querySelector('.matrix.pf');
-    if (!matrix) return;
+    const matrix = document.getElementById('bildKoerper');
+    if (!matrix || !matrix.querySelector('.matrix.pf')) return;
     const alt = matrix.querySelector('.abh-netz');
     if (alt) alt.remove();
     if (!fokus || !fokus.kanten.length) return;
@@ -8761,6 +8794,18 @@
     if (!wurzel) return;
     const kacheln = wurzel.querySelector('.bf-kacheln');
     const flaeche = wurzel.querySelector('.bf-flaeche');
+                                                                           
+                                                                                
+    kacheln.classList.toggle('zwei', lage.kategorien.length === 2);
+    let notiz = wurzel.querySelector('.bf-ohne-kap');
+    if (lage.ohneKapazitaet && !notiz) {
+      notiz = document.createElement('p');
+      notiz.className = 'bf-ohne-kap';
+      notiz.textContent = 'Kapazitätslücken erscheinen hier, sobald in Schritt 3 die Kapazität der Abteilung eingetragen ist.';
+      wurzel.appendChild(notiz);
+    } else if (!lage.ohneKapazitaet && notiz) {
+      notiz.remove();
+    }
     kacheln.innerHTML = lage.kategorien.map(k => `
       <button class="bf-kachel${k.zahl ? '' : ' leer'}${briefingKategorie === k.key ? ' offen' : ''}" type="button"
         id="${wurzel.id}-${k.key}" data-kategorie="${k.key}"
@@ -8812,8 +8857,7 @@
                                                                            
                                                                       
   function renderBriefingAll() {
-    const tg = tgLage();
-    const lage = briefingLage(S.vorhaben, verfuegbarWert(), tg.summe, tg.offen);
+    const lage = briefingLageAnzeige();
                                                                               
                                                           
     if (briefingKategorie && !lage.kategorien.some(k => k.key === briefingKategorie && k.zahl)) briefingKategorie = null;
@@ -9018,7 +9062,7 @@
       <p class="druck-kap-zeile"><strong>${zahlText(kap.gesamt)} von ${zahlText(kap.verfuegbar)} VZÄ gebunden</strong>${kap.tagesgeschaeft > 0 ? `, davon ${zahlText(kap.tagesgeschaeft)} Tagesgeschäft` : ''}${kap.ueber > 0 ? `, ${zahlText(kap.ueber)} über der Grenze` : ''}${kap.wirdFrei > 0 ? `, <span class="druck-frei">${zahlText(kap.wirdFrei)} aus laufender Arbeit frei geworden</span>` : ''}</p>
       <div class="bd-skala" role="img" aria-label="${vorlesen}">
         ${geo.html}
-        <div class="bd-marke ${geo.marke > 88 ? 'rechts' : ''}" style="left:${geo.marke}%"><b>Grenze: ${zahlText(kap.verfuegbar)}</b></div>
+        ${geo.leer ? '' : `<div class="bd-marke ${geo.marke > 88 ? 'rechts' : ''}" style="left:${geo.marke}%"><b>Grenze: ${zahlText(kap.verfuegbar)}</b></div>`}
       </div>
       ${tgDruck.offen.length ? `<p class="druck-kap-zeile">Das Tagesgeschäft von ${esc(tgDruck.offen.join(', '))} fehlt, die Gesamtlage liegt entsprechend höher.</p>` : ''}`;
   }
@@ -9745,7 +9789,9 @@
         </div>
         <div class="lane-body">${bahn.eintraege.map(e => hausKachel(e, { gedaempft: gedaempft && !hausAuswahl[e.schluessel] })).join('')}</div>
       </div>`;
-    }).join('');
+    }).join('') + `<p class="abh-info" aria-live="polite"><span>${esc(hausLinsenSatz(bau))}</span></p>`;
+                                                                               
+    hausMarkieren(bau);
   }
 
   function hausLzZeile(eintrag, h0, rasterStil) {
@@ -9882,8 +9928,8 @@
                                                                            
                                                                          
   function zeichneHausLinien(eintrag) {
-    const wurzel = document.querySelector('#hausKoerper .haus-zeilen');
-    if (!wurzel) return;
+    const wurzel = document.getElementById('hausKoerper');
+    if (!wurzel || (hausReiter !== 'portfolio' && hausReiter !== 'ziele')) return;
     const alt = wurzel.querySelector('.abh-netz');
     if (alt) alt.remove();
     if (!eintrag || !eintrag.verbunden.size) return;
@@ -9921,9 +9967,10 @@
       hausVorschauOeffnen(el.dataset.hausVorschau);
     }));
     koerper.querySelectorAll('[data-haus-kachel]').forEach(el => el.addEventListener('click', () => {
-                                                                             
+                                                                          
+                                                                         
                                               
-      if (hausReiter === 'portfolio') {
+      if (hausReiter === 'portfolio' || hausReiter === 'ziele') {
         hausAktiv = hausAktiv === el.dataset.hausKachel ? null : el.dataset.hausKachel;
         renderHaus();
         return;
@@ -10899,12 +10946,29 @@
     document.getElementById('hausPunkt').addEventListener('click', () => wechsle('haus'));
     document.querySelectorAll('#hausReiterZeile button').forEach(el => el.addEventListener('click', () => {
       if (hausReiter === el.dataset.hausReiter) return;
+                                                                             
+                                                                            
+      const vorher = new Map();
+      document.querySelectorAll('#hausKoerper [data-haus-kachel]').forEach(k => vorher.set(k.dataset.hausKachel, k.getBoundingClientRect()));
       hausReiter = el.dataset.hausReiter;
                                                                           
                                                                       
       hausAktiv = null;
       hausSichtSichern();
       renderHaus();
+      document.querySelectorAll('#hausKoerper [data-haus-kachel]').forEach(k => {
+        const alt = vorher.get(k.dataset.hausKachel);
+        if (!alt) return;
+        const jetzt = k.getBoundingClientRect();
+        const dx = alt.left - jetzt.left, dy = alt.top - jetzt.top;
+        if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+        k.style.transition = 'none';
+        k.style.transform = `translate(${dx}px, ${dy}px)`;
+        requestAnimationFrame(() => {
+          k.style.transition = 'transform .6s var(--ease)';
+          k.style.transform = '';
+        });
+      });
     }));
     document.getElementById('hausDruck').addEventListener('click', hausDrucken);
     document.getElementById('hausPortfolioDruck').addEventListener('click', hausPortfolioDrucken);
