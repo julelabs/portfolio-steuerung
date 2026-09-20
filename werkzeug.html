@@ -238,12 +238,16 @@
                                                                            
                                                                           
   .erfassen { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(18px, 2.6vw, 32px); align-items: start; }
-  .erfassen.hat-offen { grid-template-columns: 320px minmax(0, 1fr); }
-  .nav-sp { position: static; }
-  .erfassen.hat-offen .nav-sp { position: sticky; top: 16px; }
+                                                                             
+                                                                         
+                                                                          
+                                                                           
                                                                        
-                                                           
-  @media (max-width: 760px) { .erfassen.hat-offen { grid-template-columns: 1fr; } .erfassen.hat-offen .nav-sp { position: static; } }
+  .nav-sp { position: static; }
+  .erfassen.hat-offen .nav-sp { display: none; }
+  .erfassen.hat-offen { --fokus-oben: clamp(22px, 3.4vw, 38px); margin-top: calc(-1 * var(--fokus-oben)); margin-bottom: -80px;
+    padding: var(--fokus-oben) 0 72px; background: var(--blau-10); box-shadow: 0 0 0 100vmax var(--blau-10); clip-path: inset(0 -100vmax); }
+  .erfassen.hat-offen .steckbrief { width: 100%; max-width: 880px; margin: 0 auto; box-shadow: 0 24px 60px rgba(13,12,43,.12); }
 
                                                                              
                                                                             
@@ -453,9 +457,19 @@
   .sb-summe span { font-weight: 400; color: var(--fg-muted); font-size: 13.5px; }
   .sb-unklar { color: var(--fg-muted); font-size: 13px; margin-top: 2px; }
   .sb-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
-  .sb-unten { position: sticky; bottom: 0; z-index: 3; background: var(--weiss); margin-top: 22px; padding: 12px 0 14px;
-    box-shadow: 0 -10px 18px -12px rgba(13,12,43,.18); }
-  .sb-unten .ablesung { margin-top: 0; }
+  .sb-unten { --sb-rand: clamp(20px, 2.6vw, 30px); position: sticky; bottom: 0; z-index: 3; background: var(--weiss);
+    margin: 18px calc(-1 * var(--sb-rand)) calc(-1 * var(--sb-rand)); padding: 8px var(--sb-rand) 12px;
+    border-radius: 0 0 var(--r-panel) var(--r-panel); box-shadow: 0 -10px 18px -12px rgba(13,12,43,.18); }
+  .sb-unten .sb-foot { margin-top: 0; }
+  .sb-kurz { border: 0; background: transparent; padding: 4px 0; cursor: pointer; font-family: var(--display); font-size: 13px; color: var(--fg-muted); white-space: nowrap; }
+  .sb-kurz b { color: var(--fg); font-weight: 700; }
+  .sb-kurz i { font-style: normal; color: var(--blau); }
+  .sb-kurz:hover b { color: var(--blau); }
+  .sb-kurz[hidden] { display: none; }
+  .feld.feld-erstes { margin-top: 6px; }
+                                                                              
+                                                             
+  @media (max-width: 760px) { .sb-unten { position: static; box-shadow: none; } .sb-kurz { display: none; } }
   .sb-foot-mitte { display: inline-flex; align-items: baseline; gap: 16px; flex-wrap: wrap; justify-content: center; }
   textarea.beleg { resize: none; }
 
@@ -6891,6 +6905,7 @@
         <input class="sb-titel" type="text" id="titel" value="${esc(v.name)}" maxlength="90" aria-label="Name des Vorhabens">
       </div>
 
+      
       <div class="block">
         <span class="block-nr">1</span>
         <div>
@@ -6917,23 +6932,6 @@
       <div class="block">
         <span class="block-nr">2</span>
         <div>
-          <span class="frage">Wen erreicht es, und ab wann?</span>
-          <div class="zeile2">
-            <div class="feld">
-              <label for="reichweite">Wer profitiert vor allem?</label>
-              <select id="reichweite" data-id="${v.id}" data-feld="reichweite">${optionen(REICHWEITE, v.reichweite)}</select>
-            </div>
-            <div class="feld">
-              <label for="wirkungAb">Erste spürbare Wirkung in (ab heute gerechnet)</label>
-              <select id="wirkungAb" data-id="${v.id}" data-feld="wirkungAb">${optionen(WIRKUNG_AB, v.wirkungAb)}</select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="block">
-        <span class="block-nr">3</span>
-        <div>
           <label class="frage" for="ruhen">Was passiert, wenn die Abteilung es sechs Monate ruhen lässt?<span class="pflichtzeichen" aria-hidden="true">*</span></label>
           <p class="hilfe">Wen würde es treffen, und wie schnell? Bei Innovationsvorhaben kann auch eine entgangene Chance ausschlaggebend sein, ein konkreter Schaden muss nicht vorliegen.</p>
           <div class="feld">
@@ -6953,7 +6951,47 @@
       </div>
 
       <div class="block">
+        <span class="block-nr">3</span>
+        <div>
+          <span class="frage" id="leitung">Für Leitung nominieren?<span class="pflichtzeichen" aria-hidden="true">*</span></span>
+          <p class="hilfe">Nominiert nur Vorhaben, die für das ganze Haus strategisch wichtig sind.</p>
+          
+          <div class="feld">
+            <div class="wahl wahl-nominierung">
+              <button type="button" data-nominierung="nominiert" data-id="${v.id}" aria-pressed="${v.leitung === 'nominiert'}">Für Leitungsportfolio nominieren<small>kommt in die hausweite Auswahl von ST und BM</small></button>
+              <button type="button" data-nominierung="keine" data-id="${v.id}" aria-pressed="${v.leitung === 'keine'}">Nicht nominieren, selbst steuern<small>bleibt im Abteilungsportfolio</small></button>
+            </div>
+          </div>
+        ${nominiert ? `<div class="feld">
+            <label for="bmWarum">Warum ist dieses Vorhaben für das Haus strategisch wichtig?<span class="pflichtzeichen" aria-hidden="true">*</span></label>
+            <input type="text" id="bmWarum" data-id="${v.id}" data-feld="bmWarum" required aria-required="true" maxlength="240" placeholder="Strategische Bedeutung kurz begründen" value="${esc(v.bmWarum)}">
+
+          </div>` : ''}
+        
+        ${istZurueckgestellt(v) ? `<p class="hilfe sb-zurueckgestellt">${esc(zurueckstellungSatz(v))}</p>` : ''}
+        </div>
+      </div>
+
+      
+      <div class="block">
         <span class="block-nr">4</span>
+        <div>
+          <label class="frage" for="abhNeu">Womit hängt es zusammen?</label>
+          <div class="feld feld-erstes">
+            <p class="feld-hilfe" id="abhNeu-status">Bestehendes Vorhaben auswählen oder einen neuen Namen eintragen. Verknüpfungen gelten in beide Richtungen.</p>
+            ${abhChips(v)}
+            <div class="abh-zeile">
+              <input type="text" id="abhNeu" list="abhListe" aria-describedby="abhNeu-status" maxlength="90" placeholder="Vorhaben der Abteilung ..." autocomplete="off">
+              <button class="btn leise" type="button" id="abhAdd">Hinzufügen</button>
+              <datalist id="abhListe">${abhVorschlaege(v)}</datalist>
+            </div>
+            ${rueckverweisFeldHtml(v)}
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <span class="block-nr">5</span>
         <div>
           <span class="frage">Welche Ressourcen braucht es, und wo steht es?</span>
           <div class="zeile2">
@@ -6991,42 +7029,26 @@
       </div>
 
       <div class="block">
-        <span class="block-nr">5</span>
+        <span class="block-nr">6</span>
         <div>
-          <span class="frage" id="leitung">Für Leitung nominieren?<span class="pflichtzeichen" aria-hidden="true">*</span></span>
-          <p class="hilfe">Nominiert nur Vorhaben, die für das ganze Haus strategisch wichtig sind.</p>
-          
-          <div class="feld">
-            <div class="wahl wahl-nominierung">
-              <button type="button" data-nominierung="nominiert" data-id="${v.id}" aria-pressed="${v.leitung === 'nominiert'}">Für Leitungsportfolio nominieren<small>kommt in die hausweite Auswahl von ST und BM</small></button>
-              <button type="button" data-nominierung="keine" data-id="${v.id}" aria-pressed="${v.leitung === 'keine'}">Nicht nominieren, selbst steuern<small>bleibt im Abteilungsportfolio</small></button>
+          <span class="frage">Wen erreicht es, und ab wann?</span>
+          <div class="zeile2">
+            <div class="feld">
+              <label for="reichweite">Wer profitiert vor allem?</label>
+              <select id="reichweite" data-id="${v.id}" data-feld="reichweite">${optionen(REICHWEITE, v.reichweite)}</select>
+            </div>
+            <div class="feld">
+              <label for="wirkungAb">Erste spürbare Wirkung in (ab heute gerechnet)</label>
+              <select id="wirkungAb" data-id="${v.id}" data-feld="wirkungAb">${optionen(WIRKUNG_AB, v.wirkungAb)}</select>
             </div>
           </div>
-        ${nominiert ? `<div class="feld">
-            <label for="bmWarum">Warum ist dieses Vorhaben für das Haus strategisch wichtig?<span class="pflichtzeichen" aria-hidden="true">*</span></label>
-            <input type="text" id="bmWarum" data-id="${v.id}" data-feld="bmWarum" required aria-required="true" maxlength="240" placeholder="Strategische Bedeutung kurz begründen" value="${esc(v.bmWarum)}">
-
-          </div>` : ''}
-        
-        ${istZurueckgestellt(v) ? `<p class="hilfe sb-zurueckgestellt">${esc(zurueckstellungSatz(v))}</p>` : ''}
         </div>
       </div>
 
       <div class="block">
-        <span class="block-nr">6</span>
+        <span class="block-nr">7</span>
         <div>
           <span class="frage">Was ist für die Entscheidung noch wichtig?</span>
-          <div class="feld">
-            <label for="abhNeu">Hängt zusammen mit</label>
-            <p class="feld-hilfe" id="abhNeu-status">Bestehendes Vorhaben auswählen oder einen neuen Namen eintragen. Verknüpfungen gelten in beide Richtungen.</p>
-            ${abhChips(v)}
-            <div class="abh-zeile">
-              <input type="text" id="abhNeu" list="abhListe" aria-describedby="abhNeu-status" maxlength="90" placeholder="Vorhaben der Abteilung ..." autocomplete="off">
-              <button class="btn leise" type="button" id="abhAdd">Hinzufügen</button>
-              <datalist id="abhListe">${abhVorschlaege(v)}</datalist>
-            </div>
-            ${rueckverweisFeldHtml(v)}
-          </div>
           <div class="feld">
             <label for="hinweis">Weitere wichtige Information</label>
             <textarea id="hinweis" data-id="${v.id}" data-feld="hinweis" maxlength="240" placeholder="z. B. Zielkonflikt oder Bedingung, kein Statusbericht">${esc(v.hinweis)}</textarea>
@@ -7042,11 +7064,11 @@
       <p class="pflicht-legende"><span class="pflichtzeichen" aria-hidden="true">*</span>Pflichtangabe</p>
 
       
+      <div class="ablesung">${ablesungHtml(v)}</div>
       <div class="sb-unten">
-        <div class="ablesung">${ablesungHtml(v)}</div>
         <div class="sb-foot">
           <button class="textbtn" type="button" id="loeschen">Vorhaben entfernen</button>
-          <span class="sb-foot-mitte"><span class="lane-meta" id="sbOffen">${esc(fussOffenText(v))}</span><span class="sb-gespeichert${speicherStatus.art === 'fehler' ? ' fehler' : ''}" id="sbGespeichert" role="status">${esc(speicherStatusText())}</span></span>
+          <span class="sb-foot-mitte"><button class="sb-kurz" type="button" id="sbKurz"><span>Hinweis:</span> <b id="sbKurzWort">${esc(abwaegung(v).wort)}</b> <i aria-hidden="true">↓</i></button><span class="lane-meta" id="sbOffen">${esc(fussOffenText(v))}</span><span class="sb-gespeichert${speicherStatus.art === 'fehler' ? ' fehler' : ''}" id="sbGespeichert" role="status">${esc(speicherStatusText())}</span></span>
           <button class="btn primary" type="button" id="zuSchritt2">Weiter zum Portfolio</button>
         </div>
       </div>
@@ -7105,6 +7127,7 @@
                                                                           
                                                                          
                                                   
+    kurzformVerdrahten(wurzel);
     document.getElementById('sbZurueck').addEventListener('click', () => {
       offenId = null;
       wechsle('erfassen');
@@ -7170,6 +7193,26 @@
     return 'Der Personalbedarf ist gedeckt.';
   }
 
+                                                                             
+                                                                            
+                                                 
+  function kurzformPruefen() {
+    const kurz = document.getElementById('sbKurz');
+    const hinweis = document.querySelector('#steckbrief .ablesung');
+    if (!kurz || !hinweis) return;
+    const r = hinweis.getBoundingClientRect();
+    kurz.hidden = r.top < window.innerHeight - 70 && r.bottom > 0;
+  }
+  function kurzformVerdrahten(wurzel) {
+    const kurz = wurzel.querySelector('#sbKurz');
+    const hinweis = wurzel.querySelector('.ablesung');
+    if (!kurz || !hinweis) return;
+    kurz.addEventListener('click', () => hinweis.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+    kurzformPruefen();
+  }
+  window.addEventListener('scroll', kurzformPruefen, { passive: true });
+  window.addEventListener('resize', kurzformPruefen);
+
   function renderDeckung(v) {
     const ausgabe = document.getElementById('deckungRechnung');
     if (!ausgabe) return;
@@ -7187,6 +7230,8 @@
                                                                                  
     const ablesung = document.querySelector('.ablesung');
     if (ablesung) ablesung.innerHTML = ablesungHtml(v);
+    const kurzWort = document.getElementById('sbKurzWort');
+    if (kurzWort) kurzWort.textContent = abwaegung(v).wort;
     renderDeckung(v);
     const fussOffen = document.getElementById('sbOffen');
     if (fussOffen) fussOffen.textContent = fussOffenText(v);
