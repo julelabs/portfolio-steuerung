@@ -619,6 +619,14 @@
   .wanderung .wd-segment { fill: var(--blau-20); cursor: pointer; }
   .wanderung .wd-segment.haus { fill: var(--blau); }
   .wanderung .wd-segment.rand { fill: none; stroke: var(--blau-40); stroke-dasharray: 3 3; cursor: default; }
+                                                                          
+                                                                           
+                                                                           
+  .wanderung .wd-segment:not(.rand) { stroke: transparent; stroke-width: 2px; transition: stroke .12s ease; }
+  .wanderung .wd-segment:not(.rand):hover { stroke: var(--blau-60); }
+  .wanderung .wd-segment.haus:hover, .wanderung .wd-segment.aktiv, .wanderung .wd-segment.haus.aktiv { stroke: var(--dunkel); }
+  .wanderung .wd-korb[data-segment] { cursor: pointer; }
+  .wanderung .wd-korb[data-segment]:hover, .wanderung .wd-korb.aktiv { fill: var(--blau); }
                                                                             
                                             
   .wanderung .wd-strom { fill: var(--blau-40); opacity: .55; cursor: pointer; stroke: transparent; stroke-width: 8px; pointer-events: all; }
@@ -8580,10 +8588,11 @@
     });
     w.koerbe.forEach(k => {
       const a = lage.von[k.korb], b = lage.nach[k.korb];
-      html += `<rect class="wd-segment ${k.korb}" data-segment="${k.korb}" x="${WD_LINKS}" y="${a.y}" width="${WD_BREITE}" height="${a.h}" rx="3"></rect>
-        <text class="wd-korb" x="${WD_LINKS - 10}" y="${a.y + a.h / 2 + 4}" text-anchor="end">${esc(k.name)} <tspan class="wd-zahl">${k.damals}</tspan></text>
-        <rect class="wd-segment ${k.korb}" data-segment="${k.korb}" x="${WD_RECHTS}" y="${b.y}" width="${WD_BREITE}" height="${b.h}" rx="3"></rect>
-        <text class="wd-korb" x="${WD_RECHTS + WD_BREITE + 10}" y="${b.y + b.h / 2 + 4}">${esc(k.name)} <tspan class="wd-zahl">${k.heute}</tspan></text>`;
+      const tipp = `<title>Anklicken zeigt, was sich bei „${esc(k.name)}“ bewegt hat</title>`;
+      html += `<rect class="wd-segment ${k.korb}" data-segment="${k.korb}" x="${WD_LINKS}" y="${a.y}" width="${WD_BREITE}" height="${a.h}" rx="3">${tipp}</rect>
+        <text class="wd-korb" data-segment="${k.korb}" x="${WD_LINKS - 10}" y="${a.y + a.h / 2 + 4}" text-anchor="end">${esc(k.name)} <tspan class="wd-zahl">${k.damals}</tspan></text>
+        <rect class="wd-segment ${k.korb}" data-segment="${k.korb}" x="${WD_RECHTS}" y="${b.y}" width="${WD_BREITE}" height="${b.h}" rx="3">${tipp}</rect>
+        <text class="wd-korb" data-segment="${k.korb}" x="${WD_RECHTS + WD_BREITE + 10}" y="${b.y + b.h / 2 + 4}">${esc(k.name)} <tspan class="wd-zahl">${k.heute}</tspan></text>`;
     });
     if (nNeu) html += `<rect class="wd-segment rand" x="${WD_LINKS}" y="${lage.von.neu.y}" width="${WD_BREITE}" height="${lage.von.neu.h}" rx="3"></rect>
       <text class="wd-korb rand" x="${WD_LINKS - 10}" y="${lage.von.neu.y + lage.von.neu.h / 2 + 4}" text-anchor="end">${esc(KORB_KURZ.neu)} <tspan class="wd-zahl">${nNeu}</tspan></text>`;
@@ -8616,7 +8625,12 @@
     const namen = wurzel.querySelector('.wd-namen');
     const korbName = korb => KORB_KURZ[korb] || korb;
     let aktiv = null;
+    const flaeche = wurzel.querySelector('.wanderung');
     const zeige = (eintraege, titel) => {
+                                                                                
+                                                                        
+                                                                        
+      if (flaeche && flaeche.offsetHeight) flaeche.style.minHeight = Math.max(flaeche.offsetHeight, parseFloat(flaeche.style.minHeight) || 0) + 'px';
       namen.innerHTML = wanderungListeHtml(eintraege, titel);
       namen.querySelectorAll('[data-wd-vorschau]').forEach(el => el.addEventListener('click', () => oeffnen(el.dataset.wdVorschau, el.dataset.wdKuerzel)));
     };
@@ -8634,11 +8648,15 @@
       const s = w.stroeme.find(x => x.von === el.dataset.von && x.nach === el.dataset.nach);
       zeige(s ? s.eintraege : [], korbName(el.dataset.von) + ' → ' + korbName(el.dataset.nach));
     }));
-    wurzel.querySelectorAll('.wd-segment[data-segment]').forEach(el => el.addEventListener('click', () => {
-      if (aktiv === el) { zuruecksetzen(); return; }
-      wurzel.querySelectorAll('.aktiv').forEach(x => x.classList.remove('aktiv'));
-      aktiv = el;
+    wurzel.querySelectorAll('[data-segment]').forEach(el => el.addEventListener('click', () => {
       const korb = el.dataset.segment;
+      if (aktiv === 'segment:' + korb) { zuruecksetzen(); return; }
+      wurzel.querySelectorAll('.aktiv').forEach(x => x.classList.remove('aktiv'));
+      aktiv = 'segment:' + korb;
+                                                                     
+                                                      
+      wurzel.querySelectorAll('[data-segment="' + korb + '"]').forEach(x => x.classList.add('aktiv'));
+      wurzel.querySelectorAll('.wd-strom:not(.bleibt)').forEach(x => { if (x.dataset.von === korb || x.dataset.nach === korb) x.classList.add('aktiv'); });
       const treffer = [];
       w.stroeme.filter(s => s.von !== s.nach && (s.von === korb || s.nach === korb)).forEach(s => s.eintraege.forEach(e => treffer.push(e)));
       zeige(treffer, korbName(korb) + ': bewegt');
