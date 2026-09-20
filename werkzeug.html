@@ -466,6 +466,17 @@
   .sb-kurz i { font-style: normal; color: var(--blau); }
   .sb-kurz:hover b { color: var(--blau); }
   .sb-kurz[hidden] { display: none; }
+                                                                        
+                                                                              
+                                                                          
+                                                                          
+  @media (min-width: 761px) {
+    .sb-unten .sb-foot { flex-wrap: nowrap; }
+    .sb-unten .sb-foot > button { flex: none; white-space: nowrap; }
+    .sb-unten .sb-foot-mitte { flex: 1 1 auto; min-width: 0; flex-wrap: nowrap; gap: 14px; }
+    .sb-unten .sb-foot-mitte > * { flex: none; white-space: nowrap; }
+    .sb-unten .sb-kurz { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  }
   .feld.feld-erstes { margin-top: 6px; }
                                                                               
                                                              
@@ -7068,7 +7079,7 @@
       <div class="sb-unten">
         <div class="sb-foot">
           <button class="textbtn" type="button" id="loeschen">Vorhaben entfernen</button>
-          <span class="sb-foot-mitte"><button class="sb-kurz" type="button" id="sbKurz"><span>Hinweis:</span> <b id="sbKurzWort">${esc(abwaegung(v).wort)}</b> <i aria-hidden="true">↓</i></button><span class="lane-meta" id="sbOffen">${esc(fussOffenText(v))}</span><span class="sb-gespeichert${speicherStatus.art === 'fehler' ? ' fehler' : ''}" id="sbGespeichert" role="status">${esc(speicherStatusText())}</span></span>
+          <span class="sb-foot-mitte"><button class="sb-kurz" type="button" id="sbKurz"><span>Hinweis:</span> <b id="sbKurzWort">${esc(hinweisKurz(v))}</b> <i aria-hidden="true">↓</i></button><span class="lane-meta" id="sbOffen">${esc(fussOffenText(v))}</span><span class="sb-gespeichert${speicherStatus.art === 'fehler' ? ' fehler' : ''}" id="sbGespeichert" role="status">${esc(speicherStatusText())}</span></span>
           <button class="btn primary" type="button" id="zuSchritt2">Weiter zum Portfolio</button>
         </div>
       </div>
@@ -7196,6 +7207,11 @@
                                                                              
                                                                             
                                                  
+                                                                              
+                                               
+  const HINWEIS_KURZ = { 'Frist oder rechtliche Pflicht betroffen': 'Frist oder Pflicht betroffen' };
+  function hinweisKurz(v) { const wort = abwaegung(v).wort; return HINWEIS_KURZ[wort] || wort; }
+
   function kurzformPruefen() {
     const kurz = document.getElementById('sbKurz');
     const hinweis = document.querySelector('#steckbrief .ablesung');
@@ -7231,7 +7247,7 @@
     const ablesung = document.querySelector('.ablesung');
     if (ablesung) ablesung.innerHTML = ablesungHtml(v);
     const kurzWort = document.getElementById('sbKurzWort');
-    if (kurzWort) kurzWort.textContent = abwaegung(v).wort;
+    if (kurzWort) kurzWort.textContent = hinweisKurz(v);
     renderDeckung(v);
     const fussOffen = document.getElementById('sbOffen');
     if (fussOffen) fussOffen.textContent = fussOffenText(v);
