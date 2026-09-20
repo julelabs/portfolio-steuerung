@@ -409,7 +409,9 @@
   .fehlt { color: var(--kirsche-text); font-size: 13px; margin-top: 5px; }
   .deckung-rechnung { min-height: 20px; margin-top: 7px; font-size: 13.5px; color: var(--fg-2); }
   .deckung-rechnung:empty { display: none; }
-  .deckung-rechnung.luecke, .deckung-rechnung.ueber { color: var(--kirsche-text); }
+                                                                            
+                                                                   
+  .deckung-rechnung.ueber { color: var(--kirsche-text); }
 
                                                                         
                                                  
@@ -450,7 +452,12 @@
   .sb-summe { font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--fg); }
   .sb-summe span { font-weight: 400; color: var(--fg-muted); font-size: 13.5px; }
   .sb-unklar { color: var(--fg-muted); font-size: 13px; margin-top: 2px; }
-  .sb-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+  .sb-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+  .sb-unten { position: sticky; bottom: 0; z-index: 3; background: var(--weiss); margin-top: 22px; padding: 12px 0 14px;
+    box-shadow: 0 -10px 18px -12px rgba(13,12,43,.18); }
+  .sb-unten .ablesung { margin-top: 0; }
+  .sb-foot-mitte { display: inline-flex; align-items: baseline; gap: 16px; flex-wrap: wrap; justify-content: center; }
+  textarea.beleg { resize: none; }
 
                                                                                                       
                                                                             
@@ -474,7 +481,7 @@
                                                                          
                                                                              
                                                  
-  .budget-band { background: var(--blau-10); position: sticky; top: 0; z-index: 5;
+  .budget-band { background: var(--blau-10); position: sticky; top: 0; z-index: 7;
                                                                             
                                                                            
                                
@@ -1024,6 +1031,24 @@
                                                                        
                                                                           
   .matrix.pf .mx-kopf { background: var(--blau-20); color: var(--fg); font-size: 15px; padding: 9px 12px; }
+                                                                               
+                                                                              
+                                                                            
+                                                                       
+                                                                         
+                                                                       
+  #bildKoerper .matrix.pf .pt.prio, #bildKoerper .matrix.pf .pt.wartet, #bildKoerper .mx-offen .pt {
+    border: 1.5px solid var(--blau-60); border-style: solid; background: var(--weiss); }
+  .pf-erstklaeren { position: absolute; right: 12px; top: 8px; border: 0; background: transparent; padding: 2px 0; cursor: pointer;
+    font-family: var(--body); font-size: 13px; font-weight: 400; color: var(--fg-2); }
+  .pf-erstklaeren:hover { color: var(--blau); text-decoration: underline; text-underline-offset: 3px; }
+                                                                          
+                                                                             
+                                
+  @media (min-width: 1000px) {
+    #bildKoerper .mx-scroll { overflow: visible; }
+    .matrix.pf .mx-reihe:first-child > .mx-kopf { position: sticky; top: var(--band-hoehe, 56px); z-index: 6; }
+  }
   .matrix.pf .mx-kopf .pf-vzae { font-weight: 400; color: var(--fg-2); font-size: 13px; margin-left: 8px; }
   .matrix.pf .mx-kopf small { display: block; font-weight: 400; color: var(--fg-2); font-size: 12.5px; margin-top: 2px; }
   .matrix.pf .mx-zelle.pf-gebunden { background: var(--weiss); }
@@ -1243,10 +1268,16 @@
                                                                  
   #bildKoerper .pt-foot-rechts { display: inline-flex; align-items: baseline; gap: 10px; white-space: nowrap; flex: none; }
   #bildKoerper .pt-foot-rechts .pt-vzae { min-width: 54px; text-align: right; }
-  #bildKoerper .pt-verknuepft { font-size: 12px; white-space: nowrap; }
+                                                                              
+                                                
+  #bildKoerper .pt-verknuepft { font-size: 12px; white-space: nowrap; font-family: var(--body); font-weight: 400; }
   #bildKoerper.seit-an .pt-wrap.bewegt .pt-verknuepft { display: none; }
-  #bildKoerper.seit-an .pt-wrap:not(.bewegt) { opacity: .16; }
-  #bildKoerper.seit-an .pt-wrap:not(.bewegt):hover { opacity: .48; }
+                                                                           
+                                                                    
+  #bildKoerper.seit-an .pt-wrap.bewegt .pt-ref { display: none; }
+  #bildKoerper.seit-an .pt-wrap.bewegt .pt-seit::before { content: none; }
+  #bildKoerper.seit-an .pt-wrap:not(.bewegt):not(.abh-vorn):not(.abh-auswahl) { opacity: .16; }
+  #bildKoerper.seit-an .pt-wrap:not(.bewegt):not(.abh-vorn):not(.abh-auswahl):hover { opacity: .48; }
   #bildKoerper.seit-an .pt-wrap.bewegt:not(.abh-zurueck) { transform: translateY(-3px); z-index: 4; }
   #bildKoerper.seit-an .pt-wrap.bewegt .pt { box-shadow: 0 0 0 2px var(--blau), 0 12px 26px rgba(13,12,43,.16); }
   @keyframes seit-heben { from { transform: translateY(0) scale(1); } 55% { transform: translateY(-6px) scale(1.015); } to { transform: translateY(-3px) scale(1); } }
@@ -1740,6 +1771,9 @@
                                                                              
   .haus-leiste { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; background: var(--weiss); border-top: 1px solid var(--line); box-shadow: 0 -8px 28px rgba(13,12,43,.10); padding: 12px clamp(16px, 4vw, 40px); }
   .haus-leiste .textbtn { padding: 0; }
+  .bild-leiste { font-size: 14px; color: var(--fg-2); }
+  .bild-leiste strong { font-family: var(--display); color: var(--fg); }
+  @media print { .bild-leiste { display: none !important; } }
                                                                                 
                                                                            
                                                                           
@@ -1994,6 +2028,8 @@
           </div>
         </div>
         <div id="quittung" aria-live="polite"></div>
+        
+        <div class="haus-leiste bild-leiste verborgen" id="bildLeiste" role="status"></div>
         <div id="bildKoerper"></div>
       </div>
 
@@ -6661,6 +6697,17 @@
                                                                             
                                                                           
                        
+                                                                             
+                                                                     
+                                                                        
+                                                                        
+                                                                          
+  function fussOffenText(v) {
+    if (istReif(v)) return '';
+    const offen = luecken(v);
+    if (empfehlung(v, S.vorhaben).wert === 'offen' && v.ruhen !== RUHEN[6] && offen.length > 1) return '';
+    return 'Offen: ' + offen.join(', ') + '.';
+  }
   function ablesungHtml(v) {
     const a = abwaegung(v);
     const knoten = gewaehlt(v, S.vorhaben) === 'nicht' && verknuepfungsZahl(v, S.vorhaben) >= 3
@@ -6737,8 +6784,7 @@
     }
     return `<div class="feld">
       <label for="${feld}-${v.id}">${esc(frage)}<span class="pflichtzeichen" aria-hidden="true">*</span></label>
-      <input type="text" id="${feld}-${v.id}" data-id="${v.id}" data-feld="${feld}" required aria-required="true" maxlength="240" placeholder="Kurz und konkret benennen" value="${esc(wert)}">
-      ${wert.trim() ? '' : `<p class="fehlt">${esc(hinweisText)}</p>`}
+      <textarea class="beleg" rows="2" id="${feld}-${v.id}" data-id="${v.id}" data-feld="${feld}" required aria-required="true" maxlength="240" placeholder="Kurz und konkret benennen">${esc(wert)}</textarea>
     </div>`;
   }
 
@@ -6840,7 +6886,6 @@
     wurzel.innerHTML = `<div class="steckbrief">
       <div class="sb-zurueck-zeile">
         <button class="sb-zurueck" type="button" id="sbZurueck">‹ Zur Übersicht</button>
-        <span class="sb-gespeichert${speicherStatus.art === 'fehler' ? ' fehler' : ''}" id="sbGespeichert" role="status">${esc(speicherStatusText())}</span>
       </div>
       <div class="sb-kopf">
         <input class="sb-titel" type="text" id="titel" value="${esc(v.name)}" maxlength="90" aria-label="Name des Vorhabens">
@@ -6960,7 +7005,7 @@
         ${nominiert ? `<div class="feld">
             <label for="bmWarum">Warum ist dieses Vorhaben für das Haus strategisch wichtig?<span class="pflichtzeichen" aria-hidden="true">*</span></label>
             <input type="text" id="bmWarum" data-id="${v.id}" data-feld="bmWarum" required aria-required="true" maxlength="240" placeholder="Strategische Bedeutung kurz begründen" value="${esc(v.bmWarum)}">
-            ${v.bmWarum.trim() ? '' : '<p class="fehlt">Begründung fehlt noch.</p>'}
+
           </div>` : ''}
         
         ${istZurueckgestellt(v) ? `<p class="hilfe sb-zurueckgestellt">${esc(zurueckstellungSatz(v))}</p>` : ''}
@@ -6988,7 +7033,7 @@
           </div>
           <div class="feld">
             <label for="link">Link zur Ablage oder zu PM Flex</label>
-            <p class="feld-hilfe">Freiwillig. Erscheint in der Kurzvorschau, damit niemand Details doppelt aufschreiben muss.</p>
+            <p class="feld-hilfe">Erscheint in der Kurzvorschau, damit niemand Details doppelt aufschreiben muss.</p>
             <input type="url" id="link" data-id="${v.id}" data-feld="link" maxlength="500" placeholder="https://…" value="${esc(v.link || '')}">
           </div>
         </div>
@@ -6996,12 +7041,14 @@
 
       <p class="pflicht-legende"><span class="pflichtzeichen" aria-hidden="true">*</span>Pflichtangabe</p>
 
-      <div class="ablesung">${ablesungHtml(v)}</div>
-
-      <div class="sb-foot">
-        <button class="textbtn" type="button" id="loeschen">Vorhaben entfernen</button>
-        <span class="lane-meta">${istReif(v) ? 'Steckbrief vollständig.' : 'Offen: ' + luecken(v).join(', ') + '.'}</span>
-        <button class="btn primary" type="button" id="zuSchritt2">Weiter zum Portfolio</button>
+      
+      <div class="sb-unten">
+        <div class="ablesung">${ablesungHtml(v)}</div>
+        <div class="sb-foot">
+          <button class="textbtn" type="button" id="loeschen">Vorhaben entfernen</button>
+          <span class="sb-foot-mitte"><span class="lane-meta" id="sbOffen">${esc(fussOffenText(v))}</span><span class="sb-gespeichert${speicherStatus.art === 'fehler' ? ' fehler' : ''}" id="sbGespeichert" role="status">${esc(speicherStatusText())}</span></span>
+          <button class="btn primary" type="button" id="zuSchritt2">Weiter zum Portfolio</button>
+        </div>
       </div>
     </div>`;
 
@@ -7141,8 +7188,8 @@
     const ablesung = document.querySelector('.ablesung');
     if (ablesung) ablesung.innerHTML = ablesungHtml(v);
     renderDeckung(v);
-    const fuss = document.querySelector('.sb-foot .lane-meta');
-    if (fuss) fuss.textContent = istReif(v) ? 'Steckbrief vollständig.' : 'Offen: ' + luecken(v).join(', ') + '.';
+    const fussOffen = document.getElementById('sbOffen');
+    if (fussOffen) fussOffen.textContent = fussOffenText(v);
   }
 
   function renderErfassen() {
@@ -7325,6 +7372,9 @@
                                                                         
                                                                        
     document.getElementById('bdKurz').textContent = kapazitaetKurz(kap, tg.offen.length > 0);
+                                                           
+    const band = document.querySelector('.budget-band');
+    if (band && band.offsetHeight) document.documentElement.style.setProperty('--band-hoehe', band.offsetHeight + 'px');
 
     const feld = document.getElementById('verfuegbar');
     feld.addEventListener('input', () => {
@@ -7838,6 +7888,13 @@
   });
   document.addEventListener('keydown', ev => {
     if (ev.key !== 'Escape') return;
+                                                                             
+                                                                   
+    if (!hausLinseOffen && !linseOffen && abhAktivId && ansicht === 'priorisieren' && sicht === 'portfolio' && !document.querySelector('dialog[open]')) {
+      abhAktivId = null;
+      renderBild();
+      return;
+    }
     if (hausLinseOffen) { hausLinseSchalten(false); const haus = document.getElementById('hausAnzeigen'); if (haus) haus.focus(); }
     if (!linseOffen) return;
     linseSchalten(false);
@@ -8024,7 +8081,10 @@
       const verbunden = !!fokus && fokus.verbunden.has(el.dataset.kachel);
       const karte = el.closest('.pt-wrap') || el;
       karte.classList.toggle('abh-vorn', verbunden);
-      karte.classList.toggle('abh-zurueck', (!!fokus && !verbunden) || !imReferat(el.dataset.kachel));
+                                                                          
+                                                                         
+                                                                          
+      karte.classList.toggle('abh-zurueck', fokus ? !verbunden : !imReferat(el.dataset.kachel));
       karte.classList.toggle('abh-auswahl', !!fokus && fokus.auswahl.id === el.dataset.kachel);
       el.setAttribute('aria-pressed', String(!!fokus && fokus.auswahl.id === el.dataset.kachel));
     });
@@ -8165,14 +8225,21 @@
         ${drin.map(v => kachel(v, true)).join('')}</div>`;
     };
 
+    const erstKlaerenZahl = imKorb('offen').length;
     const koepfe = PF_SPALTEN.map((spalte, si) => {
                                                                            
                                                                              
                                                                            
                                                                            
       const anzahl = bildVorhaben().filter(v => gewaehlt(v, bildVorhaben()) === spalte.wahl).length;
+                                                                               
+                                                                              
+                                                                             
+                                                                           
+      const wegweiser = spalte.gebunden && erstKlaerenZahl
+        ? `<button class="pf-erstklaeren" type="button" id="zuErstKlaeren">${erstKlaerenZahl} erst klären ↓</button>` : '';
       return `<div class="mx-kopf ${spalte.gebunden ? 'pf-gebunden' : ''}" role="columnheader" style="grid-column:${si + 1}; grid-row:1">
-        ${esc(ENTSCHEIDUNG[spalte.wahl])} <span class="pf-vzae">${anzahl} Vorhaben</span>
+        ${esc(ENTSCHEIDUNG[spalte.wahl])} <span class="pf-vzae">${anzahl} Vorhaben</span>${wegweiser}
         <small>${esc(spalte.sub)}</small></div>`;
     }).join('');
 
@@ -8193,10 +8260,10 @@
         </div>
       </div>
       
-      <p class="abh-info" aria-live="polite">
-        <span>${fokus ? esc(abhaengigkeitsSatz(fokus)) + ' Erneut anklicken setzt die Auswahl zurück.' : 'Kachel anklicken zeigt verknüpfte Vorhaben.'}</span>
+      <p class="abh-info">
+        <span>Kachel anklicken zeigt verknüpfte Vorhaben.</span>
       </p>
-      ${offen.length ? `<div class="mx-offen">
+      ${offen.length ? `<div class="mx-offen" id="erstKlaeren">
         <p class="mx-offen-kopf">${esc(PORTFOLIO.offen)} · ${offen.length}</p>
         <p class="lane-sub">Noch nicht zugeordnet, es fehlen Antworten im Steckbrief.</p>
         <div class="mx-offen-body">${offen.map(v => kachel(v, true)).join('')}</div>
@@ -8228,6 +8295,41 @@
     }
     markiereAbhaengigkeiten(fokus);
     bildSucheMarkieren();
+    const wegweiserKnopf = document.getElementById('zuErstKlaeren');
+    if (wegweiserKnopf) wegweiserKnopf.addEventListener('click', ev => {
+      ev.stopPropagation();
+      const ziel = document.getElementById('erstKlaeren');
+      if (ziel) ziel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+                                                                      
+    document.getElementById('bildKoerper').onclick = ev => {
+      if (!abhAktivId || (ev.target.closest && ev.target.closest('.pt-wrap, button, a, input, select'))) return;
+      abhAktivId = null;
+      renderBild();
+    };
+                                                                          
+                                                                        
+                                                       
+    const linseAn = seitAn || pfReferate.length > 0;
+    const treffer = !linseAn ? -1 : bildVorhaben().filter(v =>
+      (!pfReferate.length || pfReferate.includes(v.referat.trim()))
+      && (!seitAn || !!seitText(seitStand, v, bildVorhaben()))).length;
+    const standName = seitStand ? (seitStand.name || standDatumText(seitStand.zeitpunkt)) : '';
+    const leerSatz = treffer !== 0 ? ''
+      : pfReferate.length && seitAn ? `Bei ${pfReferate.join(', ')} hat sich seit „${standName}“ nichts verändert.`
+      : `Seit „${standName}“ hat sich nichts verändert.`;
+    bildLeisteSetzen(fokus ? abhaengigkeitsSatz(fokus) : leerSatz, !!fokus);
+  }
+
+  function bildLeisteSetzen(satz, mitAufheben) {
+    const leiste = document.getElementById('bildLeiste');
+    if (!leiste) return;
+    leiste.classList.toggle('verborgen', !satz);
+    leiste.innerHTML = satz
+      ? `<span>${esc(satz)}</span>${mitAufheben ? '<button class="textbtn blau" type="button" id="abhAufheben">Auswahl aufheben</button>' : ''}`
+      : '';
+    const knopf = document.getElementById('abhAufheben');
+    if (knopf) knopf.addEventListener('click', () => { abhAktivId = null; renderBild(); });
   }
 
                                                                              
@@ -8491,6 +8593,7 @@
     document.getElementById('quittung').classList.toggle('verborgen', sicht !== 'portfolio');
     document.querySelectorAll('.sichten button').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.sicht === sicht)));
     document.getElementById('reiterLinse').innerHTML = '';
+    if (sicht !== 'portfolio') bildLeisteSetzen('', false);
     bdStandSichtbarkeit();
     if (imBriefing) {
       document.getElementById('bildKopf').classList.add('verborgen');
@@ -10806,7 +10909,9 @@
     '#entscheiden': 'priorisieren', '#portfolio': 'priorisieren', '#matrix': 'priorisieren',
     '#abhaengig': 'priorisieren', '#laufzeiten': 'priorisieren',
                                                       
-    '#veraenderung': 'priorisieren'
+    '#veraenderung': 'priorisieren',
+                                                                         
+    '#eintragen': 'erfassen'
   };
 
   function wechsle(neu, ohneAnker) {
@@ -10896,7 +11001,22 @@
                                                                               
                                                                             
                                                                        
+                                                                                
+                                                         
+  function neuFormOeffnen() {
+    const knopf = document.getElementById('neuZeigen');
+    if (!knopf || (knopf.classList.contains('verborgen') && document.getElementById('neuForm').classList.contains('verborgen'))) return;
+    if (offenId) { offenId = null; renderErfassen(); }
+    knopf.classList.add('verborgen');
+    document.getElementById('neuForm').classList.remove('verborgen');
+    document.getElementById('neuName').focus();
+  }
   window.addEventListener('hashchange', () => {
+    if (location.hash === '#eintragen') {
+      if (ansicht !== 'erfassen') wechsle('erfassen');
+      neuFormOeffnen();
+      return;
+    }
     const ziel = location.hash === '' ? 'erfassen' : ANKER_ANSICHT[location.hash];
     if (!ziel || ziel === ansicht) return;
     if (ziel === 'haus' && !hausVerfuegbar()) return;
@@ -11064,11 +11184,7 @@
     });
     einfrierenSichtbarkeit();
     document.querySelectorAll('.sichten button').forEach(el => el.addEventListener('click', () => sichtWechseln(el.dataset.sicht)));
-    document.getElementById('neuZeigen').addEventListener('click', () => {
-      document.getElementById('neuZeigen').classList.add('verborgen');
-      document.getElementById('neuForm').classList.remove('verborgen');
-      document.getElementById('neuName').focus();
-    });
+    document.getElementById('neuZeigen').addEventListener('click', neuFormOeffnen);
     document.getElementById('addBtn').addEventListener('click', anlegen);
     document.getElementById('neuName').addEventListener('keydown', event => {
       if (event.key === 'Enter') anlegen();
@@ -11142,6 +11258,8 @@
                                                                              
                                                                       
       wechsle('erfassen');
+                                                                           
+      if (location.hash === '#eintragen') neuFormOeffnen();
     }
     hausGemerktesOeffnen();
     spNachStart();
