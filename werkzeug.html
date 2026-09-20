@@ -4327,7 +4327,11 @@
                                                                        
                                                                         
     const vorher = {};
-    stand.vorhaben.forEach(v => { vorher[v.kennung || v.id] = JSON.stringify(v.haengtAn || []); });
+    const vorherZahl = {};
+    stand.vorhaben.forEach(v => {
+      vorher[v.kennung || v.id] = JSON.stringify(v.haengtAn || []);
+      vorherZahl[v.kennung || v.id] = (v.haengtAn || []).length;
+    });
                                                                                
                                                                           
                                                                            
@@ -4346,10 +4350,17 @@
     const repariert = stand.vorhaben
       .filter(v => unfertigKennungen.has(v.kennung) || vorher[v.kennung || v.id] !== JSON.stringify(v.haengtAn || []))
       .map(v => v.kennung);
+                                                                          
+                                                                           
+                                                                            
+                                                   
+    const entfernt = stand.vorhaben
+      .map(v => ({ name: v.name, anzahl: (vorherZahl[v.kennung || v.id] || 0) - (v.haengtAn || []).length }))
+      .filter(e => e.anzahl > 0);
     stand.tagesgeschaeft = tagesgeschaeftZeilen(stand);
     kennungenErgaenzen(stand.vorhaben);
     historieErgaenzen(stand.vorhaben);
-    return { stand: stand, eintraege: eintraege, neuester: neuester, sonderDa: sonderDa, repariert: repariert };
+    return { stand: stand, eintraege: eintraege, neuester: neuester, sonderDa: sonderDa, repariert: repariert, entfernt: entfernt };
   }
 
                                                                        
@@ -4366,6 +4377,10 @@
       if (!a || a.typ !== 'v') { if (a) liste.push(a); return liste; }
       if (istKennungsVerweis(a)) { liste.push(a); return liste; }
       const ziel = (alle || []).find(x => x.id === a.id);
+                                                                       
+                                                                            
+                                                                               
+                                                                         
       if (ziel && kennungGueltig(ziel.kennung)) liste.push({ typ: 'v', id: 'k:' + ziel.kennung });
       return liste;
     }, []);
@@ -4865,7 +4880,40 @@
                                                                          
                                                                            
                   
-  const HAUS_REFERAT_ORDNUNG = new Intl.Collator('de', { numeric: true });
+                                                                             
+                                                                
+                                                                       
+                                                                         
+                                                                       
+                
+  const ROEMISCH = { I: 1, V: 5, X: 10, L: 50, C: 100 };
+  function roemischWert(text) {
+    let summe = 0;
+    for (let i = 0; i < text.length; i += 1) {
+      const wert = ROEMISCH[text[i]], naechster = ROEMISCH[text[i + 1]] || 0;
+      summe += wert < naechster ? -wert : wert;
+    }
+    return summe;
+  }
+  function referatTeile(text) {
+    return String(text || '').trim().split(/\s+/).filter(Boolean).map(teil => {
+      if (/^\d+$/.test(teil)) return { zahl: Number(teil) };
+      if (/^[IVXLC]+$/.test(teil)) return { zahl: roemischWert(teil) };
+      return { wort: teil };
+    });
+  }
+  function referatVergleich(a, b) {
+    const ta = referatTeile(a), tb = referatTeile(b);
+    for (let i = 0; i < Math.max(ta.length, tb.length); i += 1) {
+      const x = ta[i], y = tb[i];
+      if (!x || !y) return x ? 1 : -1;
+      if (x.zahl !== undefined && y.zahl !== undefined) { if (x.zahl !== y.zahl) return x.zahl - y.zahl; continue; }
+      if (x.zahl !== undefined || y.zahl !== undefined) return x.zahl !== undefined ? -1 : 1;
+      const wort = x.wort.localeCompare(y.wort, 'de');
+      if (wort) return wort;
+    }
+    return 0;
+  }
   function hausSortiert(liste) {
     return (liste || []).slice().sort((a, b) => {
       const stufe = HAUS_RANG[gewaehlt(a, liste)] - HAUS_RANG[gewaehlt(b, liste)];
@@ -4874,7 +4922,7 @@
       if (ra !== rb) {
         if (!ra) return 1;
         if (!rb) return -1;
-        const referat = HAUS_REFERAT_ORDNUNG.compare(ra, rb);
+        const referat = referatVergleich(ra, rb);
         if (referat) return referat;
       }
       const nominiert = (wirksamNominiert(b) ? 1 : 0) - (wirksamNominiert(a) ? 1 : 0);
@@ -5572,7 +5620,14 @@
   let syncHinweisUhr = null;
                                                                                
                                                                   
-  function syncHinweisZeigen(text) {
+                                                                        
+  function entferntText(entfernt) {
+    const summe = entfernt.reduce((x, e) => x + e.anzahl, 0);
+    const namen = entfernt.slice(0, 3).map(e => '„' + e.name + '“').join(', ') + (entfernt.length > 3 ? ' und ' + (entfernt.length - 3) + ' weiteren' : '');
+    return 'Beim Laden ' + (summe === 1 ? 'wurde 1 Verknüpfung' : 'wurden ' + summe + ' Verknüpfungen')
+      + ' entfernt, weil das verknüpfte Vorhaben nicht mehr in der Liste steht (bei ' + namen + '). Falls das nicht stimmt, bitte dem Stab melden.';
+  }
+  function syncHinweisZeigen(text, dauer) {
     let el = document.getElementById('syncHinweis');
     if (!el) {
       el = document.createElement('p');
@@ -5583,7 +5638,7 @@
     }
     el.textContent = text || 'In einem anderen Tab wurde inzwischen gespeichert. Dieser Tab zeigt jetzt den neueren Stand; die letzte Änderung hier ist darin nicht enthalten.';
     clearTimeout(syncHinweisUhr);
-    syncHinweisUhr = setTimeout(() => el.remove(), 8000);
+    syncHinweisUhr = setTimeout(() => el.remove(), dauer || 8000);
   }
                                                                               
                                                                           
@@ -6319,6 +6374,7 @@
                                                                              
                                               
         if ((ergebnis.repariert || []).length && spListe.schreiben && spTyp) spSchreibenAnstossen();
+        if ((ergebnis.entfernt || []).length) syncHinweisZeigen(entferntText(ergebnis.entfernt), 20000);
         return null;
       });
     });
@@ -6471,7 +6527,7 @@
   let listeSort = { spalte: '', ab: false };
   const LISTE_SPALTEN = {
     name: { leer: v => !String(v.name || '').trim(), vergleich: (a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'de') },
-    referat: { leer: v => !String(v.referat || '').trim(), vergleich: (a, b) => REFERAT_ORDNUNG.compare(String(a.referat || '').trim(), String(b.referat || '').trim()) },
+    referat: { leer: v => !String(v.referat || '').trim(), vergleich: (a, b) => referatVergleich(a.referat, b.referat) },
     stand: { leer: v => v.laeuft !== LAEUFT[1] && v.laeuft !== LAEUFT[2], vergleich: (a, b) => LAEUFT.indexOf(a.laeuft) - LAEUFT.indexOf(b.laeuft) },
     bedarf: { leer: v => !String(v.vzae || '').trim(), vergleich: (a, b) => vzaeWert(a) - vzaeWert(b) },
     fehlt: { leer: () => false, vergleich: (a, b) => luecken(b).length - luecken(a).length }
@@ -7788,7 +7844,6 @@
     const knopf = document.getElementById('pfReferat');
     if (knopf) knopf.focus();
   });
-  const REFERAT_ORDNUNG = new Intl.Collator('de', { numeric: true });
   function sortiert(liste) {
     return liste.slice().sort((a, b) => {
       const stufe = RANG[gewaehlt(a, bildVorhaben())] - RANG[gewaehlt(b, bildVorhaben())];
@@ -7799,7 +7854,7 @@
       if (ra !== rb) {
         if (!ra) return 1;
         if (!rb) return -1;
-        const referat = REFERAT_ORDNUNG.compare(ra, rb);
+        const referat = referatVergleich(ra, rb);
         if (referat) return referat;
       }
       const nominiert = (wirksamNominiert(b) ? 1 : 0) - (wirksamNominiert(a) ? 1 : 0);
@@ -8020,7 +8075,7 @@
                                                                             
                                                                               
                                            
-    const referate = [...new Set(bildVorhaben().map(v => v.referat.trim()).filter(Boolean))].sort(REFERAT_ORDNUNG.compare);
+    const referate = [...new Set(bildVorhaben().map(v => v.referat.trim()).filter(Boolean))].sort(referatVergleich);
     pfReferate = pfReferate.filter(r => referate.includes(r));
                                                                               
                                                                              
