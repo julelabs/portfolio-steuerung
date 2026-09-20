@@ -610,6 +610,12 @@
     document.querySelectorAll('[data-impressum]').forEach(function (a) {
       a.addEventListener('click', function (e) { e.preventDefault(); if (d && d.showModal) d.showModal(); });
     });
+                                                                              
+                                                             
+    if (d) d.addEventListener('click', function (e) {
+      var r = d.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) d.close();
+    });
   })();
 </script>
 </body>

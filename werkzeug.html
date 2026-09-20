@@ -1679,7 +1679,9 @@
   .pt-haus .pt-foot-links { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
   .pt-haus-rechts { display: inline-flex; align-items: baseline; gap: 8px; white-space: nowrap; }
                                                                                
-  .pt-verknuepft { color: var(--blau); font-family: var(--display); font-weight: 700; }
+                                                                              
+                           
+  .pt-verknuepft { color: var(--blau); font-family: var(--body); font-weight: 400; font-size: 12px; white-space: nowrap; }
                                                                   
   .haus-abt { display: flex; align-items: center; gap: 4px; }
   .haus-klappe { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: 0; border-radius: 4px; background: transparent; color: var(--fg-muted); cursor: pointer; padding: 0; }
@@ -11412,6 +11414,12 @@
     const d = document.getElementById('impressum');
     document.querySelectorAll('[data-impressum]').forEach(a => {
       a.addEventListener('click', e => { e.preventDefault(); if (d && d.showModal) d.showModal(); });
+    });
+                                                                           
+                                                                                
+    if (d) d.addEventListener('click', e => {
+      const r = d.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) d.close();
     });
   })();
 </script>
