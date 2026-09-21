@@ -2104,7 +2104,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 33 · 21.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 34 · 21.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -3708,18 +3708,29 @@
                                                                           
                                                                      
                                                                         
-  function referatsstandEinlesen(stand, datei) {
+    
+                                                                              
+                                                                               
+                                                                          
+                                                                        
+                                                                     
+  function referatsstandEinlesen(stand, datei, optionen) {
     const eingelesen = datei && Array.isArray(datei.vorhaben) ? datei
       : datei && datei.stand && Array.isArray(datei.stand.vorhaben) ? datei.stand
       : null;
     if (!eingelesen) return { fehler: 'Die Datei enthält keinen Stand des Werkzeugs.' };
+    const ganzerStand = !!(optionen && optionen.ganzerStand);
+    if (ganzerStand && (stand.vorhaben || []).length) {
+      return { fehler: 'Ein ganzer Stand lässt sich nur in eine leere Liste kopieren. In dieser Liste stehen schon Vorhaben.' };
+    }
 
     const norm = wert => String(wert || '').trim().toLowerCase().replace(/\s+/g, ' ');
     const STECKBRIEFFELDER = Object.keys(neuesVorhaben('x', ''));
-    const AUSGENOMMEN = ['id', 'kennung', 'entscheidung', 'bedingung', 'begruendung', 'haengtAn'];
+    const AUSGENOMMEN = ganzerStand ? ['id', 'kennung', 'haengtAn']
+      : ['id', 'kennung', 'entscheidung', 'bedingung', 'begruendung', 'haengtAn'];
 
     const bericht = {
-      fehler: null, referate: [], neu: [], aktualisiert: [], unveraendert: 0,
+      fehler: null, ganzerStand: ganzerStand, referate: [], neu: [], aktualisiert: [], unveraendert: 0,
       verbunden: [], platzhalter: [], fehltImReferatsstand: [], tagesgeschaeft: []
     };
 
@@ -3826,6 +3837,11 @@
         bericht.fehltImReferatsstand.push(x.name);
       }
     });
+
+    if (ganzerStand) {
+      if (eingelesen.verfuegbar) stand.verfuegbar = String(eingelesen.verfuegbar);
+      if (Array.isArray(eingelesen.staende)) stand.staende = JSON.parse(JSON.stringify(eingelesen.staende));
+    }
 
     bericht.referate = [...referateAnzeige].sort((a, b) => a.localeCompare(b, 'de'));
     bericht.tagesgeschaeft = [...tgReferate];
@@ -7611,11 +7627,14 @@
     vorschauId = null;
     dialog.onclose = null;
     const kopie = JSON.parse(JSON.stringify(S));
+                                                                              
+                                                                           
+    const ganzerStand = /(^|[?&])kopie(=|&|$)/.test(spOrt().search || '');
     const berichte = dateien.map(datei => {
       let json;
       try { json = JSON.parse(datei.text); }
       catch (fehler) { return { name: datei.name, fehler: 'Die Datei ist kein gültiges JSON.' }; }
-      return Object.assign({ name: datei.name }, referatsstandEinlesen(kopie, json));
+      return Object.assign({ name: datei.name }, referatsstandEinlesen(kopie, json, { ganzerStand }));
     });
     const zahlwort = (n, ein, mehr) => (n === 1 ? '1 ' + ein : n + ' ' + mehr);
                                                                          
@@ -7644,12 +7663,14 @@
         </section>`;
     wurzel.innerHTML = `<div class="vs-inhalt">
       <div class="vs-kopf">
-        <h2 id="vorschauTitel">Referatsstand einlesen</h2>
+        <h2 id="vorschauTitel">${ganzerStand ? 'Ganzen Stand kopieren' : 'Referatsstand einlesen'}</h2>
         <button class="vs-schliessen" type="button" aria-label="Vorschau schließen">&times;</button>
       </div>
       <p class="vs-unterzeile">Noch ist nichts übernommen. Prüfe die Zusammenfassung und bestätige dann.</p>
       ${berichte.map(blockHtml).join('')}
-      <section class="vs-block"><p>Entscheidungen aus Schritt 3 bleiben unverändert.</p></section>
+      <section class="vs-block"><p>${ganzerStand
+        ? 'Kopiert wird der ganze Stand: Steckbriefe, Entscheidungen, Kapazität und Stände. Das geht nur in eine leere Liste.'
+        : 'Entscheidungen aus Schritt 3 bleiben unverändert.'}</p></section>
       <div class="vs-fuss">
         <button class="btn primary" type="button" id="einlesenUebernehmen">Übernehmen</button>
         <button class="btn leise" type="button" id="einlesenAbbrechen">Abbrechen</button>
