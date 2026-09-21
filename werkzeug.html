@@ -532,6 +532,16 @@
                                                                             
                                                               
   #bdStand .bd-eingabe { display: block; margin: 12px 0 0; }
+                                                                         
+                                                                            
+  .bd-summen { margin: 14px 0 0; border-collapse: collapse; font-size: 13.5px; color: var(--fg-2); }
+  .bd-summen caption { text-align: left; font-family: var(--display); font-weight: 700; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--fg-muted); padding-bottom: 6px; }
+  .bd-summen th, .bd-summen td { padding: 5px 22px 5px 0; border-bottom: 1px solid var(--line); text-align: right; font-weight: 400; white-space: nowrap; }
+  .bd-summen thead th { font-family: var(--display); font-weight: 700; font-size: 12.5px; color: var(--fg-2); }
+  .bd-summen tbody th { text-align: left; font-family: var(--display); font-weight: 700; color: var(--fg); }
+  .bd-summen tbody th span { font-weight: 400; color: var(--fg-muted); margin-left: 4px; }
+  .bd-summen td { font-family: var(--display); font-weight: 700; color: var(--fg); font-variant-numeric: tabular-nums; }
+  .bd-summen-fuss { margin: 6px 0 0; font-size: 12.5px; color: var(--fg-muted); }
   .bd-tg { font-size: 13.5px; padding: 0; }
   .bd-trenn { color: var(--fg-muted); font-weight: 400; margin: 0 3px 0 10px; }
                                                                 
@@ -2104,7 +2114,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 34 · 21.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 35 · 21.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -3067,6 +3077,29 @@
       luecke: hatAngabe ? runde1(Math.max(0, bedarf - gedeckt)) : null,
       ueberdeckt: hatAngabe && gedeckt > bedarf
     };
+  }
+
+                                                                              
+                                                                            
+                                                                        
+                                                                             
+                                                                         
+                                                      
+  function vzaeSummen(liste) {
+    const leer = () => ({ anzahl: 0, bedarf: 0, gedeckt: 0, luecke: 0, ohneAngabe: 0 });
+    const aus = { alle: leer(), eingeplant: leer() };
+    (liste || []).forEach(v => {
+      const d = deckung(v);
+      const ziele = gewaehlt(v, liste) === 'prio' ? [aus.alle, aus.eingeplant] : [aus.alle];
+      ziele.forEach(z => {
+        z.anzahl += 1;
+        z.bedarf += d.bedarf;
+        if (d.bedarf > 0 && d.gedeckt === null) z.ohneAngabe += 1;
+        if (d.gedeckt !== null) { z.gedeckt += Math.min(d.gedeckt, d.bedarf); z.luecke += d.luecke; }
+      });
+    });
+    [aus.alle, aus.eingeplant].forEach(z => { z.bedarf = runde1(z.bedarf); z.gedeckt = runde1(z.gedeckt); z.luecke = runde1(z.luecke); });
+    return aus;
   }
 
                                                                                          
@@ -7434,7 +7467,16 @@
                                                                           
                                           
     const ohneKap = !(kap.verfuegbar > 0);
-    document.getElementById('bdStand').innerHTML = eingabe + (ohneKap
+                                                                       
+                                                                          
+    const sum = vzaeSummen(S.vorhaben);
+    const sumZeile = (titel, z) => `<tr><th scope="row">${titel} <span>${z.anzahl}</span></th><td>${zahlText(z.bedarf)}</td><td>${zahlText(z.gedeckt)}</td><td>${zahlText(z.luecke)}</td></tr>`;
+    const summen = sum.alle.bedarf > 0 ? `<table class="bd-summen" id="bdSummen">
+        <caption>Aus den Steckbriefen, in VZÄ</caption>
+        <thead><tr><th scope="col"></th><th scope="col">Bedarf</th><th scope="col">von der Abteilung gedeckt</th><th scope="col">noch ungedeckt</th></tr></thead>
+        <tbody>${sumZeile('Eingeplant', sum.eingeplant)}${sumZeile('Alle Vorhaben', sum.alle)}</tbody>
+      </table>${sum.alle.ohneAngabe ? `<p class="bd-summen-fuss">Bei ${sum.alle.ohneAngabe === 1 ? 'einem Vorhaben' : sum.alle.ohneAngabe + ' Vorhaben'} mit Bedarf fehlt die Angabe zur Deckung. ${sum.alle.ohneAngabe === 1 ? 'Es zählt' : 'Sie zählen'} bei „gedeckt“ und „ungedeckt“ nicht mit.</p>` : ''}` : '';
+    document.getElementById('bdStand').innerHTML = eingabe + summen + (ohneKap
       ? '<p class="bd-stand">Noch keine Kapazität eingetragen. Solange das Feld leer ist, rechnet das Werkzeug keine Auslastung und zeigt keine Kapazitätslücken.</p>'
       : standHinweis + tgHinweis);
                                                                            
