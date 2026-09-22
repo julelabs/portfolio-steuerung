@@ -2128,7 +2128,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 41 · 22.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 42 · 22.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -7015,7 +7015,7 @@
           <div class="feld">
             
             <label for="veraenderung">Beschreibe die angestrebte Veränderung<span class="pflichtzeichen" aria-hidden="true">*</span></label>
-            <textarea id="veraenderung" data-id="${v.id}" data-feld="veraenderung" required aria-required="true" maxlength="240" placeholder="Was machen oder erleben Menschen dadurch künftig anders?">${esc(v.veraenderung)}</textarea>
+            <textarea id="veraenderung" data-id="${v.id}" data-feld="veraenderung" required aria-required="true" maxlength="400" placeholder="Was machen oder erleben Menschen dadurch künftig anders?">${esc(v.veraenderung)}</textarea>
             
           </div>
         </div>
@@ -9766,8 +9766,7 @@
                                                                             
                                                                              
                                                                               
-                                                                              
-                                                                           
+                                                       
                                                                            
                                                                            
                                                                   
@@ -9785,8 +9784,14 @@
                                                                        
                                      
     const imWandel = hausReiter === 'veraenderung';
-    const lpSchalter = hausReiter === 'portfolio' && hausNurNominierte;
-    const lpAn = lpSchalter && hausSeitAn;
+                                                                           
+                                                                              
+                                                                            
+                                                                           
+                                                                         
+                                                            
+    const lpSchalter = hausReiter === 'portfolio';
+    const lpAn = lpSchalter && hausSeitAn && hausNurNominierte;
     const teile = [];
     if (hausAbteilungen.length) teile.push(hausAbteilungen.length <= 3 ? hausAbteilungen.join(', ') : hausAbteilungen.length + ' Abteilungen');
     if (lpAn) teile.push('Veränderung');
@@ -9802,7 +9807,7 @@
           <button class="linse-knopf${leer ? ' leer' : ''}" type="button" id="hausAnzeigen" aria-haspopup="true" aria-expanded="${hausLinseOffen}" aria-controls="hausAnzeigenMenue" aria-labelledby="hausAnzeigenWort hausAnzeigen">${esc(leer ? (lpSchalter ? 'Abteilung oder Veränderung' : 'alle Abteilungen') : teile.join(' · '))}</button>
           <div class="linse-menue${hausLinseOffen ? '' : ' verborgen'}" id="hausAnzeigenMenue" role="group" aria-labelledby="hausAnzeigenWort">
             <button class="linse-eintrag" type="button" data-haus-anzeigen="alle" aria-pressed="${leer}">alle Abteilungen</button>
-            ${lpSchalter ? `<button class="linse-eintrag" type="button" id="hausSeitSchalter" aria-pressed="${hausSeitAn}">Veränderung im Leitungsportfolio</button>
+            ${lpSchalter ? `<button class="linse-eintrag" type="button" id="hausSeitSchalter" aria-pressed="${lpAn}">Veränderung im Leitungsportfolio</button>
             <p class="linse-notiz">${esc(seitName ? 'seit ' + seitName : 'seit dem letzten Stand je Abteilung')}</p>` : ''}
             <div class="linse-gruppe">${bau.abteilungen.map(a => `<label class="linse-haken"><input type="checkbox" data-haus-abteilung="${esc(a.kuerzel)}" ${hausAbteilungen.includes(a.kuerzel) ? 'checked' : ''}>${esc(a.kuerzel + ' · ' + a.name)}</label>`).join('')}</div>
           </div>
@@ -9824,7 +9829,17 @@
     });
     const seitSchalter = document.getElementById('hausSeitSchalter');
     if (seitSchalter) seitSchalter.addEventListener('click', () => {
-      seitSetzen(!hausSeitAn);
+      if (hausSeitAn && hausNurNominierte) {
+        seitSetzen(false);
+      } else {
+        seitSetzen(true);
+        if (!hausNurNominierte) {
+          hausNurNominierte = true;
+          hausAktiv = null;
+          hausOffen = {};
+          hausSichtSichern();
+        }
+      }
       hausLinseOffen = false;
       renderHaus();
       nachWahl();
