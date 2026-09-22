@@ -2117,7 +2117,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 37 · 21.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 38 · 22.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -7035,11 +7035,11 @@
         <span class="block-nr">3</span>
         <div>
           <span class="frage" id="leitung">Für Leitung nominieren?<span class="pflichtzeichen" aria-hidden="true">*</span></span>
-          <p class="hilfe">Nominiert nur Vorhaben, die für das ganze Haus strategisch wichtig sind.</p>
+          <p class="hilfe">Nominiert nur Vorhaben, die für das ganze Haus strategisch wichtig sind, als Richtwert etwa 8 bis 10 je Abteilung.</p>
           
           <div class="feld">
             <div class="wahl wahl-nominierung">
-              <button type="button" data-nominierung="nominiert" data-id="${v.id}" aria-pressed="${v.leitung === 'nominiert'}">Für Leitungsportfolio nominieren<small>kommt in die hausweite Auswahl von ST und BM</small></button>
+              <button type="button" data-nominierung="nominiert" data-id="${v.id}" aria-pressed="${v.leitung === 'nominiert'}">Für Leitungsportfolio nominieren<small>die Abteilung nominiert etwa 8 bis 10 Vorhaben</small></button>
               <button type="button" data-nominierung="keine" data-id="${v.id}" aria-pressed="${v.leitung === 'keine'}">Nicht nominieren, selbst steuern<small>bleibt im Abteilungsportfolio</small></button>
             </div>
           </div>
@@ -7930,10 +7930,10 @@
         </div>
         
         <div class="vs-nominierung">
-          <h4>Nominierung für die hausweite Auswahl</h4>
-          <p class="vs-empfehlung">${istZurueckgestellt(v) ? esc(nominierung) : 'ST und BM wählen hausweit ca. 8 bis 10 Vorhaben.'}</p>
+          <h4>Nominierung für das Leitungsportfolio</h4>
+          <p class="vs-empfehlung">${istZurueckgestellt(v) ? esc(nominierung) : 'Richtwert: etwa 8 bis 10 Vorhaben je Abteilung.'}</p>
           <div class="wahl wahl-nominierung">
-            <button type="button" data-nominierung="nominiert" aria-pressed="${v.leitung === 'nominiert'}"${nominierungGesperrt ? ' disabled' : ''}>Für Leitungsportfolio nominieren<small>kommt in die hausweite Auswahl von ST und BM</small></button>
+            <button type="button" data-nominierung="nominiert" aria-pressed="${v.leitung === 'nominiert'}"${nominierungGesperrt ? ' disabled' : ''}>Für Leitungsportfolio nominieren<small>die Abteilung nominiert etwa 8 bis 10 Vorhaben</small></button>
             <button type="button" data-nominierung="keine" aria-pressed="${v.leitung === 'keine'}"${nominierungGesperrt ? ' disabled' : ''}>Nicht nominieren, selbst steuern<small>bleibt im Abteilungsportfolio</small></button>
           </div>
           ${nominierungGesperrt ? '<p class="vs-gesperrt">Nominiert werden kann nur, was eingeplant ist.</p>' : ''}
@@ -8368,7 +8368,7 @@
     const zone = (korb, label) => {
       const drin = imKorb(korb);
       return `<div class="mx-zelle pf-gebunden pf-zone" role="cell" data-wahl="prio" data-zone="${korb}">
-        <span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))} VZÄ${korb === 'haus' ? '<span class="pf-richtwert">ST und BM wählen hausweit ca. 8 bis 10 Vorhaben</span>' : ''}</span>
+        <span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))} VZÄ${korb === 'haus' ? '<span class="pf-richtwert">Richtwert: etwa 8 bis 10 Vorhaben je Abteilung</span>' : ''}</span>
         ${korb === 'fach' ? tgKarte : ''}
         ${drin.map(v => kachel(v, true)).join('')}</div>`;
     };
