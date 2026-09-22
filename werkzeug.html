@@ -1000,6 +1000,12 @@
   .mx-offen { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
   .mx-offen-kopf { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 8px; }
   .mx-offen-body { display: flex; flex-wrap: wrap; gap: 7px; }
+                                                                         
+                                                                                
+  .abh-fremd-strip .pt-wrap { z-index: 3; }
+  .pt.pt-fremd { border: 1.5px dashed var(--blau-40); background: var(--weiss); cursor: default; }
+  .pt.pt-fremd .pt-korb { color: var(--fg-2); }
+  .pt-abt { font-family: var(--display); font-size: 11px; font-weight: 800; letter-spacing: .06em; color: var(--weiss); background: var(--dunkel); border-radius: 4px; padding: 1px 5px; }
 
                                                                              
                                                                            
@@ -2122,7 +2128,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 40 · 22.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 41 · 22.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -8146,18 +8152,32 @@
     return { auswahl, ausgehend, eingehend, verbunden, kanten };
   }
 
-  function abhaengigkeitsSatz(fokus) {
-    const namen = [...fokus.verbunden].filter(id => id !== fokus.auswahl.id)
-      .map(id => nachId(id)).filter(Boolean).map(v => v.name)
-                                                                              
-                                                           
-      .concat((fokus.auswahl.haengtAn || []).filter(istKennungsVerweis).map(a => fremdName(a, fremdeNamen())))
-                                                                     
-                                                                       
-                             
-      .concat(rueckverweise(fokus.auswahl).map(x => x.name ? x.name + ' (' + (x.abteilung ? 'Abteilung ' + x.abteilung : 'andere Abteilung') + ')' : 'ein Vorhaben einer anderen Abteilung'));
-    if (!namen.length) return 'Keine Verknüpfung zu einem anderen Vorhaben erfasst.';
-    return `${fokus.auswahl.name} hängt zusammen mit ${namensListe(namen)}.`;
+                                                                             
+                                                                             
+                                                                 
+                                                                             
+                                                                                   
+  function fremdePartner(v) {
+    const externe = fremdeNamen();
+    const aus = (v.haengtAn || []).filter(istKennungsVerweis).map(a => {
+      const x = fremdesVorhaben(a, externe);
+      return { name: (x && x.name) || 'Vorhaben ' + verweisKennung(a), abteilung: (x && x.abteilung) || '', rueck: false };
+    });
+    rueckverweise(v).forEach(x => aus.push({ name: x.name || 'Ein Vorhaben einer anderen Abteilung', abteilung: x.abteilung || '', rueck: true }));
+    return aus;
+  }
+  function fremdStreifenHtml(fokus) {
+    const partner = fokus ? fremdePartner(fokus.auswahl) : [];
+    if (!partner.length) return '';
+    const kachel = (p, i) => `<div class="pt-wrap abh-vorn"><div class="pt pt-fremd" data-fremd="${i}">
+        <span class="pt-name">${esc(p.name)}</span>
+        <span class="pt-korb">${p.rueck ? 'hat sich mit diesem Vorhaben verknüpft' : 'im Steckbrief verknüpft'}</span>
+        <span class="pt-foot"><span>${p.abteilung ? 'Abteilung ' + esc(p.abteilung) : 'andere Abteilung'}</span>${p.abteilung ? `<span class="pt-abt">${esc(p.abteilung)}</span>` : ''}</span>
+      </div></div>`;
+    return `<div class="mx-offen abh-fremd-strip" id="fremdStreifen">
+      <p class="mx-offen-kopf">Verknüpft in anderen Abteilungen · ${partner.length}</p>
+      <div class="mx-offen-body">${partner.map(kachel).join('')}</div>
+    </div>`;
   }
 
   function kartenRand(von, zu, bezug) {
@@ -8191,9 +8211,24 @@
     if (!matrix || !matrix.querySelector('.matrix.pf')) return;
     const alt = matrix.querySelector('.abh-netz');
     if (alt) alt.remove();
-    if (!fokus || !fokus.kanten.length) return;
+    const alterStreifen = matrix.querySelector('.abh-fremd-strip');
+    if (alterStreifen) alterStreifen.remove();
+    if (!fokus) return;
+    const streifen = fremdStreifenHtml(fokus);
+    if (streifen) {
+      const offen = matrix.querySelector('.mx-offen');
+      (offen || matrix.querySelector('.matrix.pf')).insertAdjacentHTML('afterend', streifen);
+    }
+    if (!fokus.kanten.length && !streifen) return;
     const bezug = matrix.getBoundingClientRect();
-    const pfade = fokus.kanten.map(kante => {
+    const auswahlEl = matrix.querySelector(`[data-kachel="${fokus.auswahl.id}"]`);
+    const fremdPfade = auswahlEl ? [...matrix.querySelectorAll('.abh-fremd-strip [data-fremd]')].map(zu => {
+      const p = kartenRand(auswahlEl, zu, bezug);
+      const dy = p.ty - p.sy;
+      const d = `M ${p.sx} ${p.sy} C ${p.sx} ${p.sy + dy * .46}, ${p.tx} ${p.ty - dy * .46}, ${p.tx} ${p.ty}`;
+      return `<path class="abh-linie-halo" d="${d}"></path><path class="abh-linie" d="${d}"></path>`;
+    }).join('') : '';
+    const pfade = fremdPfade + fokus.kanten.map(kante => {
       const von = matrix.querySelector(`[data-kachel="${kante.von}"]`);
       const zu = matrix.querySelector(`[data-kachel="${kante.zu}"]`);
       if (!von || !zu) return '';
@@ -8471,18 +8506,17 @@
     const leerSatz = treffer !== 0 ? ''
       : pfReferate.length && seitAn ? `Bei ${pfReferate.join(', ')} hat sich seit „${standName}“ nichts verändert.`
       : `Seit „${standName}“ hat sich nichts verändert.`;
-    bildLeisteSetzen(fokus ? abhaengigkeitsSatz(fokus) : leerSatz, !!fokus);
+                                                                           
+                                                                             
+                                                                    
+    bildLeisteSetzen(fokus ? '' : leerSatz, false);
   }
 
-  function bildLeisteSetzen(satz, mitAufheben) {
+  function bildLeisteSetzen(satz) {
     const leiste = document.getElementById('bildLeiste');
     if (!leiste) return;
     leiste.classList.toggle('verborgen', !satz);
-    leiste.innerHTML = satz
-      ? `<span>${esc(satz)}</span>${mitAufheben ? '<button class="textbtn blau" type="button" id="abhAufheben">Auswahl aufheben</button>' : ''}`
-      : '';
-    const knopf = document.getElementById('abhAufheben');
-    if (knopf) knopf.addEventListener('click', () => { abhAktivId = null; renderBild(); });
+    leiste.innerHTML = satz ? `<span>${esc(satz)}</span>` : '';
   }
 
                                                                              
@@ -8756,7 +8790,7 @@
     document.getElementById('quittung').classList.toggle('verborgen', sicht !== 'portfolio');
     document.querySelectorAll('.sichten button').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.sicht === sicht)));
     document.getElementById('reiterLinse').innerHTML = '';
-    if (sicht !== 'portfolio') bildLeisteSetzen('', false);
+    if (sicht !== 'portfolio') bildLeisteSetzen('');
     bdStandSichtbarkeit();
     if (imBriefing) {
       document.getElementById('bildKopf').classList.add('verborgen');
