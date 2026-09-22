@@ -2122,7 +2122,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 39 · 22.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 40 · 22.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -10032,6 +10032,7 @@
     const wandel = {};
     hausVeraenderungZaehler(bau.abteilungen).forEach(z => { wandel[z.kuerzel] = z; });
     const abteilungen = bau.abteilungen.filter(a => hausAbtGewaehlt(a.kuerzel));
+    const aktiv = hausAktiv ? bau.alle.find(e => e.schluessel === hausAktiv) : null;
                                                                          
                        
     const summen = { bleibt: 0, neu: 0, raus: 0 };
@@ -10041,7 +10042,15 @@
                                                                             
                                                              
       const offen = !hausNurNominierte || !!hausOffen[a.kuerzel];
-      const meine = (offen ? bau.alle.filter(hausSuchTreffer) : bau.sichtbar).filter(e => e.kuerzel === a.kuerzel);
+      let meine = (offen ? bau.alle.filter(hausSuchTreffer) : bau.sichtbar).filter(e => e.kuerzel === a.kuerzel);
+                                                                        
+                                                                             
+                                                                            
+                              
+      if (!offen && aktiv && aktiv.verbunden.size) {
+        const da = new Set(meine.map(e => e.schluessel));
+        bau.alle.forEach(e => { if (e.kuerzel === a.kuerzel && aktiv.verbunden.has(e.schluessel) && !da.has(e.schluessel)) meine.push(e); });
+      }
                                                                            
                                                                            
                                                   
