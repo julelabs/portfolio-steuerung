@@ -917,6 +917,18 @@
   .linse-eintrag:hover { background: var(--blau-10); }
   .linse-eintrag[aria-pressed="true"] { font-family: var(--display); font-weight: 700; color: var(--blau); }
   .linse-gruppe { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 6px; }
+  .linse-titel { font-family: var(--display); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); padding: 4px 10px 2px; }
+                                                                          
+                                                                               
+  .thema-chip { display: inline-flex; align-items: center; gap: 2px; border: 1px solid var(--blau-40); background: var(--weiss); color: var(--blau); border-radius: 999px; padding: 3px 4px 3px 10px; font-family: var(--display); font-size: 12.5px; font-weight: 700; }
+  .thema-chip.nur-lesen { padding-right: 10px; }
+  .thema-chip button { border: 0; background: transparent; cursor: pointer; color: var(--fg-muted); font-size: 14px; line-height: 1; padding: 1px 6px; border-radius: 999px; }
+  .thema-chip button:hover { background: var(--lavendel); color: var(--kirsche-text); }
+  .thema-vorschlag { border: 1px dashed var(--blau-40); background: transparent; color: var(--fg-2); border-radius: 999px; padding: 3px 10px; font-family: var(--display); font-size: 12.5px; font-weight: 600; cursor: pointer; }
+  .thema-vorschlag:hover { background: var(--blau-10); color: var(--blau); }
+  .vs-themen-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; }
+  .vs-thema-neu { width: 100%; max-width: 320px; border: 1px solid var(--feldkante); border-radius: 5px; padding: 6px 9px; font: inherit; font-size: 13.5px; }
+  .vs-status .thema-chip { background: var(--weiss); padding: 4px 9px; font-size: 12.5px; }
   .bild-steuer .linse-haken, .haus-steuer .linse-haken { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 5px; cursor: pointer;
     font-family: var(--body); font-size: 14px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--fg); }
   .bild-steuer .linse-haken:hover, .haus-steuer .linse-haken:hover { background: var(--blau-10); }
@@ -2133,7 +2145,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 43 · 24.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 44 · 24.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -2357,6 +2369,10 @@
                                                                        
                                                               
       koav: false,
+                                                                         
+                                                                    
+                                                                            
+      themen: [],
       ziel: WAEHLEN, veraenderung: '',
       reichweite: WAEHLEN, wirkungAb: WAEHLEN,
       ruhen: WAEHLEN, chanceKonkret: '', pflichtKonkret: '', zusageKonkret: '', schadenKonkret: '', klaerungKonkret: '',
@@ -2665,7 +2681,49 @@
     const leereFelder = ['referat', 'veraenderung', 'vzae', 'vzaeGedeckt', 'startAb', 'endeBis',
       'bmWarum', 'hinweis', 'link', 'rollenFehlen', 'chanceKonkret', 'pflichtKonkret', 'zusageKonkret', 'schadenKonkret', 'klaerungKonkret'];
     const gewaehltFelder = ['ziel', 'reichweite', 'wirkungAb', 'ruhen', 'laeuft'];
-    return leereFelder.every(leer) && gewaehltFelder.every(feld => v[feld] === WAEHLEN) && v.leitung === 'offen' && v.koav !== true;
+    return leereFelder.every(leer) && gewaehltFelder.every(feld => v[feld] === WAEHLEN) && v.leitung === 'offen' && v.koav !== true
+      && !themenListe(v).length;
+  }
+
+                                                                         
+                                                                            
+                                                                             
+                                                                     
+                                                                         
+                                                                               
+  const THEMA_MAX = 60;
+  function themaSchluessel(text) {
+    return String(text || '').trim().replace(/\s+/g, ' ').toLowerCase();
+  }
+  function themenListe(v) {
+    return v && Array.isArray(v.themen) ? v.themen.filter(t => typeof t === 'string' && t.trim()) : [];
+  }
+  function abteilungsThemen(liste) {
+    const nach = new Map();
+    (liste || []).forEach(v => themenListe(v).forEach(t => {
+      const k = themaSchluessel(t);
+      if (!nach.has(k)) nach.set(k, { name: t, anzahl: 0 });
+      nach.get(k).anzahl += 1;
+    }));
+    return [...nach.values()].sort((a, b) => a.name.localeCompare(b.name, 'de'));
+  }
+  function themaVergeben(v, text, liste) {
+    const roh = String(text || '').trim().replace(/\s+/g, ' ').slice(0, THEMA_MAX).trim();
+    if (!v || !roh) return false;
+    const k = themaSchluessel(roh);
+    const eigene = themenListe(v);
+    if (eigene.some(t => themaSchluessel(t) === k)) return false;
+    const vorhanden = abteilungsThemen(liste).find(t => themaSchluessel(t.name) === k);
+    v.themen = eigene.concat(vorhanden ? vorhanden.name : roh);
+    return true;
+  }
+  function themaEntfernen(v, text) {
+    const k = themaSchluessel(text);
+    const eigene = themenListe(v);
+    const rest = eigene.filter(t => themaSchluessel(t) !== k);
+    if (rest.length === eigene.length) return false;
+    v.themen = rest;
+    return true;
   }
 
                                                                             
@@ -3783,7 +3841,7 @@
     const norm = wert => String(wert || '').trim().toLowerCase().replace(/\s+/g, ' ');
     const STECKBRIEFFELDER = Object.keys(neuesVorhaben('x', ''));
     const AUSGENOMMEN = ganzerStand ? ['id', 'kennung', 'haengtAn']
-      : ['id', 'kennung', 'entscheidung', 'bedingung', 'begruendung', 'haengtAn'];
+      : ['id', 'kennung', 'entscheidung', 'bedingung', 'begruendung', 'haengtAn', 'themen'];
 
     const bericht = {
       fehler: null, ganzerStand: ganzerStand, referate: [], neu: [], aktualisiert: [], unveraendert: 0,
@@ -7884,6 +7942,36 @@
                                                     
                                                                            
                                                                   
+                                                                             
+                                                                   
+                                                                     
+                                                                        
+                                                                         
+                                                                       
+                                                                           
+                                                       
+  const THEMEN_VORSCHLAEGE_MAX = 8;
+  function themenBlockHtml(v) {
+    const eigene = themenListe(v);
+    const lesen = speicherArt === 'liste' && spListe && !spListe.schreiben;
+    if (lesen && !eigene.length) return '';
+    const alle = abteilungsThemen(S.vorhaben);
+    const vergeben = new Set(eigene.map(t => t.trim().toLowerCase()));
+    const uebrig = alle.filter(t => !vergeben.has(t.name.trim().toLowerCase()));
+    const chips = eigene.map(t => lesen
+      ? `<span class="thema-chip nur-lesen">${esc(t)}</span>`
+      : `<span class="thema-chip">${esc(t)}<button type="button" data-thema-weg="${esc(t)}" aria-label="Thema ${esc(t)} entfernen">&times;</button></span>`).join('');
+    const vorschlaege = !lesen && alle.length <= THEMEN_VORSCHLAEGE_MAX
+      ? uebrig.map(t => `<button type="button" class="thema-vorschlag" data-thema-dazu="${esc(t.name)}">+ ${esc(t.name)}</button>`).join('') : '';
+    return `<section class="vs-block vs-themen">
+        <h3>Themen</h3>
+        ${chips || vorschlaege ? `<div class="vs-themen-chips">${chips}${vorschlaege}</div>` : ''}
+        ${lesen ? '' : `<input class="vs-thema-neu" type="text" id="themaNeu" list="themaListe" maxlength="60" placeholder="Neues Thema, mit Enter anlegen" aria-label="Neues Thema" autocomplete="off">
+        <datalist id="themaListe">${uebrig.map(t => `<option value="${esc(t.name)}"></option>`).join('')}</datalist>
+        ${alle.length ? '' : '<p class="vs-auto">Über „Hervorheben“ zeigt das Portfolio alle Vorhaben eines Themas.</p>'}`}
+      </section>`;
+  }
+
   function vorschauOeffnen(id, fokus) {
     const v = nachId(id);
     const dialog = document.getElementById('vorschauDialog');
@@ -7986,6 +8074,7 @@
         ${v.hinweis.trim() ? `<p class="vs-landet">Hinweis der Erfassung: ${esc(v.hinweis)}</p>` : ''}
         ${linkSicher(v.link) ? `<p class="vs-landet vs-link"><a href="${esc(linkSicher(v.link))}" target="_blank" rel="noopener">Ablage oder PM Flex öffnen</a></p>` : ''}
       </section>
+      ${themenBlockHtml(v)}
       ${rueckverweise(v).length ? `<section class="vs-block">
         <h3>${rueckverweise(v).length > 1 ? 'Verknüpfungen aus anderen Abteilungen' : 'Verknüpfung aus anderer Abteilung'}</h3>
         ${rueckverweise(v).map(x => `<p>${esc(rueckverweisSatz(x))}</p>`).join('')}
@@ -8022,6 +8111,28 @@
       renderBriefingAll();
       renderQuittung();
     }));
+                                                                           
+                                                                        
+    const themaFertig = () => {
+      speichern();
+      renderPriorisieren();
+      vorschauOeffnen(v.id);
+    };
+    wurzel.querySelectorAll('[data-thema-weg]').forEach(el => el.addEventListener('click', () => {
+      if (themaEntfernen(v, el.dataset.themaWeg)) themaFertig();
+    }));
+    wurzel.querySelectorAll('[data-thema-dazu]').forEach(el => el.addEventListener('click', () => {
+      if (themaVergeben(v, el.dataset.themaDazu, S.vorhaben)) themaFertig();
+    }));
+    const themaFeld = wurzel.querySelector('#themaNeu');
+    if (themaFeld) themaFeld.addEventListener('keydown', ev => {
+      if (ev.key !== 'Enter') return;
+      ev.preventDefault();
+      if (!themaVergeben(v, themaFeld.value, S.vorhaben)) return;
+      themaFertig();
+      const neu = document.getElementById('themaNeu');
+      if (neu) neu.focus();
+    });
     wurzel.querySelector('.vs-schliessen').addEventListener('click', () => dialog.close());
     document.getElementById('vorschauSteckbrief').addEventListener('click', () => {
       dialog.close();
@@ -8054,6 +8165,15 @@
   const RANG = { prio: 0, wartet: 1, offen: 2, nicht: 3 };
   const SEIT_WAHL = '__seit';
   const LINSE_LEER = 'Referat oder Veränderung';
+  const LINSE_LEER_THEMEN = 'Referat, Thema oder Veränderung';
+                                                                    
+  let pfThemen = [];
+  function imThema(v) {
+    if (!pfThemen.length) return true;
+    if (!v) return false;
+    const eigene = themenListe(v).map(t => t.trim().toLowerCase());
+    return pfThemen.some(t => eigene.includes(t.trim().toLowerCase()));
+  }
                                                                              
                            
   function linseSchalten(offen) {
@@ -8289,16 +8409,16 @@
                                                                      
                                                                            
     const imReferat = id => {
-      if (!pfReferate.length) return true;
       const v = nachId(id);
+      if (!pfReferate.length) return pfThemen.length ? imThema(v) : true;
       if (!v) return false;
-      return pfReferate.includes(v.referat.trim());
+      return pfReferate.includes(v.referat.trim()) && imThema(v);
     };
                                                                          
                                                                       
                                       
     const tg = wurzel.querySelector('.tg-wrap');
-    if (tg) tg.classList.toggle('abh-zurueck', !!fokus || pfReferate.length > 0);
+    if (tg) tg.classList.toggle('abh-zurueck', !!fokus || pfReferate.length > 0 || pfThemen.length > 0);
     wurzel.querySelectorAll('[data-kachel]').forEach(el => {
       const verbunden = !!fokus && fokus.verbunden.has(el.dataset.kachel);
       const karte = el.closest('.pt-wrap') || el;
@@ -8322,7 +8442,7 @@
   function bildSuchTreffer(v) {
     const suche = bildSuche.trim().toLowerCase();
     if (!suche || !v) return true;
-    return (String(v.name || '') + ' ' + String(v.referat || '')).toLowerCase().indexOf(suche) >= 0;
+    return (String(v.name || '') + ' ' + String(v.referat || '') + ' ' + themenListe(v).join(' ')).toLowerCase().indexOf(suche) >= 0;
   }
   function bildSucheHtml() {
     return `<input class="haus-suche bild-suche" type="search" id="bildSuche" value="${esc(bildSuche)}" placeholder="Vorhaben suchen ..." aria-label="Vorhaben suchen" autocomplete="off">`;
@@ -8359,6 +8479,8 @@
                                            
     const referate = [...new Set(bildVorhaben().map(v => v.referat.trim()).filter(Boolean))].sort(referatVergleich);
     pfReferate = pfReferate.filter(r => referate.includes(r));
+    const themen = abteilungsThemen(bildVorhaben()).map(t => t.name);
+    pfThemen = pfThemen.filter(t => themen.includes(t));
                                                                               
                                                                              
                                                                           
@@ -8380,26 +8502,28 @@
                                                                         
                                                                        
                                                                               
-    const linseLeer = !seitAn && !pfReferate.length;
+    const linseLeer = !seitAn && !pfReferate.length && !pfThemen.length;
     const linseTeile = [];
     if (pfReferate.length) linseTeile.push(pfReferate.length <= 2 ? pfReferate.join(', ') : pfReferate.length + ' Referate');
-    if (seitAn) linseTeile.push(pfReferate.length ? 'verändert' : seitWahl);
-    const linseText = linseLeer ? LINSE_LEER : linseTeile.join(' · ');
+    if (pfThemen.length) linseTeile.push(pfThemen.length === 1 ? pfThemen[0] : pfThemen.length + ' Themen');
+    if (seitAn) linseTeile.push(pfReferate.length || pfThemen.length ? 'verändert' : seitWahl);
+    const linseText = linseLeer ? (themen.length ? LINSE_LEER_THEMEN : LINSE_LEER) : linseTeile.join(' · ');
                                                                             
                                                          
     document.getElementById('reiterLinse').innerHTML = `<div class="bild-steuer">
         ${bildSucheHtml()}
-        ${referate.length || seitWahl ? `<span class="linse-wort" id="linseWort">Hervorheben</span>
+        ${referate.length || seitWahl || themen.length ? `<span class="linse-wort" id="linseWort">Hervorheben</span>
         <div class="linse">
           <button class="linse-knopf${linseLeer ? ' leer' : ''}" type="button" id="pfReferat" aria-haspopup="true" aria-expanded="${linseOffen}" aria-controls="linseMenue" aria-labelledby="linseWort pfReferat">${esc(linseText)}</button>
           <div class="linse-menue${linseOffen ? '' : ' verborgen'}" id="linseMenue" role="group" aria-labelledby="linseWort">
-            <button class="linse-eintrag" type="button" data-linse="alle" aria-pressed="${!seitAn && !pfReferate.length}">alle Referate</button>
+            <button class="linse-eintrag" type="button" data-linse="alle" aria-pressed="${linseLeer}">alle Referate</button>
             <div class="linse-gruppe">${seitWahl
               ? `<label class="linse-haken"><input type="checkbox" data-linse-seit ${seitAn ? 'checked' : ''}>${esc(seitWahl)}</label>`
                                                                               
                                                                                
               : '<label class="linse-haken gesperrt"><input type="checkbox" data-linse-seit disabled>Verändert seit dem letzten Stand <span class="linse-hinweis">noch kein Stand</span></label>'}</div>
             ${referate.length ? `<div class="linse-gruppe">${referate.map(r => `<label class="linse-haken"><input type="checkbox" data-linse-referat="${esc(r)}" ${pfReferate.includes(r) ? 'checked' : ''}>${esc(r)}</label>`).join('')}</div>` : ''}
+            ${themen.length ? `<div class="linse-gruppe"><p class="linse-titel">Themen</p>${themen.map(t => `<label class="linse-haken"><input type="checkbox" data-linse-thema="${esc(t)}" ${pfThemen.includes(t) ? 'checked' : ''}>${esc(t)}</label>`).join('')}</div>` : ''}
           </div>
         </div>` : ''}
       </div>`;
@@ -8496,6 +8620,7 @@
       linseKnopf.addEventListener('click', () => linseSchalten(!linseOffen));
       menue.querySelectorAll('[data-linse]').forEach(el => el.addEventListener('click', () => {
         pfReferate = [];
+        pfThemen = [];
         linseOffen = false;
         seitSchalten(false);
         const knopf = document.getElementById('pfReferat');
@@ -8512,6 +8637,13 @@
         pfReferate = el.checked ? pfReferate.concat(referat) : pfReferate.filter(r => r !== referat);
         renderBild();
         const wieder = [...document.querySelectorAll('#linseMenue [data-linse-referat]')].find(feld => feld.dataset.linseReferat === referat);
+        if (wieder) wieder.focus();
+      }));
+      menue.querySelectorAll('[data-linse-thema]').forEach(el => el.addEventListener('change', () => {
+        const thema = el.dataset.linseThema;
+        pfThemen = el.checked ? pfThemen.concat(thema) : pfThemen.filter(t => t !== thema);
+        renderBild();
+        const wieder = [...document.querySelectorAll('#linseMenue [data-linse-thema]')].find(feld => feld.dataset.linseThema === thema);
         if (wieder) wieder.focus();
       }));
     }
@@ -8532,12 +8664,14 @@
                                                                           
                                                                         
                                                        
-    const linseAn = seitAn || pfReferate.length > 0;
+    const linseAn = seitAn || pfReferate.length > 0 || pfThemen.length > 0;
     const treffer = !linseAn ? -1 : bildVorhaben().filter(v =>
       (!pfReferate.length || pfReferate.includes(v.referat.trim()))
+      && imThema(v)
       && (!seitAn || !!seitText(seitStand, v, bildVorhaben()))).length;
     const standName = seitStand ? (seitStand.name || standDatumText(seitStand.zeitpunkt)) : '';
     const leerSatz = treffer !== 0 ? ''
+      : !seitAn ? 'Kein Vorhaben passt zu dieser Auswahl.'
       : pfReferate.length && seitAn ? `Bei ${pfReferate.join(', ')} hat sich seit „${standName}“ nichts verändert.`
       : `Seit „${standName}“ hat sich nichts verändert.`;
                                                                            
@@ -10276,7 +10410,7 @@
   function hausSuchTreffer(eintrag) {
     const suche = hausSuche.trim().toLowerCase();
     if (!suche) return true;
-    return [eintrag.v.name, eintrag.v.referat, eintrag.ziel, eintrag.v.bmWarum, eintrag.v.koav ? 'koav koalitionsvertrag' : '']
+    return [eintrag.v.name, eintrag.v.referat, eintrag.ziel, eintrag.v.bmWarum, eintrag.v.koav ? 'koav koalitionsvertrag' : '', themenListe(eintrag.v).join(' ')]
       .join(' ').toLowerCase().indexOf(suche) >= 0;
   }
 
@@ -10976,6 +11110,7 @@
         ${eintrag.stand ? `<span>${esc(eintrag.stand)}</span>` : ''}
         ${v.koav ? '<span>Bestandteil KoaV</span>' : ''}
         ${eintrag.zurueckgestellt ? `<span>${esc(ZURUECKGESTELLT_CHIP)}</span>` : ''}
+        ${themenListe(v).map(t => `<span class="thema-chip nur-lesen">${esc(t)}</span>`).join('')}
       </div>
       <section class="vs-block">
         <h3>Veränderung</h3>
