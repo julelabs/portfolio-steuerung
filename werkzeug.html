@@ -1005,6 +1005,11 @@
   .abh-fremd-strip .pt-wrap { z-index: 3; }
   .pt.pt-fremd { border: 1.5px dashed var(--blau-40); background: var(--weiss); cursor: default; }
   .pt.pt-fremd .pt-korb { color: var(--fg-2); }
+                                                                                 
+  .pt.pt-fremd.pt-weg { border-color: var(--line); }
+  .pt.pt-fremd.pt-weg .pt-name { color: var(--fg-2); }
+  .pt-loesen { border: 0; background: transparent; padding: 0; font: inherit; font-weight: 700; color: var(--blau); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+  .pt-loesen:hover { color: var(--kirsche-text); }
   .pt-abt { font-family: var(--display); font-size: 11px; font-weight: 800; letter-spacing: .06em; color: var(--weiss); background: var(--dunkel); border-radius: 4px; padding: 1px 5px; }
 
                                                                              
@@ -2128,7 +2133,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 42 · 22.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 43 · 24.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -6834,7 +6839,7 @@
                                                                            
                                                                              
     const fremde = (v.haengtAn || []).filter(istKennungsVerweis).map(a => {
-      const name = fremdName(a, fremdeNamen());
+      const name = fremdVerschwunden(a) ? verschwundenName(a) : fremdName(a, fremdeNamen());
       return `<span class="abh-chip abh-fremd">${esc(name)}<button type="button" data-abh-ziel="${esc(a.id)}" aria-label="Verknüpfung mit ${esc(name)} entfernen">&times;</button></span>`;
     });
     const chips = eigene.concat(fremde).join('');
@@ -6861,6 +6866,23 @@
     if (speicherArt !== 'liste' || !Array.isArray(spNamen) || !spListe) return [];
     const eigene = new Set(S.vorhaben.map(v => v.kennung));
     return spNamen.filter(e => kennungGueltig(e.kennung) && e.abteilung !== spListe.kuerzel && !eigene.has(e.kennung) && String(e.name || '').trim());
+  }
+
+                                                                          
+                                                                             
+                                                                           
+                                                                            
+                                                                          
+                                                                           
+                                                                       
+                                     
+  function fremdVerschwunden(a) {
+    if (!istKennungsVerweis(a) || speicherArt !== 'liste' || !Array.isArray(spNamen)) return false;
+    const kennung = verweisKennung(a);
+    return !fremdeNamen().some(e => e.kennung === kennung);
+  }
+  function verschwundenName(a) {
+    return 'Nicht mehr vorhanden (' + verweisKennung(a) + ')';
   }
 
                                                                            
@@ -8160,6 +8182,7 @@
   function fremdePartner(v) {
     const externe = fremdeNamen();
     const aus = (v.haengtAn || []).filter(istKennungsVerweis).map(a => {
+      if (fremdVerschwunden(a)) return { name: 'Nicht mehr vorhanden', abteilung: '', rueck: false, weg: a.id };
       const x = fremdesVorhaben(a, externe);
       return { name: (x && x.name) || 'Vorhaben ' + verweisKennung(a), abteilung: (x && x.abteilung) || '', rueck: false };
     });
@@ -8169,7 +8192,12 @@
   function fremdStreifenHtml(fokus) {
     const partner = fokus ? fremdePartner(fokus.auswahl) : [];
     if (!partner.length) return '';
-    const kachel = (p, i) => `<div class="pt-wrap abh-vorn"><div class="pt pt-fremd" data-fremd="${i}">
+    const schreibbar = !(speicherArt === 'liste' && spListe && !spListe.schreiben);
+    const kachel = (p, i) => p.weg ? `<div class="pt-wrap abh-vorn"><div class="pt pt-fremd pt-weg" data-fremd="${i}">
+        <span class="pt-name">${esc(p.name)}</span>
+        <span class="pt-korb">vermutlich in seiner Abteilung gelöscht · ${esc(p.weg.slice(2))}</span>
+        <span class="pt-foot">${schreibbar ? `<button type="button" class="pt-loesen" data-fremd-loesen="${esc(p.weg)}">Verknüpfung lösen</button>` : '<span>andere Abteilung</span>'}</span>
+      </div></div>` : `<div class="pt-wrap abh-vorn"><div class="pt pt-fremd" data-fremd="${i}">
         <span class="pt-name">${esc(p.name)}</span>
         <span class="pt-korb">${p.rueck ? 'hat sich mit diesem Vorhaben verknüpft' : 'im Steckbrief verknüpft'}</span>
         <span class="pt-foot"><span>${p.abteilung ? 'Abteilung ' + esc(p.abteilung) : 'andere Abteilung'}</span>${p.abteilung ? `<span class="pt-abt">${esc(p.abteilung)}</span>` : ''}</span>
@@ -8218,6 +8246,12 @@
     if (streifen) {
       const offen = matrix.querySelector('.mx-offen');
       (offen || matrix.querySelector('.matrix.pf')).insertAdjacentHTML('afterend', streifen);
+      matrix.querySelectorAll('[data-fremd-loesen]').forEach(el => el.addEventListener('click', ev => {
+        ev.stopPropagation();
+        verknuepfungEntfernen(S.vorhaben, fokus.auswahl.id, el.dataset.fremdLoesen);
+        speichern();
+        renderBild();
+      }));
     }
     if (!fokus.kanten.length && !streifen) return;
     const bezug = matrix.getBoundingClientRect();
