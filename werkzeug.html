@@ -1389,7 +1389,7 @@
                                                                                   
   .sync-hinweis.sync-oben { top: 0; bottom: auto; left: 0; transform: none; width: 100%; max-width: none; border-radius: 0; text-align: center; }
   .sync-hinweis { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 60; margin: 0; max-width: 560px; background: var(--dunkel); color: #FFFFFF; font-size: 14px; line-height: 1.45; padding: 12px 18px; border-radius: 8px; box-shadow: 0 6px 24px rgba(17, 22, 59, .35); }
-                                                                            
+                                                                        
                                                                           
                                                                            
                                                                           
@@ -2192,7 +2192,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 49 · 25.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 50 · 25.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -5410,7 +5410,7 @@
   function hausKuratierbar(eintrag, umgebung) {
     if (!eintrag || !eintrag.nominiert) return false;
     if (eintrag.quelle === 'liste' || eintrag.quelle === 'demo') return true;
-                                                                          
+                                                                      
                                                          
     if (eintrag.quelle === 'spiel') return true;
     if (eintrag.quelle === 'eigene') return !!(umgebung && umgebung.eigeneSchreibbar);
@@ -5616,7 +5616,7 @@
                 
 
                                         
-                                                                            
+                                                                        
                                                                        
                                                                      
                                                                             
@@ -5794,7 +5794,7 @@
                                                                           
                                                            
     if (speicherArt === 'liste') return;
-                                                                           
+                                                                       
                                                                           
     if (speicherArt === 'spiel') return;
     try {
@@ -5851,7 +5851,7 @@
                                                                               
                                                               
     if (speicherArt === 'liste') { speicherStatusSetzen('laeuft'); spSchreibenAnstossen(); return; }
-                                                                               
+                                                                           
                                                                                
                                                                                  
     if (speicherArt === 'spiel') { spielAblegen(); speicherStatusSetzen('gespeichert'); return; }
@@ -5964,7 +5964,7 @@
                                                                              
                                                                        
     if (speicherArt === 'liste') return;
-                                                                            
+                                                                        
                                                             
     if (speicherArt === 'spiel') {
       if (!spiel || event.key !== SPIEL || !event.newValue) return;
@@ -5991,7 +5991,7 @@
   const SP_SICHERUNG = SPEICHER + '-sicherung-';
   const SP_LETZTE_LISTE = SPEICHER + '-liste';
   let speicherArt = 'lokal';
-                                                                             
+                                                                         
                                                                             
                                                                             
   const spielModus = /(^|[?&])spiel(=|&|$)/.test(spOrt().search || '');
@@ -6071,7 +6071,7 @@
   function spListenWahlZeigen() {
     const wahl = document.getElementById('spListenWahl');
     if (!wahl) return;
-                                                                          
+                                                                      
                                                                           
                                                    
     if (speicherArt === 'spiel') {
@@ -6640,16 +6640,16 @@
     return listen.find(l => l.titel === gemerkt) || listen[0];
   }
 
-                                                                           
+                                                                       
                                                                          
                                                             
                                                                        
                                                                            
                                                   
-  const SPIEL_TITEL = 'Portfolio-Steuerung · Planspiel';
-  const SPIEL_OHNE_RECHT = 'Das Planspiel steht Personen offen, die Vorhaben-Listen bearbeiten dürfen.';
-  const SPIEL_OHNE_VERBINDUNG = 'Planspiel · Keine Verbindung zu SharePoint. Bitte Seite neu laden.';
-  const SPIEL_NICHT_LESBAR = 'Planspiel · Die Vorhaben aus SharePoint konnten nicht gelesen werden. Bitte Seite neu laden.';
+  const SPIEL_TITEL = 'Portfolio-Steuerung · Sandbox';
+  const SPIEL_OHNE_RECHT = 'Die Sandbox steht Personen offen, die Vorhaben-Listen bearbeiten dürfen.';
+  const SPIEL_OHNE_VERBINDUNG = 'Sandbox · Keine Verbindung zu SharePoint. Bitte Seite neu laden.';
+  const SPIEL_NICHT_LESBAR = 'Sandbox · Die Vorhaben aus SharePoint konnten nicht gelesen werden. Bitte Seite neu laden.';
   let spiel = null;                                                    
   let spielGesperrt = false;                                                  
 
@@ -6657,7 +6657,7 @@
     document.title = SPIEL_TITEL;
                                                                              
                                                                         
-                                                     
+                                                   
     try {
       if (location.protocol !== 'about:' || window.parent === window) return;
       const eltern = window.parent.document;
@@ -6680,9 +6680,9 @@
     const d = new Date(spiel.geladen);
     const wann = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ', '
       + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-    el.innerHTML = `<span>Planspiel · Stand vom ${esc(wann)} · Die Listen bleiben unberührt.</span>`
+    el.innerHTML = `<span>Sandbox · Stand vom ${esc(wann)} · Der gemeinsame Stand bleibt unberührt.</span>`
       + '<button class="textbtn hell" type="button" id="spielNeuLaden">Neu aus den Listen laden</button>'
-      + '<span class="spiel-zweit">Was hier passiert, ist ein Gedankenspiel. Entscheidungen treffen die Abteilungen in ihrer Runde.</span>';
+      + '<span class="spiel-zweit">Vorauswahl und Szenarien ausprobieren, ohne den gemeinsamen Stand zu verändern.</span>';
     document.getElementById('spielNeuLaden').addEventListener('click', spielNeuLadenFragen);
   }
 
@@ -6755,7 +6755,7 @@
       const ausgefallen = ergebnisse.filter(e => e.fehler).map(e => e.kuerzel);
       const gut = spielNeuAnlegen(ergebnisse.filter(e => !e.fehler), 'liste');
       if (gut && ausgefallen.length) {
-        syncHinweisZeigen('Nicht lesbar und deshalb nicht im Planspiel: ' + ausgefallen.map(k => 'Abteilung ' + k).join(', ') + '.', 20000);
+        syncHinweisZeigen('Nicht lesbar und deshalb nicht in der Sandbox: ' + ausgefallen.map(k => 'Abteilung ' + k).join(', ') + '.', 20000);
       }
       return gut;
     });
@@ -6826,7 +6826,7 @@
     spListenWahlZeigen();
     wechsle(ansicht);
   }
-                                                                        
+                                                                      
   function spielFremdUebernehmen(roh) {
     const neu = spielObjektAufbereiten(roh);
     if (!neu) return;
@@ -7834,7 +7834,7 @@
   function einfrierenSichtbarkeit() {
     const knopf = document.getElementById('standEinfrieren');
                                                                            
-                                                               
+                                                             
     if (knopf) knopf.classList.toggle('verborgen', speicherArt === 'liste' || speicherArt === 'spiel');
   }
 
@@ -8104,7 +8104,7 @@
                                                                         
                         
   function einlesenVorschauZeigen(dateien) {
-                                                                              
+                                                                          
                                        
     if (speicherArt === 'spiel') return;
     const dialog = document.getElementById('vorschauDialog');
@@ -8325,8 +8325,8 @@
   }
 
                                                                         
-                                                                        
-                                                            
+                                                                          
+                                                          
   function nominierungKnoepfeHtml(v, gesperrt) {
     return `<div class="wahl wahl-nominierung">
             <button type="button" data-nominierung="nominiert" aria-pressed="${v.leitung === 'nominiert'}"${gesperrt ? ' disabled' : ''}>Für Leitungsportfolio nominieren<small>die Abteilung nominiert etwa 8 bis 10 Vorhaben</small></button>
@@ -10012,8 +10012,8 @@
                                                              
 
                                                                              
-                                                                             
                                                                           
+                                                                        
   const HAUS_DATEIEN = (spielModus ? SPIEL : SPEICHER) + '-haus-dateien';
   const HAUS_AUSWAHL = (spielModus ? SPIEL : SPEICHER) + '-haus-auswahl';
   const HAUS_SICHT = (spielModus ? SPIEL : SPEICHER) + '-haus-sicht';
@@ -10126,8 +10126,8 @@
                                                                             
   function hausSteckbriefWeg(eintrag) {
     if (eintrag.quelle === 'eigene') return '<button class="textbtn blau" type="button" id="hausVorschauSteckbrief">Steckbrief öffnen</button>';
-                                                                         
-                                                                       
+                                                                           
+                                                                     
     if (eintrag.quelle === 'spiel') return `<button class="textbtn blau" type="button" id="hausVorschauSteckbrief">Steckbrief in ${esc(eintrag.abteilung)} öffnen</button>`;
     if (speicherArt === 'liste' && spListen.some(l => l.kuerzel === eintrag.kuerzel)) {
       return `<button class="textbtn blau" type="button" id="hausVorschauSteckbrief">Steckbrief in ${esc(eintrag.abteilung)} öffnen</button>`;
@@ -10154,7 +10154,7 @@
   }
 
   function hausLaden() {
-                                                                           
+                                                                       
                                                                               
     if (speicherArt === 'spiel') {
       H = {
@@ -10297,12 +10297,12 @@
                                                                               
                                                                       
                                                            
-                                                                              
-                                                                          
+                                                                                
+                                                                      
                                                                      
     const abschluss = hausDarfAbschliessen(hausAbschlussUmgebung())
       ? '<button class="textbtn hell" type="button" id="hausAbschluss">Runde abschließen</button>'
-        + '<button class="textbtn hell" type="button" id="hausSpielOeffnen">Planspiel öffnen</button>'
+        + '<button class="textbtn hell" type="button" id="hausSpielOeffnen">Sandbox öffnen</button>'
       : '';
     const demoHinweis = bau.abteilungen.some(a => a.quelle === 'demo')
       ? '<span class="haus-lage-zahlen haus-demo" id="hausDemoHinweis">Demo: Die Abteilungen Z, V und G sind simuliert, die Sicht des Stabs und der Hausleitung ist hier nur nachgestellt.</span>'
@@ -11255,7 +11255,7 @@
       <section class="vs-block">
         <p>Die Vorhaben kehren in das Portfolio ihrer Abteilung zurück. ${speicherArt === 'spiel' ? 'Die Abteilungen sehen davon nichts.' : 'Die Abteilungen sehen diese Entscheidung.'} Es wird nichts gelöscht; die Zurückstellung kann jederzeit zurückgenommen werden.</p>
         ${nurDemo ? '<p class="vs-leer">Demo: Es wird nichts gespeichert.</p>' : ''}
-        ${speicherArt === 'spiel' ? '<p class="vs-leer">Nur im Planspiel.</p>' : ''}
+        ${speicherArt === 'spiel' ? '<p class="vs-leer">Nur in der Sandbox.</p>' : ''}
       </section>
       <div class="vs-fuss">
         <button class="textbtn blau" type="button" id="hausKuratierungAbbrechen">Abbrechen</button>
@@ -11275,7 +11275,7 @@
                                                                               
                                                              
   function hausSchreibweg(eintrag, anwenden) {
-                                                                              
+                                                                          
                                                                           
                                                                        
     if (speicherArt === 'spiel') {
@@ -11316,7 +11316,7 @@
       hausHinweis = 'Nicht alles konnte gespeichert werden. ' + (erfolge ? erfolge + ' von ' + (erfolge + fehler) + ' ' : '')
         + 'Bitte in einem Moment noch einmal versuchen.';
     } else if (speicherArt === 'spiel') {
-      hausHinweis = wort + ' Nur im Planspiel.';
+      hausHinweis = wort + ' Nur in der Sandbox.';
     } else if (hausDemoQuelle()) {
       hausHinweis = wort + ' In der Demo wird nichts gespeichert.';
     } else {
@@ -11871,14 +11871,14 @@
       spVorlauf().then(startWeiter, () => { spLokalBleiben('nicht verbunden'); spOhneVerbindung(); startWeiter(); });
       return;
     }
-                                                                      
+                                                                    
                                                                       
     if (spielModus) spielLokalStarten(); else laden();
     startWeiter();
   }
 
   function startWeiter() {
-                                                                               
+                                                                             
     if (spielGesperrt) return;
                                                                             
                                                                              
@@ -12080,7 +12080,7 @@
                                                            
     } else if (location.hash === '#haus' && hausVerfuegbar()) {
       wechsle('haus');
-                                                                              
+                                                                          
                                          
     } else if (speicherArt === 'spiel' && !location.hash) {
       wechsle('haus');
@@ -12099,7 +12099,7 @@
                                                                            
       if (location.hash === '#eintragen') neuFormOeffnen();
     }
-                                                                             
+                                                                           
                   
     if (speicherArt !== 'spiel') hausGemerktesOeffnen();
     spNachStart();
@@ -12110,7 +12110,7 @@
   function spNachStart() {
     spStatusZeigen();
     spListenWahlZeigen();
-                                                                             
+                                                                         
                                                                    
                                                          
     if (speicherArt === 'spiel') {
