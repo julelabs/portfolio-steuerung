@@ -918,17 +918,16 @@
   .linse-eintrag[aria-pressed="true"] { font-family: var(--display); font-weight: 700; color: var(--blau); }
   .linse-gruppe { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 6px; }
   .linse-titel { font-family: var(--display); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); padding: 4px 10px 2px; }
-                                                                          
-                                                                               
-  .thema-chip { display: inline-flex; align-items: center; gap: 2px; border: 1px solid var(--blau-40); background: var(--weiss); color: var(--blau); border-radius: 999px; padding: 3px 4px 3px 10px; font-family: var(--display); font-size: 12.5px; font-weight: 700; }
-  .thema-chip.nur-lesen { padding-right: 10px; }
+                                                                  
+                                                         
+  .thema-chip { display: inline-flex; align-items: center; gap: 2px; background: var(--blau-10); color: var(--fg-2); border-radius: 999px; padding: 5px 6px 5px 12px; font-family: var(--display); font-size: 13px; font-weight: 700; }
+  .thema-chip.nur-lesen { padding-right: 12px; }
   .thema-chip button { border: 0; background: transparent; cursor: pointer; color: var(--fg-muted); font-size: 14px; line-height: 1; padding: 1px 6px; border-radius: 999px; }
   .thema-chip button:hover { background: var(--lavendel); color: var(--kirsche-text); }
   .thema-vorschlag { border: 1px dashed var(--blau-40); background: transparent; color: var(--fg-2); border-radius: 999px; padding: 3px 10px; font-family: var(--display); font-size: 12.5px; font-weight: 600; cursor: pointer; }
   .thema-vorschlag:hover { background: var(--blau-10); color: var(--blau); }
   .vs-themen-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; }
   .vs-thema-neu { width: 100%; max-width: 320px; border: 1px solid var(--feldkante); border-radius: 5px; padding: 6px 9px; font: inherit; font-size: 13.5px; }
-  .vs-status .thema-chip { background: var(--weiss); padding: 4px 9px; font-size: 12.5px; }
   .bild-steuer .linse-haken, .haus-steuer .linse-haken { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 5px; cursor: pointer;
     font-family: var(--body); font-size: 14px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--fg); }
   .bild-steuer .linse-haken:hover, .haus-steuer .linse-haken:hover { background: var(--blau-10); }
@@ -1416,7 +1415,17 @@
              
   .vs-unterzeile { color: var(--fg-muted); font-size: 14px; margin: 16px 0 4px; line-height: 1.4; }
   .vs-block { padding: 20px 0; border-bottom: 1px solid var(--line); }
-  .vs-block h3 { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 7px; }
+                                                                          
+                                                                         
+                                                            
+  .vs-block h3 { font-family: var(--display); font-size: 12.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--blau); margin-bottom: 9px; }
+                                                                         
+                                                                       
+                                                                        
+  .vs-block p.vs-start { margin-top: 14px; }
+  .vs-block p.vs-dazu { margin-top: 2px; }
+  .vs-themen-titel { font-family: var(--display); font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--blau); margin: 12px 0 0; }
+  .vs-status.vs-themen-status { margin-top: 5px; }
   .vs-block p { color: var(--fg-2); font-size: 14.5px; line-height: 1.5; text-wrap: pretty; }
   .vs-block p + p { margin-top: 6px; }
   .vs-liste { margin: 8px 0 0; padding-left: 18px; color: var(--fg-2); font-size: 14.5px; line-height: 1.5; }
@@ -1428,7 +1437,8 @@
   .vs-namen li + li { margin-top: 2px; }
                                                                     
                                                                   
-  .vs-wert .sb-summe { margin-top: 8px; margin-bottom: 12px; }
+  .vs-wert .sb-summe { margin-top: 8px; margin-bottom: 12px; font-size: 13.5px; font-weight: 600; color: var(--fg-2); }
+  .vs-wert .sb-summe span { font-size: 13px; }
   .vs-leer { color: var(--fg-muted) !important; }
                                                                                
                                                                                 
@@ -1495,7 +1505,7 @@
                                                                             
                                                                            
   .vs-nominierung { margin-top: 16px; }
-  .vs-nominierung h4 { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); margin: 0 0 7px; }
+  .vs-nominierung h4 { font-family: var(--display); font-size: 12.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--blau); margin: 0 0 9px; }
   .wahl-nominierung button[data-nominierung="nominiert"][aria-pressed="true"] { background: var(--weiss); border-color: var(--blau); color: var(--fg); box-shadow: inset 4px 0 0 var(--minze); }
   .wahl-nominierung button[data-nominierung="nominiert"][aria-pressed="true"] small { opacity: .9; color: var(--fg-2); }
   .wahl-nominierung button[data-nominierung="keine"][aria-pressed="true"] { background: var(--blau-10); border-color: var(--blau-40); color: var(--fg); }
@@ -2145,7 +2155,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 44 · 24.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 45 · 25.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -7951,6 +7961,14 @@
                                                                            
                                                        
   const THEMEN_VORSCHLAEGE_MAX = 8;
+                                                                           
+                                                                         
+  function themenStatusHtml(v) {
+    const themen = themenListe(v);
+    if (!themen.length) return '';
+    return `<p class="vs-themen-titel">Themen</p>
+      <div class="vs-status vs-themen-status">${themen.map(t => `<span>${esc(t)}</span>`).join('')}</div>`;
+  }
   function themenBlockHtml(v) {
     const eigene = themenListe(v);
     const lesen = speicherArt === 'liste' && spListe && !spListe.schreiben;
@@ -7992,16 +8010,20 @@
                                                                           
                                                                               
     const nominierungGesperrt = wahl === 'wartet' || wahl === 'nicht';
+                                                                        
+                                                            
     const nominierung = v.leitung === 'offen'
       ? 'Nominierung noch offen.'
       : !IST_NOMINIERT(v.leitung)
         ? 'Nicht nominiert, die Abteilung steuert selbst.'
-                                                                             
-                                                                              
-                                                 
-        : istZurueckgestellt(v)
-          ? 'Für Leitungsportfolio nominiert.'
-          : 'Für Leitungsportfolio nominiert. Ausgewählt wird im Haus.';
+        : 'Für Leitungsportfolio nominiert.';
+                                                                         
+    const nominierungHtml = v.leitung === 'offen'
+      ? '<strong>Nominierung noch offen</strong>.'
+      : !IST_NOMINIERT(v.leitung)
+        ? '<strong>Nicht nominiert</strong>, die Abteilung steuert selbst.'
+        : '<strong>Für Leitungsportfolio nominiert</strong>.';
+    const gross = text => text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
     wurzel.innerHTML = `<div class="vs-inhalt">
       <div class="vs-kopf">
         <h2 id="vorschauTitel">${esc(v.name)}</h2>
@@ -8016,6 +8038,7 @@
         
         ${istZurueckgestellt(v) ? `<span>${esc(ZURUECKGESTELLT_CHIP)}</span>` : ''}
       </div>
+      ${themenStatusHtml(v)}
       ${erstKlaeren ? `<p class="vs-erstklaeren">Erst klären: ${esc(luecken(v).join(', '))}</p>` : ''}
       <section class="vs-block">
         <h3>Veränderung</h3>
@@ -8024,16 +8047,16 @@
       <section class="vs-block">
         <h3>Folgen des Ruhenlassens</h3>
         <p class="${v.ruhen === WAEHLEN ? 'vs-leer' : ''}">${esc(v.ruhen === WAEHLEN ? 'Noch nicht beantwortet.' : v.ruhen)}</p>
-        ${konkret ? `<p>${esc(konkret)}</p>` : ''}
+        ${konkret ? `<p class="vs-dazu">„${esc(konkret)}“</p>` : ''}
       </section>
       
       <section class="vs-block vs-wert">
         <h3>Empfehlung</h3>
         ${balkenHtml(v)}
-        <p><strong>${esc(ENTSCHEIDUNG[e.wert])}</strong>. ${esc(e.regel)}</p>
-        <p>${esc(nominierung)}</p>
-        ${IST_NOMINIERT(v.leitung) && v.bmWarum.trim() ? `<p>${esc(v.bmWarum)}</p>` : ''}
-        <p>${bedarf ? esc(deckungText(v) || 'Personaldeckung noch nicht angegeben.') : 'Personalbedarf noch nicht angegeben.'}</p>
+        <p><strong>${esc(gross(ENTSCHEIDUNG[e.wert]))}</strong>. ${esc(e.regel)}</p>
+        <p class="vs-start">${nominierungHtml}</p>
+        ${IST_NOMINIERT(v.leitung) && v.bmWarum.trim() ? `<p class="vs-dazu">„${esc(v.bmWarum)}“</p>` : ''}
+        <p class="vs-start">${bedarf ? esc(deckungText(v) || 'Personaldeckung noch nicht angegeben.') : 'Personalbedarf noch nicht angegeben.'}</p>
       </section>
       
       <section class="vs-block vs-entscheid">
@@ -11110,8 +11133,8 @@
         ${eintrag.stand ? `<span>${esc(eintrag.stand)}</span>` : ''}
         ${v.koav ? '<span>Bestandteil KoaV</span>' : ''}
         ${eintrag.zurueckgestellt ? `<span>${esc(ZURUECKGESTELLT_CHIP)}</span>` : ''}
-        ${themenListe(v).map(t => `<span class="thema-chip nur-lesen">${esc(t)}</span>`).join('')}
       </div>
+      ${themenStatusHtml(v)}
       <section class="vs-block">
         <h3>Veränderung</h3>
         <p class="${v.veraenderung.trim() ? '' : 'vs-leer'}">${v.veraenderung.trim() ? esc(v.veraenderung) : 'Noch nicht beschrieben.'}</p>
@@ -11119,12 +11142,12 @@
       <section class="vs-block">
         <h3>Folgen des Ruhenlassens</h3>
         <p class="${v.ruhen === WAEHLEN ? 'vs-leer' : ''}">${esc(v.ruhen === WAEHLEN ? 'Noch nicht beantwortet.' : v.ruhen)}</p>
-        ${konkret ? `<p>${esc(konkret)}</p>` : ''}
+        ${konkret ? `<p class="vs-dazu">„${esc(konkret)}“</p>` : ''}
       </section>
       <section class="vs-block">
         <h3>Nominierung</h3>
         <p>${esc(nominierung)}</p>
-        ${IST_NOMINIERT(v.leitung) && v.bmWarum.trim() ? `<p>${esc(v.bmWarum)}</p>` : ''}
+        ${IST_NOMINIERT(v.leitung) && v.bmWarum.trim() ? `<p class="vs-dazu">„${esc(v.bmWarum)}“</p>` : ''}
       </section>
       ${eintrag.wahl === 'wartet' ? `<section class="vs-block">
         <h3>Bedingung</h3>
