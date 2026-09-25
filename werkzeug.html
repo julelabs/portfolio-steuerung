@@ -534,17 +534,22 @@
   #bdStand .bd-eingabe { display: block; margin: 12px 0 0; }
                                                                          
                                                                             
+                                                                            
+                                                                               
+                                                                            
+                                                                      
   .bd-summen { margin: 14px 0 0; border-collapse: collapse; font-size: 13.5px; color: var(--fg-2); }
-  .bd-summen caption { text-align: left; font-family: var(--display); font-weight: 700; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--fg-muted); padding-bottom: 6px; }
+  .bd-summen caption { text-align: left; font-size: 13.5px; color: var(--fg-2); padding-bottom: 8px; }
   .bd-summen th, .bd-summen td { padding: 5px 22px 5px 0; border-bottom: 1px solid var(--line); text-align: right; font-weight: 400; white-space: nowrap; }
-  .bd-summen thead th { font-family: var(--display); font-weight: 700; font-size: 12.5px; color: var(--fg-2); }
+  .bd-summen thead th { color: var(--fg-muted); }
   .bd-summen tbody th { text-align: left; font-family: var(--display); font-weight: 700; color: var(--fg); }
   .bd-summen tbody th span { font-weight: 400; color: var(--fg-muted); margin-left: 4px; }
-  .bd-summen td { font-family: var(--display); font-weight: 700; color: var(--fg); font-variant-numeric: tabular-nums; }
-  .bd-summen-fuss { margin: 6px 0 0; font-size: 12.5px; color: var(--fg-muted); }
+  .bd-summen td { color: var(--fg); font-variant-numeric: tabular-nums; }
+  .bd-summen td:nth-child(4) { font-weight: 700; }
+  .bd-summen-fuss { margin: 6px 0 0; font-size: 13.5px; color: var(--fg-muted); }
   .bd-summen .bd-summen-tg { padding-left: 22px; border-left: 1px solid var(--line); }
-  .bd-summen td.bd-summen-tg { font-weight: 400; color: var(--fg-2); }
-  .bd-summen .bd-summen-personal span { font-weight: 400; color: var(--fg-muted); font-size: 12.5px; }
+  .bd-summen td.bd-summen-tg { color: var(--fg-2); }
+  .bd-summen .bd-summen-personal span { color: var(--fg-muted); }
   .bd-tg { font-size: 13.5px; padding: 0; }
   .bd-trenn { color: var(--fg-muted); font-weight: 400; margin: 0 3px 0 10px; }
                                                                 
@@ -787,10 +792,10 @@
   .budget { color: var(--fg); }
   .bd-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
   .bd-titel { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-2); }
-  .bd-eingabe { font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--fg-2); }
+  .bd-eingabe { font-size: 13.5px; color: var(--fg); }
                                                                             
                                                                           
-  .bd-eingabe input { border: 1px solid var(--feldkante); border-radius: 6px; background: var(--weiss); color: var(--fg); font-family: var(--display); font-weight: 700; font-size: 15px; width: 62px; text-align: right; padding: 6px 10px; margin: 0 4px 0 8px; }
+  .bd-eingabe input { border: 1px solid var(--feldkante); border-radius: 6px; background: var(--weiss); color: var(--fg); font-family: var(--display); font-weight: 700; font-size: 14px; width: 62px; text-align: right; padding: 6px 10px; margin: 0 4px 0 8px; }
   .bd-eingabe input:hover { border-color: var(--blau); }
   .bd-eingabe input:focus { outline: 2px solid var(--minze); outline-offset: 1px; border-color: var(--minze); }
                                                                                
@@ -1098,7 +1103,10 @@
                                                                         
                                                                        
                                                                           
-  .matrix.pf .mx-kopf { background: var(--blau-20); color: var(--fg); font-size: 15px; padding: 9px 12px; }
+                                                                         
+                                                                           
+                                                    
+  .matrix.pf .mx-kopf { background: var(--blau-20); color: var(--fg); font-size: 15px; padding: 7px 12px; }
                                                                                
                                                                               
                                                                             
@@ -1125,7 +1133,6 @@
     .matrix.pf .mx-reihe:first-child > .mx-kopf { position: sticky; top: var(--band-hoehe, 56px); z-index: 6; }
   }
   .matrix.pf .mx-kopf .pf-vzae { font-weight: 400; color: var(--fg-2); font-size: 13px; margin-left: 8px; }
-  .matrix.pf .mx-kopf small { display: block; font-weight: 400; color: var(--fg-2); font-size: 12.5px; margin-top: 2px; }
   .matrix.pf .mx-zelle.pf-gebunden { background: var(--weiss); }
   .matrix.pf .mx-zelle { min-height: 110px; }
                                                                           
@@ -1137,12 +1144,16 @@
 
   .pf-korb, .pf-korb-leer { flex-basis: 100%; min-height: 13px; }
   .pf-korb { font-family: var(--display); font-size: 11px; line-height: 15px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-2); }
+                                                                              
                                                                             
-                                                                            
-                                                                               
                                                                       
-  .matrix.pf .pf-korb, .matrix.pf .pf-korb-leer { flex-basis: auto; width: calc(100% + 18px); margin: -9px -9px 8px; padding: 6px 10px; }
-  .matrix.pf .pf-korb { background: var(--lavendel); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+                                                                              
+                                                                         
+                                                                              
+                                                                                  
+  .matrix.pf .pf-korb, .matrix.pf .pf-korb-leer { flex-basis: auto; width: calc(100% + 18px); margin: -9px -9px 8px; padding: 7px 10px 5px; min-height: 29px; }
+  .matrix.pf .pf-korb { font-family: var(--body); font-size: 13px; line-height: 16px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--fg-muted);
+    background: transparent; border-bottom: 1px solid var(--line); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
                                                                             
                                                                            
                                                                               
@@ -1150,12 +1161,11 @@
                                                                             
                                                                              
                                           
-  .pf-richtwert { text-transform: none; letter-spacing: normal; font-weight: 400; font-size: 12.5px; color: var(--fg-muted); margin-left: 10px; }
+  .pf-richtwert { text-transform: none; letter-spacing: normal; font-weight: 400; font-size: 13px; color: var(--fg-muted); margin-left: 10px; }
                                                                               
                                                                               
                                                                           
                                                         
-  .matrix.pf .pf-korb-leer { min-height: 27px; }
   .lane-body { display: flex; gap: 8px; flex-wrap: wrap; }
   .lane-leer { color: var(--fg-muted); font-size: 13px; padding: 6px 0; }
   @media (max-width: 720px) { .lane { grid-template-columns: 1fr; gap: 6px; } }
@@ -2173,7 +2183,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 47 · 25.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 48 · 25.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -7601,10 +7611,10 @@
     const sumZeile = (titel, z) => `<tr><th scope="row">${titel} <span>${z.anzahl}</span></th><td>${zahlText(z.bedarf)}</td><td>${zahlText(z.gedeckt)}</td><td>${zahlText(z.luecke)}</td><td class="bd-summen-tg">${zahlText(sum.tagesgeschaeft)}</td><td class="bd-summen-personal">${(z.ohneAngabe || tg.offen.length) ? '<span>mind.</span> ' : ''}${zahlText(z.personal)}</td></tr>`;
     const summen = sum.alle.bedarf > 0 ? `<table class="bd-summen" id="bdSummen">
         <caption>Aus Steckbriefen und Tagesgeschäft, in VZÄ</caption>
-        <thead><tr><th scope="col"></th><th scope="col">Bedarf</th><th scope="col">von der Abteilung gedeckt</th><th scope="col">noch ungedeckt</th><th scope="col" class="bd-summen-tg">Tagesgeschäft</th><th scope="col">Personal der Abteilung gebunden</th></tr></thead>
+        <thead><tr><th scope="col"></th><th scope="col">Bedarf</th><th scope="col">von der Abteilung gedeckt</th><th scope="col">noch ungedeckt</th><th scope="col" class="bd-summen-tg">Tagesgeschäft</th><th scope="col">gedeckt + Tagesgeschäft</th></tr></thead>
         <tbody>${sumZeile('Eingeplant', sum.eingeplant)}${sumZeile('Alle Vorhaben', sum.alle)}</tbody>
       </table>${sum.alle.ohneAngabe ? `<p class="bd-summen-fuss">Bei ${sum.alle.ohneAngabe === 1 ? 'einem Vorhaben' : sum.alle.ohneAngabe + ' Vorhaben'} mit Bedarf fehlt die Angabe zur Deckung. ${sum.alle.ohneAngabe === 1 ? 'Es zählt' : 'Sie zählen'} bei „gedeckt“ und „ungedeckt“ nicht mit.</p>` : ''}
-      <p class="bd-summen-fuss">„Personal der Abteilung gebunden“ ist „von der Abteilung gedeckt“ plus Tagesgeschäft. „mind.“ steht davor, solange Deckungsangaben oder das Tagesgeschäft einzelner Referate fehlen.</p>` : '';
+      <p class="bd-summen-fuss">„mind.“ steht, solange Deckungsangaben oder das Tagesgeschäft einzelner Referate fehlen.</p>` : '';
     document.getElementById('bdStand').innerHTML = eingabe + summen + (ohneKap
       ? '<p class="bd-stand">Noch keine Kapazität eingetragen. Solange das Feld leer ist, rechnet das Werkzeug keine Auslastung und zeigt keine Kapazitätslücken.</p>'
       : standHinweis + tgHinweis);
@@ -8205,8 +8215,10 @@
                                                      
   const RANG = { prio: 0, wartet: 1, offen: 2, nicht: 3 };
   const SEIT_WAHL = '__seit';
-  const LINSE_LEER = 'Referat oder Veränderung';
-  const LINSE_LEER_THEMEN = 'Referat, Thema oder Veränderung';
+                                                                           
+                                                                         
+                                  
+  const LINSE_LEER = 'Hervorheben';
                                                                     
   let pfThemen = [];
   function imThema(v) {
@@ -8289,10 +8301,13 @@
                                                                               
                                                                             
                                                         
+                                                                         
+                                                                         
+                                                              
   const PF_SPALTEN = [
-    { wahl: 'nicht', sub: 'wird nicht weiterverfolgt' },
-    { wahl: 'wartet', sub: 'wird aktiv, wenn die benannte Bedingung eintritt' },
-    { wahl: 'prio', sub: 'bindet Kapazität im nächsten Halbjahr', gebunden: true }
+    { wahl: 'nicht' },
+    { wahl: 'wartet' },
+    { wahl: 'prio', gebunden: true }
   ];
 
   function namensListe(namen) {
@@ -8554,15 +8569,14 @@
     if (pfReferate.length) linseTeile.push(pfReferate.length <= 2 ? pfReferate.join(', ') : pfReferate.length + ' Referate');
     if (pfThemen.length) linseTeile.push(pfThemen.length === 1 ? pfThemen[0] : pfThemen.length + ' Themen');
     if (seitAn) linseTeile.push(pfReferate.length || pfThemen.length ? 'verändert' : seitWahl);
-    const linseText = linseLeer ? (themen.length ? LINSE_LEER_THEMEN : LINSE_LEER) : linseTeile.join(' · ');
+    const linseText = linseLeer ? LINSE_LEER : linseTeile.join(' · ');
                                                                             
                                                          
     document.getElementById('reiterLinse').innerHTML = `<div class="bild-steuer">
         ${bildSucheHtml()}
-        ${referate.length || seitWahl || themen.length ? `<span class="linse-wort" id="linseWort">Hervorheben</span>
-        <div class="linse">
-          <button class="linse-knopf${linseLeer ? ' leer' : ''}" type="button" id="pfReferat" aria-haspopup="true" aria-expanded="${linseOffen}" aria-controls="linseMenue" aria-labelledby="linseWort pfReferat">${esc(linseText)}</button>
-          <div class="linse-menue${linseOffen ? '' : ' verborgen'}" id="linseMenue" role="group" aria-labelledby="linseWort">
+        ${referate.length || seitWahl || themen.length ? `<div class="linse">
+          <button class="linse-knopf${linseLeer ? ' leer' : ''}" type="button" id="pfReferat" aria-haspopup="true" aria-expanded="${linseOffen}" aria-controls="linseMenue" aria-label="Hervorheben: ${esc(linseText)}">${esc(linseText)}</button>
+          <div class="linse-menue${linseOffen ? '' : ' verborgen'}" id="linseMenue" role="group" aria-label="Hervorheben">
             <button class="linse-eintrag" type="button" data-linse="alle" aria-pressed="${linseLeer}">alle Referate</button>
             <div class="linse-gruppe">${seitWahl
               ? `<label class="linse-haken"><input type="checkbox" data-linse-seit ${seitAn ? 'checked' : ''}>${esc(seitWahl)}</label>`
@@ -8632,8 +8646,7 @@
       const wegweiser = spalte.gebunden && erstKlaerenZahl
         ? `<button class="pf-erstklaeren" type="button" id="zuErstKlaeren">${erstKlaerenZahl} erst klären ↓</button>` : '';
       return `<div class="mx-kopf ${spalte.gebunden ? 'pf-gebunden' : ''}" role="columnheader" style="grid-column:${si + 1}; grid-row:1">
-        ${esc(ENTSCHEIDUNG[spalte.wahl])} <span class="pf-vzae">${anzahl} Vorhaben</span>${wegweiser}
-        <small>${esc(spalte.sub)}</small></div>`;
+        ${esc(ENTSCHEIDUNG[spalte.wahl])} <span class="pf-vzae">${anzahl} Vorhaben</span>${wegweiser}</div>`;
     }).join('');
 
     const offen = imKorb('offen');
