@@ -1106,12 +1106,14 @@
                                                                          
                                                                        
   #bildKoerper .matrix.pf .pt.prio, #bildKoerper .matrix.pf .pt.wartet, #bildKoerper .mx-offen .pt {
-    border: 1.5px solid var(--blau-60); border-style: solid; background: var(--weiss); }
+    border: 1.5px solid var(--blau-40); border-style: solid; background: var(--weiss); }
+                                                                              
+                                                                          
                                                                               
                                                                               
                                                 
   #hausKoerper .haus-zeilen .pt.prio, #hausKoerper .haus-zeilen .pt.wartet, #hausKoerper .haus-zeilen .pt.offen {
-    border: 1.5px solid var(--blau-60); border-style: solid; background: var(--weiss); }
+    border: 1.5px solid var(--blau-40); border-style: solid; background: var(--weiss); }
   .pf-erstklaeren { position: absolute; right: 12px; top: 8px; border: 0; background: transparent; padding: 2px 0; cursor: pointer;
     font-family: var(--body); font-size: 13px; font-weight: 400; color: var(--fg-2); }
   .pf-erstklaeren:hover { color: var(--blau); text-decoration: underline; text-underline-offset: 3px; }
@@ -1162,7 +1164,7 @@
                                                                          
                                                     
   .pt-wrap { position: relative; width: 214px; max-width: 100%; min-width: 0; flex: 0 1 214px; align-self: flex-start; }
-  .pt { position: relative; background: var(--weiss); border: 1.5px solid var(--blau-20); border-radius: var(--r-card); cursor: pointer; text-align: left; padding: 9px 12px 8px; width: 100%; display: flex; flex-direction: column; gap: 5px; transition: transform .18s var(--ease), box-shadow .18s var(--ease); }
+  .pt { position: relative; background: var(--weiss); border: 1.5px solid var(--blau-20); border-radius: var(--r-card); cursor: pointer; text-align: left; padding: 9px 12px 8px 20px; width: 100%; display: flex; flex-direction: column; gap: 5px; transition: transform .18s var(--ease), box-shadow .18s var(--ease); }
   .pt:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(13,12,43,.09); }
   .pt.aktiv { box-shadow: 0 0 0 2px var(--blau); border-color: var(--blau); }
                                                                            
@@ -1187,7 +1189,10 @@
                                                                           
                                                                           
                              
-  .pt-name { font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg); line-height: 1.28; padding-right: 26px; hyphens: auto; overflow-wrap: break-word; }
+                                                                           
+                                                                             
+                                                                                 
+  .pt-name { font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg); line-height: 1.28; padding-right: 26px; hyphens: auto; hyphenate-limit-chars: 16 8 8; overflow-wrap: break-word; }
                                                                           
                                                                              
                                                                               
@@ -1393,7 +1398,11 @@
                                                                            
                                                                           
                                                                                  
-  .pt.lf::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--minze); border-radius: 5px 0 0 5px; }
+                                                                         
+                                                                           
+                                                                         
+                             
+  .pt.lf::before { content: ''; position: absolute; left: 8px; top: 9px; bottom: 9px; width: 4px; background: var(--minze); border-radius: 2px; }
 
                                                                      
                                                                                    
@@ -1740,7 +1749,10 @@
                                                                                
                                                                               
                            
-  .pt-verknuepft { color: var(--blau); font-family: var(--body); font-weight: 400; font-size: 12px; white-space: nowrap; }
+                                                                        
+                                                              
+  .pt-verknuepft { color: inherit; font-family: var(--body); font-weight: 400; font-size: 12px; white-space: nowrap; display: inline-flex; align-items: center; gap: 3px; }
+  .pt-verknuepft svg { width: 12px; height: 12px; flex: none; position: relative; top: 1px; }
                                                                   
   .haus-abt { display: flex; align-items: center; gap: 4px; }
   .haus-klappe { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: 0; border-radius: 4px; background: transparent; color: var(--fg-muted); cursor: pointer; padding: 0; }
@@ -2155,7 +2167,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 45 · 25.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 46 · 25.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -7911,7 +7923,7 @@
             ${referat ? `<span class="pt-ref">${esc(referat)}</span>` : ''}
             ${seit && !weg ? `<span class="pt-seit">${esc(seit)}</span>` : ''}
           </span>
-          <span class="pt-foot-rechts">${verknuepft && !weg ? `<span class="pt-verknuepft">${verknuepft} verknüpft</span>` : ''}<span class="pt-vzae">${vzae ? zahlText(vzae) + ' VZÄ' : 'VZÄ offen'}</span></span>
+          <span class="pt-foot-rechts">${verknuepft && !weg ? verknuepftHtml(verknuepft) : ''}<span class="pt-vzae">${vzae ? zahlText(vzae) + ' VZÄ' : 'VZÄ offen'}</span></span>
         </span>
       </button>
       ${weg ? '' : `<button class="pt-lupe" type="button" data-vorschau="${v.id}" aria-label="${esc(v.name)} kurz ansehen" title="Kurz ansehen">
@@ -8349,6 +8361,12 @@
       <p class="mx-offen-kopf">Verknüpft in anderen Abteilungen · ${partner.length}</p>
       <div class="mx-offen-body">${partner.map(kachel).join('')}</div>
     </div>`;
+  }
+
+                                                                           
+  const KETTE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3.2-3.2a4.5 4.5 0 0 0-6.4-6.4L11.6 6"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3.2 3.2a4.5 4.5 0 0 0 6.4 6.4l1.6-1.6"/></svg>';
+  function verknuepftHtml(n) {
+    return `<span class="pt-verknuepft" title="${n} verknüpft">${KETTE_SVG}${n}<span class="nur-vorlesen"> verknüpft</span></span>`;
   }
 
   function kartenRand(von, zu, bezug) {
@@ -10164,7 +10182,7 @@
         ${grund ? `<span class="pt-haus-seit">${esc(grund)}</span>` : ''}
         <span class="pt-foot">
           <span class="pt-foot-links">${esc((opt.ohneKuerzel ? '' : eintrag.kuerzel + ' · ') + (v.referat.trim() || 'ohne Referat'))}</span>
-          <span class="pt-haus-rechts">${eintrag.stand ? `<span class="pt-stand">${eintrag.stand}</span>` : ''}${eintrag.verknuepft ? `<span class="pt-verknuepft">${eintrag.verknuepft} verknüpft</span>` : ''}</span>
+          <span class="pt-haus-rechts">${eintrag.stand ? `<span class="pt-stand">${eintrag.stand}</span>` : ''}${eintrag.verknuepft ? verknuepftHtml(eintrag.verknuepft) : ''}</span>
         </span>
       </button>
       <button class="pt-lupe" type="button" data-haus-vorschau="${esc(eintrag.schluessel)}" aria-label="${esc(v.name)} kurz ansehen" title="Kurz ansehen">
