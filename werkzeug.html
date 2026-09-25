@@ -1389,6 +1389,15 @@
                                                                                   
   .sync-hinweis.sync-oben { top: 0; bottom: auto; left: 0; transform: none; width: 100%; max-width: none; border-radius: 0; text-align: center; }
   .sync-hinweis { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 60; margin: 0; max-width: 560px; background: var(--dunkel); color: #FFFFFF; font-size: 14px; line-height: 1.45; padding: 12px 18px; border-radius: 8px; box-shadow: 0 6px 24px rgba(17, 22, 59, .35); }
+                                                                            
+                                                                          
+                                                                           
+                                                                          
+                                
+  #spielLeiste { position: relative; }
+  #spielLeiste .textbtn { margin-left: 10px; }
+  #spielLeiste .spiel-zweit { display: block; }
+  body.spiel-gesperrt > :not(#spielLeiste) { display: none !important; }
   .qt-kap { color: var(--fg-muted); font-size: 13px; }
   .textbtn.qt-tun { padding: 0; font-size: 13px; }
   .pt-korb { font-size: 11.5px; color: var(--fg-muted); }
@@ -2183,7 +2192,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 48 · 25.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 49 · 25.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -5401,6 +5410,9 @@
   function hausKuratierbar(eintrag, umgebung) {
     if (!eintrag || !eintrag.nominiert) return false;
     if (eintrag.quelle === 'liste' || eintrag.quelle === 'demo') return true;
+                                                                          
+                                                         
+    if (eintrag.quelle === 'spiel') return true;
     if (eintrag.quelle === 'eigene') return !!(umgebung && umgebung.eigeneSchreibbar);
     return false;
   }
@@ -5603,6 +5615,62 @@
 
                 
 
+                                        
+                                                                            
+                                                                       
+                                                                     
+                                                                            
+                                                                        
+                                                                          
+                                                                           
+                                                                                
+  const SPIEL_AUSGANG = 'Ausgangsstand';
+  function spielAusgangsName(zeitpunkt) {
+    const teile = standDatumAusZeitpunkt(zeitpunkt);
+    return teile ? SPIEL_AUSGANG + ' ' + teile.tag + '.' + teile.monat + '.' : SPIEL_AUSGANG;
+  }
+                                                                            
+                                                                          
+                                                                    
+  function spielAusgangsstandAnlegen(stand, zeitpunkt) {
+    if (!stand) return null;
+    const vorhanden = (Array.isArray(stand.staende) ? stand.staende : [])
+      .find(s => s && String(s.name || '').indexOf(SPIEL_AUSGANG) === 0);
+    if (vorhanden) return vorhanden;
+    return standAblegen(stand, standEinfrieren(stand, zeitpunkt, { name: spielAusgangsName(zeitpunkt), art: 'runde' }));
+  }
+                                                                               
+                                                                             
+                                                                        
+                                      
+  function spielObjektAufbereiten(roh) {
+    if (!roh || typeof roh !== 'object' || !Array.isArray(roh.abteilungen)) return null;
+    const abteilungen = roh.abteilungen
+      .filter(a => a && a.stand && Array.isArray(a.stand.vorhaben) && String(a.kuerzel || '').trim())
+      .map(a => {
+        const kuerzel = String(a.kuerzel).trim();
+        const name = String(a.name || '').trim() || ('Abteilung ' + kuerzel);
+        if (!String(a.stand.abteilung || '').trim()) a.stand.abteilung = name;
+        return { kuerzel: kuerzel, name: name, stand: a.stand };
+      });
+    if (!abteilungen.length) return null;
+    return {
+      geladen: String(roh.geladen || ''),
+      quelle: roh.quelle === 'liste' ? 'liste' : 'demo',
+      aktiv: abteilungen.some(a => a.kuerzel === roh.aktiv) ? roh.aktiv : abteilungen[0].kuerzel,
+      abteilungen: abteilungen
+    };
+  }
+                                                                          
+                                                             
+  function spielObjektNeu(abteilungen, zeitpunkt, quelle) {
+    const spiel = spielObjektAufbereiten({ geladen: zeitpunkt, quelle: quelle, abteilungen: abteilungen });
+    if (!spiel) return null;
+    spiel.abteilungen.forEach(a => spielAusgangsstandAnlegen(a.stand, zeitpunkt));
+    return spiel;
+  }
+                 
+
   const SPEICHER = 'portfolio-prio-v3';
   const SPEICHER_V2 = 'portfolio-prio-v2';
                                                                            
@@ -5726,6 +5794,9 @@
                                                                           
                                                            
     if (speicherArt === 'liste') return;
+                                                                           
+                                                                          
+    if (speicherArt === 'spiel') return;
     try {
                                                                                
                                                                            
@@ -5780,6 +5851,10 @@
                                                                               
                                                               
     if (speicherArt === 'liste') { speicherStatusSetzen('laeuft'); spSchreibenAnstossen(); return; }
+                                                                               
+                                                                               
+                                                                                 
+    if (speicherArt === 'spiel') { spielAblegen(); speicherStatusSetzen('gespeichert'); return; }
                                                                           
                                                                       
                                                                         
@@ -5889,6 +5964,13 @@
                                                                              
                                                                        
     if (speicherArt === 'liste') return;
+                                                                            
+                                                            
+    if (speicherArt === 'spiel') {
+      if (!spiel || event.key !== SPIEL || !event.newValue) return;
+      try { spielFremdUebernehmen(JSON.parse(event.newValue)); } catch (fehler) {                                       }
+      return;
+    }
     if (!S || event.key !== SPEICHER || !event.newValue) return;
     try {
       const daten = JSON.parse(event.newValue);
@@ -5909,6 +5991,11 @@
   const SP_SICHERUNG = SPEICHER + '-sicherung-';
   const SP_LETZTE_LISTE = SPEICHER + '-liste';
   let speicherArt = 'lokal';
+                                                                             
+                                                                            
+                                                                            
+  const spielModus = /(^|[?&])spiel(=|&|$)/.test(spOrt().search || '');
+  const SPIEL = SPEICHER + '-spiel';
   let spSite = null;                                          
   let spListe = null;                                               
   let spListen = [];                                              
@@ -5984,6 +6071,21 @@
   function spListenWahlZeigen() {
     const wahl = document.getElementById('spListenWahl');
     if (!wahl) return;
+                                                                          
+                                                                          
+                                                   
+    if (speicherArt === 'spiel') {
+      const mehr = !!spiel && spiel.abteilungen.length > 1;
+      wahl.classList.toggle('verborgen', !mehr);
+      if (!mehr) return;
+      wahl.innerHTML = spiel.abteilungen.map(a => `<option value="${esc(a.kuerzel)}"${a.kuerzel === spiel.aktiv ? ' selected' : ''}>${esc(a.kuerzel)}</option>`).join('');
+      wahl.onchange = () => {
+        spielAktivSetzen(wahl.value);
+        spielAblegen();
+        spielNachWechsel();
+      };
+      return;
+    }
     const mehrere = speicherArt === 'liste' && spListen.length > 1;
     wahl.classList.toggle('verborgen', !mehrere);
     if (!mehrere) return;
@@ -6538,7 +6640,206 @@
     return listen.find(l => l.titel === gemerkt) || listen[0];
   }
 
+                                                                           
+                                                                         
+                                                            
+                                                                       
+                                                                           
+                                                  
+  const SPIEL_TITEL = 'Portfolio-Steuerung · Planspiel';
+  const SPIEL_OHNE_RECHT = 'Das Planspiel steht Personen offen, die Vorhaben-Listen bearbeiten dürfen.';
+  const SPIEL_OHNE_VERBINDUNG = 'Planspiel · Keine Verbindung zu SharePoint. Bitte Seite neu laden.';
+  const SPIEL_NICHT_LESBAR = 'Planspiel · Die Vorhaben aus SharePoint konnten nicht gelesen werden. Bitte Seite neu laden.';
+  let spiel = null;                                                    
+  let spielGesperrt = false;                                                  
+
+  function spielTitelSetzen() {
+    document.title = SPIEL_TITEL;
+                                                                             
+                                                                        
+                                                     
+    try {
+      if (location.protocol !== 'about:' || window.parent === window) return;
+      const eltern = window.parent.document;
+      eltern.title = SPIEL_TITEL;
+      const titel = eltern.querySelector('title');
+      if (titel) new MutationObserver(() => { if (eltern.title !== SPIEL_TITEL) eltern.title = SPIEL_TITEL; })
+        .observe(titel, { childList: true, characterData: true, subtree: true });
+    } catch (fehler) {                                                     }
+  }
+
+  function spielLeisteZeigen(text) {
+    let el = document.getElementById('spielLeiste');
+    if (!el) {
+      el = document.createElement('p');
+      el.id = 'spielLeiste';
+      el.className = 'sync-hinweis sync-oben';
+      document.body.insertBefore(el, document.body.firstChild);
+    }
+    if (text || !spiel) { el.textContent = text || ''; return; }
+    const d = new Date(spiel.geladen);
+    const wann = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ', '
+      + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    el.innerHTML = `<span>Planspiel · Stand vom ${esc(wann)} · Die Listen bleiben unberührt.</span>`
+      + '<button class="textbtn hell" type="button" id="spielNeuLaden">Neu aus den Listen laden</button>'
+      + '<span class="spiel-zweit">Was hier passiert, ist ein Gedankenspiel. Entscheidungen treffen die Abteilungen in ihrer Runde.</span>';
+    document.getElementById('spielNeuLaden').addEventListener('click', spielNeuLadenFragen);
+  }
+
+  function spielSperren(text) {
+    speicherArt = 'spiel';
+    spielGesperrt = true;
+    spiel = null;
+    document.body.classList.add('spiel-gesperrt');
+    spielLeisteZeigen(text);
+  }
+
+  function spielLesen() {
+    try { return spielObjektAufbereiten(JSON.parse(localStorage.getItem(SPIEL) || 'null')); } catch (fehler) { return null; }
+  }
+  function spielAblegen() {
+    if (!spiel) return;
+    try {
+      localStorage.setItem(SPIEL, JSON.stringify(spiel));
+    } catch (fehler) {
+                                                                       
+                                                              
+      syncHinweisZeigen('Der Spielstand passt nicht mehr in den Browserspeicher und ist nicht gesichert.', 20000);
+    }
+  }
+
+                                                                           
+                                                                           
+  function spielAktivSetzen(kuerzel) {
+    const abteilung = spiel.abteilungen.find(a => a.kuerzel === kuerzel) || spiel.abteilungen[0];
+    spiel.aktiv = abteilung.kuerzel;
+    S = abteilung.stand;
+    S.vorhaben.forEach(v => {
+      const nummer = parseInt(String(v.id).replace(/\D/g, ''), 10);
+      if (Number.isFinite(nummer) && nummer >= naechste) naechste = nummer + 1;
+    });
+    offenId = null;
+    vorschauId = null;
+    abhAktivId = null;
+    ziehId = null;
+  }
+                                                                             
+                                            
+  function spielSetzen(neu) {
+    spiel = neu;
+    spiel.abteilungen.forEach(a => {
+      a.stand = hausStandAufbereiten(a.stand);
+      if (!String(a.stand.abteilung || '').trim()) a.stand.abteilung = a.name;
+    });
+    spielAktivSetzen(spiel.aktiv);
+  }
+  function spielNeuAnlegen(abteilungen, quelle) {
+    const neu = spielObjektNeu(abteilungen, new Date().toISOString(), quelle);
+    if (!neu) return false;
+    spielSetzen(neu);
+    spielAblegen();
+    return true;
+  }
+
+                                                                        
+                                                    
+  function spielAusListen() {
+    return Promise.all(spListen.map(l => standLesen(spHole, spSite, l.titel).then(
+      ergebnis => ({
+        kuerzel: l.kuerzel,
+        name: (ergebnis.stand && String(ergebnis.stand.abteilung || '').trim()) || ('Abteilung ' + l.kuerzel),
+        stand: hausStandAufbereiten(ergebnis.stand)
+      }),
+      () => ({ kuerzel: l.kuerzel, fehler: true })
+    ))).then(ergebnisse => {
+      const ausgefallen = ergebnisse.filter(e => e.fehler).map(e => e.kuerzel);
+      const gut = spielNeuAnlegen(ergebnisse.filter(e => !e.fehler), 'liste');
+      if (gut && ausgefallen.length) {
+        syncHinweisZeigen('Nicht lesbar und deshalb nicht im Planspiel: ' + ausgefallen.map(k => 'Abteilung ' + k).join(', ') + '.', 20000);
+      }
+      return gut;
+    });
+  }
+                                                                 
+                                                                         
+  function spielAusDemo() {
+    const basis = beispieldaten();
+    const abteilungen = [{ kuerzel: hausKuerzel(basis.abteilung), name: basis.abteilung, stand: hausStandAufbereiten(basis) }]
+      .concat(hausDemoAus(beispieldaten()).map(d => ({ kuerzel: d.kuerzel, name: d.name, stand: hausStandAufbereiten(d.stand) })));
+    return spielNeuAnlegen(abteilungen, 'demo');
+  }
+
+                                                                         
+                                                                          
+                          
+  function spielVorlauf() {
+    speicherArt = 'spiel';
+    spielTitelSetzen();
+    return siteSuchen(spHole, spOrt()).then(gefunden => {
+      if (!gefunden) { spielSperren(SPIEL_OHNE_VERBINDUNG); return null; }
+      if (gefunden.fehler) { spielSperren(SP_ANMELDUNG_FEHLT); return null; }
+      spSite = gefunden.basis;
+      return listenErmitteln(spHole, spSite).then(listen => {
+        spListen = listen;
+                                                                              
+                                                       
+        if (!listen.some(l => l.schreiben)) { spielSperren(SPIEL_OHNE_RECHT); return null; }
+        const vorhanden = spielLesen();
+        if (vorhanden) { spielSetzen(vorhanden); spielLeisteZeigen(); return null; }
+        return spielAusListen().then(gut => {
+          if (gut) spielLeisteZeigen(); else spielSperren(SPIEL_NICHT_LESBAR);
+          return null;
+        });
+      });
+    }).catch(() => { spielSperren(SPIEL_OHNE_VERBINDUNG); return null; });
+  }
+                                                                            
+  function spielLokalStarten() {
+    speicherArt = 'spiel';
+    spielTitelSetzen();
+    const vorhanden = spielLesen();
+    if (vorhanden) spielSetzen(vorhanden); else spielAusDemo();
+    spielLeisteZeigen();
+  }
+
+                                                                      
+                                                                   
+  function spielNeuLadenFragen() {
+    if (!spiel) return;
+    const tag = new Date(spiel.geladen).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+    if (!confirm('Der Spielstand vom ' + tag + ' wird verworfen.')) return;
+    const neu = spiel.quelle === 'liste' && spSite ? spielAusListen() : Promise.resolve(spielAusDemo());
+    neu.then(gut => {
+      if (!gut) { spielSperren(SPIEL_NICHT_LESBAR); return; }
+      hausAuswahl = {};
+      hausSchreib(HAUS_AUSWAHL, hausAuswahl);
+      spielLeisteZeigen();
+      spielNachWechsel();
+    }).catch(() => spielSperren(SPIEL_NICHT_LESBAR));
+  }
+                                                                          
+                                                                       
+                        
+  function spielNachWechsel() {
+    seitZustandLaden();
+    spMarkeSetzen();
+    spListenWahlZeigen();
+    wechsle(ansicht);
+  }
+                                                                        
+  function spielFremdUebernehmen(roh) {
+    const neu = spielObjektAufbereiten(roh);
+    if (!neu) return;
+    if (neu.abteilungen.some(a => a.kuerzel === spiel.aktiv)) neu.aktiv = spiel.aktiv;
+    spielSetzen(neu);
+    spielLeisteZeigen();
+    spMarkeSetzen();
+    spListenWahlZeigen();
+    if (ansicht === 'haus') { hausLaden(); renderHaus(); } else syncZeichnen();
+  }
+
   function spVorlauf() {
+    if (spielModus) return spielVorlauf();
     return siteSuchen(spHole, spOrt()).then(gefunden => {
       if (!gefunden) { spLokalBleiben('nicht verbunden'); spOhneVerbindung(); return null; }
       if (gefunden.fehler) {
@@ -7532,7 +7833,9 @@
                                                                            
   function einfrierenSichtbarkeit() {
     const knopf = document.getElementById('standEinfrieren');
-    if (knopf) knopf.classList.toggle('verborgen', speicherArt === 'liste');
+                                                                           
+                                                               
+    if (knopf) knopf.classList.toggle('verborgen', speicherArt === 'liste' || speicherArt === 'spiel');
   }
 
   function renderFussStand() {
@@ -7801,6 +8104,9 @@
                                                                         
                         
   function einlesenVorschauZeigen(dateien) {
+                                                                              
+                                       
+    if (speicherArt === 'spiel') return;
     const dialog = document.getElementById('vorschauDialog');
     const wurzel = document.getElementById('vorschauInhalt');
     if (!dialog || !wurzel) return;
@@ -8018,6 +8324,16 @@
       </section>`;
   }
 
+                                                                        
+                                                                        
+                                                            
+  function nominierungKnoepfeHtml(v, gesperrt) {
+    return `<div class="wahl wahl-nominierung">
+            <button type="button" data-nominierung="nominiert" aria-pressed="${v.leitung === 'nominiert'}"${gesperrt ? ' disabled' : ''}>Für Leitungsportfolio nominieren<small>die Abteilung nominiert etwa 8 bis 10 Vorhaben</small></button>
+            <button type="button" data-nominierung="keine" aria-pressed="${v.leitung === 'keine'}"${gesperrt ? ' disabled' : ''}>Nicht nominieren, selbst steuern<small>bleibt im Abteilungsportfolio</small></button>
+          </div>`;
+  }
+
   function vorschauOeffnen(id, fokus) {
     const v = nachId(id);
     const dialog = document.getElementById('vorschauDialog');
@@ -8104,10 +8420,7 @@
         <div class="vs-nominierung">
           <h4>Nominierung für das Leitungsportfolio</h4>
           <p class="vs-empfehlung">${istZurueckgestellt(v) ? esc(nominierung) : 'Richtwert: etwa 8 bis 10 Vorhaben je Abteilung.'}</p>
-          <div class="wahl wahl-nominierung">
-            <button type="button" data-nominierung="nominiert" aria-pressed="${v.leitung === 'nominiert'}"${nominierungGesperrt ? ' disabled' : ''}>Für Leitungsportfolio nominieren<small>die Abteilung nominiert etwa 8 bis 10 Vorhaben</small></button>
-            <button type="button" data-nominierung="keine" aria-pressed="${v.leitung === 'keine'}"${nominierungGesperrt ? ' disabled' : ''}>Nicht nominieren, selbst steuern<small>bleibt im Abteilungsportfolio</small></button>
-          </div>
+          ${nominierungKnoepfeHtml(v, nominierungGesperrt)}
           ${nominierungGesperrt ? '<p class="vs-gesperrt">Nominiert werden kann nur, was eingeplant ist.</p>' : ''}
         </div>
         ${abweichend ? `<div class="vs-feld">
@@ -9698,9 +10011,12 @@
                                                                            
                                                              
 
-  const HAUS_DATEIEN = SPEICHER + '-haus-dateien';
-  const HAUS_AUSWAHL = SPEICHER + '-haus-auswahl';
-  const HAUS_SICHT = SPEICHER + '-haus-sicht';
+                                                                             
+                                                                             
+                                                                          
+  const HAUS_DATEIEN = (spielModus ? SPIEL : SPEICHER) + '-haus-dateien';
+  const HAUS_AUSWAHL = (spielModus ? SPIEL : SPEICHER) + '-haus-auswahl';
+  const HAUS_SICHT = (spielModus ? SPIEL : SPEICHER) + '-haus-sicht';
   const HAUS_OEFFNEN = SPEICHER + '-haus-oeffnen';                                                              
   const HAUS_REITER = ['portfolio', 'ziele', 'laufzeiten', 'liste', 'veraenderung'];
 
@@ -9810,6 +10126,9 @@
                                                                             
   function hausSteckbriefWeg(eintrag) {
     if (eintrag.quelle === 'eigene') return '<button class="textbtn blau" type="button" id="hausVorschauSteckbrief">Steckbrief öffnen</button>';
+                                                                         
+                                                                       
+    if (eintrag.quelle === 'spiel') return `<button class="textbtn blau" type="button" id="hausVorschauSteckbrief">Steckbrief in ${esc(eintrag.abteilung)} öffnen</button>`;
     if (speicherArt === 'liste' && spListen.some(l => l.kuerzel === eintrag.kuerzel)) {
       return `<button class="textbtn blau" type="button" id="hausVorschauSteckbrief">Steckbrief in ${esc(eintrag.abteilung)} öffnen</button>`;
     }
@@ -9835,6 +10154,15 @@
   }
 
   function hausLaden() {
+                                                                           
+                                                                              
+    if (speicherArt === 'spiel') {
+      H = {
+        abteilungen: (spiel ? spiel.abteilungen : []).map(a => ({ kuerzel: a.kuerzel, name: a.name, stand: a.stand, quelle: 'spiel', geladen: spiel.geladen })),
+        geladen: spiel ? spiel.geladen : new Date().toISOString()
+      };
+      return Promise.resolve(null);
+    }
     const eigene = hausEigene();
     if (speicherArt === 'liste') {
                                                                     
@@ -9960,14 +10288,21 @@
       zahlwort(bau.alle.length, 'Vorhaben', 'Vorhaben'),
       zeit ? 'geladen ' + zeit : ''
     ].filter(Boolean).join(' · ');
+                                                                      
+                                                       
     const knopf = speicherArt === 'liste'
       ? '<button class="textbtn hell" type="button" id="hausNeuLaden">Neu laden</button>'
-      : '<button class="textbtn hell" type="button" id="hausEinlesen">Abteilungsstände einlesen</button>';
+      : speicherArt === 'spiel' ? ''
+        : '<button class="textbtn hell" type="button" id="hausEinlesen">Abteilungsstände einlesen</button>';
                                                                               
                                                                       
                                                            
+                                                                              
+                                                                          
+                                                                     
     const abschluss = hausDarfAbschliessen(hausAbschlussUmgebung())
       ? '<button class="textbtn hell" type="button" id="hausAbschluss">Runde abschließen</button>'
+        + '<button class="textbtn hell" type="button" id="hausSpielOeffnen">Planspiel öffnen</button>'
       : '';
     const demoHinweis = bau.abteilungen.some(a => a.quelle === 'demo')
       ? '<span class="haus-lage-zahlen haus-demo" id="hausDemoHinweis">Demo: Die Abteilungen Z, V und G sind simuliert, die Sicht des Stabs und der Hausleitung ist hier nur nachgestellt.</span>'
@@ -9988,6 +10323,16 @@
     if (einlesen) einlesen.addEventListener('click', () => document.getElementById('hausDatei').click());
     const abschlussKnopf = document.getElementById('hausAbschluss');
     if (abschlussKnopf) abschlussKnopf.addEventListener('click', () => hausAbschlussOeffnen());
+    const spielKnopf = document.getElementById('hausSpielOeffnen');
+    if (spielKnopf) spielKnopf.addEventListener('click', hausSpielOeffnen);
+  }
+
+                                                                              
+                                                                        
+                                                                       
+  function hausSpielOeffnen() {
+    const adresse = String(spOrt().href || '').split(/[?#]/)[0] + '?spiel#haus';
+    window.open(adresse, '_blank', 'noopener');
   }
 
                                                                             
@@ -10908,8 +11253,9 @@
         <ul class="vs-liste">${vorgemerkt.map(e => `<li>${esc(e.v.name)} (${esc(e.kuerzel)})</li>`).join('')}</ul>
       </section>
       <section class="vs-block">
-        <p>Die Vorhaben kehren in das Portfolio ihrer Abteilung zurück. Die Abteilungen sehen diese Entscheidung. Es wird nichts gelöscht; die Zurückstellung kann jederzeit zurückgenommen werden.</p>
+        <p>Die Vorhaben kehren in das Portfolio ihrer Abteilung zurück. ${speicherArt === 'spiel' ? 'Die Abteilungen sehen davon nichts.' : 'Die Abteilungen sehen diese Entscheidung.'} Es wird nichts gelöscht; die Zurückstellung kann jederzeit zurückgenommen werden.</p>
         ${nurDemo ? '<p class="vs-leer">Demo: Es wird nichts gespeichert.</p>' : ''}
+        ${speicherArt === 'spiel' ? '<p class="vs-leer">Nur im Planspiel.</p>' : ''}
       </section>
       <div class="vs-fuss">
         <button class="textbtn blau" type="button" id="hausKuratierungAbbrechen">Abbrechen</button>
@@ -10929,6 +11275,14 @@
                                                                               
                                                              
   function hausSchreibweg(eintrag, anwenden) {
+                                                                              
+                                                                          
+                                                                       
+    if (speicherArt === 'spiel') {
+      anwenden(eintrag.v);
+      speichern();
+      return Promise.resolve(true);
+    }
     if (eintrag.quelle === 'eigene') {
       const v = S.vorhaben.find(x => x.id === eintrag.v.id) || eintrag.v;
       anwenden(v);
@@ -10961,6 +11315,8 @@
     if (fehler) {
       hausHinweis = 'Nicht alles konnte gespeichert werden. ' + (erfolge ? erfolge + ' von ' + (erfolge + fehler) + ' ' : '')
         + 'Bitte in einem Moment noch einmal versuchen.';
+    } else if (speicherArt === 'spiel') {
+      hausHinweis = wort + ' Nur im Planspiel.';
     } else if (hausDemoQuelle()) {
       hausHinweis = wort + ' In der Demo wird nichts gespeichert.';
     } else {
@@ -11145,7 +11501,7 @@
     const umgebung = hausUmgebung();
     const kuratierbar = hausKuratierbar(eintrag, umgebung);
     const ruecknahmeMoeglich = eintrag.zurueckgestellt
-      && (eintrag.quelle === 'liste' || eintrag.quelle === 'demo'
+      && (eintrag.quelle === 'liste' || eintrag.quelle === 'demo' || eintrag.quelle === 'spiel'
         || (eintrag.quelle === 'eigene' && umgebung.eigeneSchreibbar));
                                                                        
                                                             
@@ -11158,6 +11514,10 @@
         : 'Nicht nominiert, die Abteilung steuert selbst.';
     const verbundene = hausVerbundeneNamen(eintrag, bau)
       .concat(eintrag.ohneTreffer.map(kennung => 'Vorhaben ' + kennung + ' (nicht geladen)'));
+                                                                            
+                                                                             
+                                                         
+    const spielNominierung = speicherArt === 'spiel' && eintrag.quelle === 'spiel' && !eintrag.nominiert && eintrag.wahl === 'prio';
     wurzel.innerHTML = `<div class="vs-inhalt">
       <div class="vs-kopf">
         <h2 id="hausVorschauTitel">${esc(v.name)}</h2>
@@ -11185,6 +11545,7 @@
         <h3>Nominierung</h3>
         <p>${esc(nominierung)}</p>
         ${IST_NOMINIERT(v.leitung) && v.bmWarum.trim() ? `<p class="vs-dazu">„${esc(v.bmWarum)}“</p>` : ''}
+        ${spielNominierung ? nominierungKnoepfeHtml(v, false) : ''}
       </section>
       ${eintrag.wahl === 'wartet' ? `<section class="vs-block">
         <h3>Bedingung</h3>
@@ -11217,6 +11578,15 @@
       dialog.close();
       hausVerschiebenOeffnen(eintrag, verschiebKandidaten);
     });
+                                                                             
+                         
+    wurzel.querySelectorAll('[data-nominierung]').forEach(el => el.addEventListener('click', () => {
+      if (speicherArt !== 'spiel') return;
+      nominierungSetzen(v, v.leitung === el.dataset.nominierung ? 'offen' : el.dataset.nominierung);
+      speichern();
+      renderHaus();
+      hausVorschauOeffnen(schluessel);
+    }));
     const haken = document.getElementById('hausVorschauHaken');
     if (haken) haken.addEventListener('click', () => {
       hausAuswahl = auswahlUmschalten(hausAuswahl, schluessel);
@@ -11234,6 +11604,16 @@
     if (zumSteckbriefKnopf) zumSteckbriefKnopf.addEventListener('click', () => {
       dialog.close();
       if (eintrag.quelle === 'eigene') { offenId = v.id; wechsle('erfassen'); return; }
+      if (eintrag.quelle === 'spiel') {
+        spielAktivSetzen(eintrag.kuerzel);
+        spielAblegen();
+        seitZustandLaden();
+        spMarkeSetzen();
+        spListenWahlZeigen();
+        offenId = v.id;
+        wechsle('erfassen');
+        return;
+      }
                                                                          
                                                                              
                                                                            
@@ -11491,11 +11871,15 @@
       spVorlauf().then(startWeiter, () => { spLokalBleiben('nicht verbunden'); spOhneVerbindung(); startWeiter(); });
       return;
     }
-    laden();
+                                                                      
+                                                                      
+    if (spielModus) spielLokalStarten(); else laden();
     startWeiter();
   }
 
   function startWeiter() {
+                                                                               
+    if (spielGesperrt) return;
                                                                             
                                                                              
                                                                             
@@ -11696,6 +12080,10 @@
                                                            
     } else if (location.hash === '#haus' && hausVerfuegbar()) {
       wechsle('haus');
+                                                                              
+                                         
+    } else if (speicherArt === 'spiel' && !location.hash) {
+      wechsle('haus');
     } else if (location.hash in sprung) {
       if (briefingSichtDeepLink) sicht = 'briefing';
       else if (sprung[location.hash]) sicht = sprung[location.hash];
@@ -11711,7 +12099,9 @@
                                                                            
       if (location.hash === '#eintragen') neuFormOeffnen();
     }
-    hausGemerktesOeffnen();
+                                                                             
+                  
+    if (speicherArt !== 'spiel') hausGemerktesOeffnen();
     spNachStart();
   }
 
@@ -11720,6 +12110,17 @@
   function spNachStart() {
     spStatusZeigen();
     spListenWahlZeigen();
+                                                                             
+                                                                   
+                                                         
+    if (speicherArt === 'spiel') {
+      ['einlesenZeigen', 'downloadTsv', 'downloadJson', 'copy', 'reset'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('verborgen');
+      });
+      einfrierenSichtbarkeit();
+      return;
+    }
     if (speicherArt !== 'liste') return;
                                                                              
                                                                
