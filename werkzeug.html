@@ -2197,7 +2197,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 51 · 26.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 52 · 26.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -6652,6 +6652,7 @@
                                                                            
                                                   
   const SPIEL_TITEL = 'Portfolio-Steuerung · Sandbox';
+  const SPIEL_WARUM = 'Vorauswahl der Hausleitung';
   const SPIEL_OHNE_RECHT = 'Die Sandbox steht Personen offen, die Vorhaben-Listen bearbeiten dürfen.';
   const SPIEL_OHNE_VERBINDUNG = 'Sandbox · Keine Verbindung zu SharePoint. Bitte Seite neu laden.';
   const SPIEL_NICHT_LESBAR = 'Sandbox · Die Vorhaben aus SharePoint konnten nicht gelesen werden. Bitte Seite neu laden.';
@@ -11268,6 +11269,7 @@
         <p>Die Vorhaben kehren in das Portfolio ihrer Abteilung zurück. ${speicherArt === 'spiel' ? 'Die Abteilungen sehen davon nichts.' : 'Die Abteilungen sehen diese Entscheidung.'} Es wird nichts gelöscht; die Zurückstellung kann jederzeit zurückgenommen werden.</p>
         ${nurDemo ? '<p class="vs-leer">Demo: Es wird nichts gespeichert.</p>' : ''}
         ${speicherArt === 'spiel' ? '<p class="vs-leer">Nur in der Sandbox.</p>' : ''}
+        ${speicherArt === 'spiel' ? '<div class="vs-feld"><label for="hausKuratierungGrund">Warum? Ein Satz, freiwillig</label><input type="text" id="hausKuratierungGrund" maxlength="240" placeholder="Steht später auf dem Papier aus der Sandbox"></div>' : ''}
       </section>
       <div class="vs-fuss">
         <button class="textbtn blau" type="button" id="hausKuratierungAbbrechen">Abbrechen</button>
@@ -11277,8 +11279,9 @@
     wurzel.querySelector('.vs-schliessen').addEventListener('click', () => dialog.close());
     document.getElementById('hausKuratierungAbbrechen').addEventListener('click', () => dialog.close());
     document.getElementById('hausKuratierungOk').addEventListener('click', () => {
+      const grundFeld = document.getElementById('hausKuratierungGrund');
       dialog.close();
-      hausZurueckstellenAusfuehren(vorgemerkt);
+      hausZurueckstellenAusfuehren(vorgemerkt, grundFeld ? grundFeld.value.trim() : '');
     });
     dialog.onclick = event => { if (event.target === dialog) dialog.close(); };
     if (!dialog.open) dialog.showModal();
@@ -11336,12 +11339,17 @@
     }
   }
 
-  function hausZurueckstellenAusfuehren(eintraege) {
+                                                                           
+                                                          
+  function hausZurueckstellenAusfuehren(eintraege, grund) {
     let erfolge = 0, fehler = 0;
     let kette = Promise.resolve();
     eintraege.forEach(eintrag => {
       kette = kette
-        .then(() => hausSchreibweg(eintrag, v => zurueckstellen(v)))
+        .then(() => hausSchreibweg(eintrag, v => {
+          zurueckstellen(v);
+          if (speicherArt === 'spiel' && grund && v.zurueckgestellt) v.zurueckgestellt.grund = grund;
+        }))
         .then(gut => { if (gut) erfolge += 1; else fehler += 1; })
         .catch(() => { fehler += 1; });
     });
@@ -11530,6 +11538,15 @@
                                                                              
                                                          
     const spielNominierung = speicherArt === 'spiel' && eintrag.quelle === 'spiel' && !eintrag.nominiert && eintrag.wahl === 'prio';
+                                                                       
+                                                                             
+                                                                             
+                                                                            
+                                                                          
+                                                                           
+                                                                           
+                                                                            
+    const spielWarum = speicherArt === 'spiel' && eintrag.quelle === 'spiel' && IST_NOMINIERT(v.leitung);
     wurzel.innerHTML = `<div class="vs-inhalt">
       <div class="vs-kopf">
         <h2 id="hausVorschauTitel">${esc(v.name)}</h2>
@@ -11556,8 +11573,9 @@
       <section class="vs-block">
         <h3>Nominierung</h3>
         <p>${esc(nominierung)}</p>
-        ${IST_NOMINIERT(v.leitung) && v.bmWarum.trim() ? `<p class="vs-dazu">„${esc(v.bmWarum)}“</p>` : ''}
+        ${IST_NOMINIERT(v.leitung) && v.bmWarum.trim() && !spielWarum ? `<p class="vs-dazu">„${esc(v.bmWarum)}“</p>` : ''}
         ${spielNominierung ? nominierungKnoepfeHtml(v, false) : ''}
+        ${spielWarum ? `<div class="vs-feld"><label for="spielWarum">Warum? Ein Satz, freiwillig</label><input type="text" id="spielWarum" maxlength="240" value="${esc(v.bmWarum)}" placeholder="${esc(SPIEL_WARUM)}"></div>` : ''}
       </section>
       ${eintrag.wahl === 'wartet' ? `<section class="vs-block">
         <h3>Bedingung</h3>
@@ -11595,10 +11613,18 @@
     wurzel.querySelectorAll('[data-nominierung]').forEach(el => el.addEventListener('click', () => {
       if (speicherArt !== 'spiel') return;
       nominierungSetzen(v, v.leitung === el.dataset.nominierung ? 'offen' : el.dataset.nominierung);
+      if (IST_NOMINIERT(v.leitung) && !v.bmWarum.trim()) v.bmWarum = SPIEL_WARUM;
       speichern();
       renderHaus();
       hausVorschauOeffnen(schluessel);
     }));
+    const warumFeld = document.getElementById('spielWarum');
+    if (warumFeld) warumFeld.addEventListener('change', () => {
+      if (speicherArt !== 'spiel') return;
+      v.bmWarum = warumFeld.value.trim() || SPIEL_WARUM;
+      speichern();
+      renderHaus();
+    });
     const haken = document.getElementById('hausVorschauHaken');
     if (haken) haken.addEventListener('click', () => {
       hausAuswahl = auswahlUmschalten(hausAuswahl, schluessel);
