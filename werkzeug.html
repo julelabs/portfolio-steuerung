@@ -1814,6 +1814,11 @@
   #hausKoerper .pt-haus-wrap.lp-raus .pt { border-style: dashed; border-color: var(--blau-40); border-width: 1.5px; background: #FAFAFE; }
   #hausKoerper .pt-haus-wrap.lp-raus .pt-name, #hausKoerper .pt-haus-wrap.lp-raus .pt-haus-info, #hausKoerper .pt-haus-wrap.lp-raus .pt-foot { color: var(--fg-muted); }
   #hausKoerper .pt-haus-wrap.lp-raus .pt-haus-seit { color: var(--blau-60); }
+                                                                          
+                                                                            
+                                                                        
+                 
+  #hausKoerper .pt-haus-wrap.lp-neu .pt-haus-seit, #hausKoerper .pt-haus-wrap.lp-raus .pt-haus-seit { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #hausKoerper .pt-haus-wrap.lp-weg .pt { cursor: default; }
   @media (max-width: 860px) { .haus-lp-koepfe { margin-left: 0; } .haus-lp-koepfe, .haus-lp-spalten { grid-template-columns: 1fr; gap: 6px 0; } .haus-lp-spalte.bleibt, .haus-lp-spalte.neu { border-right: 0; padding-right: 0; } }
 
@@ -2192,7 +2197,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 50 · 25.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 51 · 26.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -4287,7 +4292,7 @@
         neu.push({ v, grund: !e ? 'neu in der Liste' : damals === 'fach' ? 'jetzt nominiert' : 'war ' + korbWort(damals) });
       } else if (damals === 'haus') {
         raus.push({ v, name: v.name, kennung: String(v.kennung || ''), weg: false,
-          grund: heute === 'fach' ? 'jetzt restliches Abteilungsportfolio' : 'jetzt ' + korbWort(heute) });
+          grund: heute === 'fach' ? 'jetzt Abteilungsportfolio' : 'jetzt ' + korbWort(heute) });                                                                 
       }
     });
     if (eingefroren && Array.isArray(eingefroren.vorhaben)) eingefroren.vorhaben.forEach(e => {
@@ -10536,14 +10541,21 @@
                                                        
     const lp = opt.lp || '';
     const grund = lp ? (opt.grund || '') : '';
+                                                                               
+                                                                            
+                                                                      
+                                                                            
+                                                                            
+    const zweiteZeile = grund
+      ? `<span class="pt-haus-seit">${esc(grund)}</span>`
+      : `<span class="pt-haus-info">${esc(eintrag.folgen)} · ${esc(zielText)}</span>`;
     return `<div class="pt-wrap pt-haus-wrap${lp ? ' lp-' + lp : ''}">
       <button class="pt pt-haus ${eintrag.wahl} ${eintrag.nominiert && lp !== 'raus' ? 'lf' : ''} ${opt.gedaempft ? 'abgewaehlt' : ''} ${eintrag.schluessel === hausVorschauSchluessel ? 'aktiv' : ''}"
         type="button" data-haus-kachel="${esc(eintrag.schluessel)}"
         title="${esc(v.name)} · ${esc(eintrag.abteilung)} · ${esc(PORTFOLIO[eintrag.korb])}">
         <span class="pt-name">${esc(v.name)}</span>
         ${eintrag.nominiert ? '<span class="nur-vorlesen">Für Leitungsportfolio nominiert</span>' : ''}
-        <span class="pt-haus-info">${esc(eintrag.folgen)} · ${esc(zielText)}</span>
-        ${grund ? `<span class="pt-haus-seit">${esc(grund)}</span>` : ''}
+        ${zweiteZeile}
         <span class="pt-foot">
           <span class="pt-foot-links">${esc((opt.ohneKuerzel ? '' : eintrag.kuerzel + ' · ') + (v.referat.trim() || 'ohne Referat'))}</span>
           <span class="pt-haus-rechts">${eintrag.verknuepft ? verknuepftHtml(eintrag.verknuepft) : ''}${eintrag.stand ? `<span class="pt-stand">${eintrag.stand}</span>` : ''}</span>
