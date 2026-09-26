@@ -1970,6 +1970,51 @@
     body.druck-haus tr.gewaehlt .hs-haken-druck { display: inline; }
     body.druck-haus .flaeche, body.druck-haus .fl-teil { box-shadow: none; padding: 0; margin: 0; }
   }
+                                                                            
+                                                                         
+                                                                         
+                                                                       
+                                                                     
+  .vb-druck { display: none; font-family: var(--display); color: var(--fg); font-size: 10.5pt; line-height: 1.55; }
+  .vb-druck .vb-seite { position: relative; padding: 9mm 0 20mm; }
+  .vb-druck .vb-kopf { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 3mm; border-bottom: 2pt solid var(--blau); }
+  .vb-druck .vb-kopf b { color: var(--blau); font-size: 10.5pt; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+  .vb-druck .vb-kopf span { color: var(--fg-muted); font-size: 8.5pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .vb-druck .vb-kicker { margin-top: 8mm; color: var(--fg-muted); font-size: 8.5pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .vb-druck h1 { color: var(--blau); font-size: 26pt; font-weight: 800; line-height: 1.08; letter-spacing: -0.02em; margin: 2mm 0 5mm; max-width: 152mm; }
+  .vb-druck .vb-blick { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 4mm; }
+  .vb-druck .vb-blick div { background: var(--blau-10); padding: 4mm 6mm 3.5mm; border-left: 4mm solid var(--blau-20); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .vb-druck .vb-blick div.neu { border-left-color: var(--minze); }
+  .vb-druck .vb-blick div.raus { border-left-color: var(--kirsche); }
+  .vb-druck .vb-blick b { display: block; font-size: 26pt; font-weight: 800; line-height: 1; color: var(--blau); letter-spacing: -0.02em; }
+  .vb-druck .vb-blick span { display: block; margin-top: 1.5mm; color: var(--fg-2); font-size: 9.5pt; line-height: 1.3; }
+  .vb-druck h2 { color: var(--blau); font-size: 16.5pt; font-weight: 800; margin: 8mm 0 1mm; line-height: 1.2; }
+  .vb-druck .vb-label { color: var(--blau); font-size: 11pt; font-weight: 700; border-bottom: 1px solid var(--line); padding-bottom: .5mm; margin: 5mm 0 2mm; }
+  .vb-druck .vb-label b { font-weight: 400; color: var(--fg-muted); }
+  .vb-druck ul { list-style: none; margin: 0; padding: 0; }
+  .vb-druck li { position: relative; padding-left: 6mm; margin: 0 0 1mm; break-inside: avoid; }
+  .vb-druck li::before { content: ''; position: absolute; left: .3mm; top: .55em; width: 1.8mm; height: 1.8mm; border-radius: 50%; background: var(--blau); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .vb-druck li.neu::before { background: var(--minze); }
+  .vb-druck li.raus::before { background: var(--kirsche); }
+  .vb-druck li.sort::before { background: var(--blau-20); }
+  .vb-druck li .g { color: var(--fg-2); }
+  .vb-druck li .abt { color: var(--fg-muted); font-size: 9pt; font-weight: 700; letter-spacing: .06em; margin-left: 1mm; }
+  .vb-druck .vb-zwei { display: grid; grid-template-columns: 1fr 1fr; column-gap: 8mm; }
+  .vb-druck .vb-leer { color: var(--fg-muted); }
+  .vb-druck .vb-fuss { margin-top: 8mm; border-top: 1px solid var(--line); padding-top: 2mm; display: flex; justify-content: space-between; color: var(--fg-muted); font-size: 8pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  @media print {
+    body.druck-vorbereitung .vb-druck { display: block; }
+    body.druck-vorbereitung header.top,
+    body.druck-vorbereitung .auftakt,
+    body.druck-vorbereitung #hausKopf,
+    body.druck-vorbereitung .flaeche,
+    body.druck-vorbereitung .haus-leiste,
+    body.druck-vorbereitung .fusszeile,
+    body.druck-vorbereitung .hs-druck-kopf,
+    body.druck-vorbereitung #spielLeiste,
+    body.druck-vorbereitung .vorschau-dialog { display: none !important; }
+    body.druck-vorbereitung .vb-seite2 { break-before: page; }
+  }
                                                           
   .impressum-dialog { margin: auto; border: 1px solid var(--line); border-radius: 10px; padding: 24px 28px 20px; max-width: 440px; width: min(440px, 92vw); color: var(--fg); box-shadow: 0 18px 40px rgba(13,12,43,0.18); }
   .impressum-dialog::backdrop { background: rgba(13,12,43,0.35); }
@@ -2197,7 +2242,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 53 · 26.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 54 · 26.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -2294,6 +2339,7 @@
     <div class="fusszeile">
       <span id="hausFussHinweis">Die Vormerkung bleibt in diesem Browser, bis sie bestätigt wird.</span>
       <span class="fuss-rechts">
+        <button class="textbtn blau verborgen" type="button" id="hausVorbereitungDruck">Vorbereitung drucken</button>
         <button class="textbtn blau" type="button" id="hausPortfolioDruck">Portfolio drucken</button>
         <button class="textbtn blau" type="button" id="hausDruck">Liste drucken</button>
         <button type="button" class="impressum-link" data-impressum>Impressum</button>
@@ -2322,6 +2368,12 @@
   
   <dialog class="vorschau-dialog" id="hausKuratierung" aria-labelledby="hausKuratierungTitel">
     <div id="hausKuratierungInhalt"></div>
+  </dialog>
+
+  
+  <div class="vb-druck" id="vbDruck" aria-hidden="true"></div>
+  <dialog class="vorschau-dialog" id="vbNameDialog" aria-labelledby="vbNameTitel">
+    <div id="vbNameInhalt"></div>
   </dialog>
 
   
@@ -5618,6 +5670,41 @@
     return staende;
   }
 
+                                                                          
+                                                                        
+                                                                          
+                                                                   
+                                                                           
+                                                                     
+                                                                            
+                                      
+  function vorbereitungAufbereiten(abteilungen) {
+    const vorher = [], nachher = [], neu = [], raus = [], sortiert = [];
+    let ausgang = '';
+    (abteilungen || []).forEach(a => {
+      const stand = (a && a.stand) || {};
+      const liste = Array.isArray(stand.vorhaben) ? stand.vorhaben : [];
+      const referenz = letzterStand(stand);
+      if (referenz && !ausgang) ausgang = String(referenz.name || '');
+      const alt = referenz && Array.isArray(referenz.vorhaben)
+        ? referenz.vorhaben.filter(e => korbBekannt(e.korb) === 'haus').map(e => String(e.name || '')) : [];
+      vorher.push({ kuerzel: a.kuerzel, name: a.name, eintraege: alt });
+      const w = leitungsportfolioWandel(referenz, liste);
+      const neuNamen = new Set(w.neu.map(x => x.v.name));
+      nachher.push({ kuerzel: a.kuerzel, name: a.name,
+        eintraege: liste.filter(v => portfolio(v, liste).wert === 'haus').map(v => ({ name: v.name, neu: neuNamen.has(v.name) })) });
+      w.neu.forEach(x => neu.push({ name: x.v.name, kuerzel: a.kuerzel, grund: x.grund, satz: String(x.v.bmWarum || '').trim() }));
+      w.raus.forEach(x => raus.push({ name: x.name, kuerzel: a.kuerzel, grund: x.grund,
+        satz: x.v && x.v.zurueckgestellt ? String(x.v.zurueckgestellt.grund || '').trim() : '' }));
+      if (referenz) veraenderung(referenz, liste).entscheidung.forEach(x => {
+        if (x.vonKorb === 'haus' || x.nachKorb === 'haus' || x.vonWahl === x.nachWahl) return;
+        sortiert.push({ name: x.v.name, kuerzel: a.kuerzel, von: ENTSCHEIDUNG[x.vonWahl] || x.vonWahl, nach: ENTSCHEIDUNG[x.nachWahl] || x.nachWahl });
+      });
+    });
+    const summe = l => l.reduce((n, a) => n + a.eintraege.length, 0);
+    return { vorher, nachher, neu, raus, sortiert, ausgang,
+      zahlen: { vorher: summe(vorher), nachher: summe(nachher), neu: neu.length, raus: raus.length } };
+  }
                 
 
                                         
@@ -11020,6 +11107,8 @@
   }
 
   function renderHaus() {
+    const vbKnopf = document.getElementById('hausVorbereitungDruck');
+    if (vbKnopf) vbKnopf.classList.toggle('verborgen', speicherArt !== 'spiel');
     if (!H) return;
     const bau = hausAufbau();
     if (hausAktiv && !bau.sichtbar.some(e => e.schluessel === hausAktiv)) hausAktiv = null;
@@ -11742,6 +11831,94 @@
     window.print();
   }
 
+                                                                         
+                                                                             
+                                                                             
+                                                  
+  const SPIEL_NAME = SPEICHER + '-spiel-name';
+  function vorbereitungName() {
+    try { return localStorage.getItem(SPIEL_NAME) || ''; } catch (fehler) { return ''; }
+  }
+  function vorbereitungDruckFragen() {
+    if (speicherArt !== 'spiel') return;
+    const dialog = document.getElementById('vbNameDialog');
+    const wurzel = document.getElementById('vbNameInhalt');
+    wurzel.innerHTML = `<div class="vs-inhalt">
+      <div class="vs-kopf">
+        <h2 id="vbNameTitel">Vorbereitung drucken</h2>
+        <button class="vs-schliessen" type="button" aria-label="Schließen">&times;</button>
+      </div>
+      <section class="vs-block">
+        <p>Zwei Seiten: das Leitungsportfolio zum Ausgangsstand, die Änderungen aus der Sandbox, das Leitungsportfolio danach. Der Druckdialog des Browsers kann auch als PDF sichern.</p>
+        <div class="vs-feld"><label for="vbName">Vorbereitet von (freiwillig)</label><input type="text" id="vbName" maxlength="60" value="${esc(vorbereitungName())}" placeholder="Name, wie er auf dem Papier stehen soll"></div>
+      </section>
+      <div class="vs-fuss">
+        <button class="textbtn blau" type="button" id="vbNameAbbrechen">Abbrechen</button>
+        <button class="btn primary" type="button" id="vbNameOk">Drucken</button>
+      </div>
+    </div>`;
+    wurzel.querySelector('.vs-schliessen').addEventListener('click', () => dialog.close());
+    document.getElementById('vbNameAbbrechen').addEventListener('click', () => dialog.close());
+    document.getElementById('vbNameOk').addEventListener('click', () => {
+      const name = document.getElementById('vbName').value.trim();
+      try { localStorage.setItem(SPIEL_NAME, name); } catch (fehler) {                               }
+      dialog.close();
+      vorbereitungDrucken(name);
+    });
+    hintergrundSchliessen(dialog, () => dialog.close());
+    if (!dialog.open) dialog.showModal();
+  }
+  function vorbereitungDruckHtml(d, name, geladen) {
+    const wann = geladen ? new Date(geladen) : new Date();
+    const standKurz = wann.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ', ' + wann.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    const datum = wann.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const kicker = 'Vorbereitung Portfoliorunde' + (name ? ' · von ' + esc(name) : '');
+    const kopf = `<div class="vb-kopf"><b>Portfolio-Steuerung · Vorbereitung</b><span>Sandbox · ${datum}</span></div>`;
+    const fuss = n => `<div class="vb-fuss"><span>Ausgangsstand ${standKurz} · Vorschlag, keine Entscheidung</span><span>Seite ${n} von 2</span></div>`;
+    const liste = (gruppen, mitNeu) => gruppen.map(g => `<div class="vb-label">${esc(g.name)} <b>· ${g.eintraege.length}</b></div>
+      ${g.eintraege.length ? '<ul>' + g.eintraege.map(e => mitNeu
+        ? `<li${e.neu ? ' class="neu"' : ''}>${e.neu ? '<b>' + esc(e.name) + '</b>' : esc(e.name)}</li>`
+        : `<li>${esc(e)}</li>`).join('') + '</ul>' : '<p class="vb-leer">keine</p>'}`).join('');
+    const halb = (gruppen, mitNeu) => {
+      const mitte = Math.ceil(gruppen.length / 2);
+      return `<div class="vb-zwei"><div>${liste(gruppen.slice(0, mitte), mitNeu)}</div><div>${liste(gruppen.slice(mitte), mitNeu)}</div></div>`;
+    };
+    const satz = e => e.satz ? ` <span class="g">· „${esc(e.satz)}“</span>` : '';
+    const block = (titel, klasse, eintraege, zeile) => `<div class="vb-label">${titel} <b>· ${eintraege.length}</b></div>
+      ${eintraege.length ? '<ul>' + eintraege.map(e => `<li class="${klasse}"><b>${esc(e.name)}</b><span class="abt">${esc(e.kuerzel)}</span>${zeile(e)}</li>`).join('') + '</ul>' : '<p class="vb-leer">keine</p>'}`;
+    return `<section class="vb-seite">${kopf}
+      <div class="vb-kicker">${kicker}</div>
+      <h1>Leitungsportfolio: vorher, Änderungen, nachher.</h1>
+      <div class="vb-blick">
+        <div class="neu"><b>+${d.zahlen.neu}</b><span>neu im Leitungsportfolio</span></div>
+        <div class="raus"><b>−${d.zahlen.raus}</b><span>nicht mehr dabei</span></div>
+        <div><b>${d.zahlen.nachher}</b><span>Vorhaben im Leitungsportfolio, vorher ${d.zahlen.vorher}</span></div>
+      </div>
+      <h2>Leitungsportfolio zum Ausgangsstand</h2>
+      ${halb(d.vorher, false)}
+      ${fuss(1)}
+    </section>
+    <section class="vb-seite vb-seite2">${kopf}
+      <h2 style="margin-top:8mm">Was sich in der Vorbereitung ändert</h2>
+      ${block('Neu im Leitungsportfolio', 'neu', d.neu, satz)}
+      ${block('Nicht mehr dabei', 'raus', d.raus, satz)}
+      ${block('Innerhalb der Abteilung umsortiert', 'sort', d.sortiert, e => ` <span class="g">· ${esc(e.von)} → ${esc(e.nach)}</span>`)}
+      <h2>Leitungsportfolio nach der Vorbereitung</h2>
+      ${halb(d.nachher, true)}
+      ${fuss(2)}
+    </section>`;
+  }
+  function vorbereitungDrucken(name) {
+    if (speicherArt !== 'spiel' || !spiel) return;
+    const d = vorbereitungAufbereiten(spiel.abteilungen);
+    document.getElementById('vbDruck').innerHTML = vorbereitungDruckHtml(d, name, spiel.geladen);
+    document.body.classList.add('druck-vorbereitung');
+    window.print();
+  }
+  window.addEventListener('afterprint', () => {
+    document.body.classList.remove('druck-vorbereitung');
+  });
+
   window.addEventListener('afterprint', () => {
     document.body.classList.remove('druck-hausportfolio');
   });
@@ -12028,6 +12205,7 @@
     }));
     document.getElementById('hausDruck').addEventListener('click', hausDrucken);
     document.getElementById('hausPortfolioDruck').addEventListener('click', hausPortfolioDrucken);
+    document.getElementById('hausVorbereitungDruck').addEventListener('click', vorbereitungDruckFragen);
     document.getElementById('hausDatei').addEventListener('change', event => {
       const dateien = [...event.target.files];
       event.target.value = '';
