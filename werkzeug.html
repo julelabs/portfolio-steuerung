@@ -1990,6 +1990,7 @@
   .vb-druck .vb-kopf span { color: var(--fg-muted); font-size: 8.5pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
   .vb-druck .vb-kicker { margin-top: 5mm; color: var(--fg-muted); font-size: 8.5pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
   .vb-druck h1 { color: var(--blau); font-size: 26pt; font-weight: 800; line-height: 1.08; letter-spacing: -0.02em; margin: 2mm 0 5mm; max-width: 152mm; }
+  .vb-druck .vb-kopf + h1 { margin-top: 6mm; }
   .vb-druck .vb-blick { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 4mm; }
   .vb-druck .vb-blick div { background: var(--blau-10); padding: 4mm 6mm 3.5mm; border-left: 4mm solid var(--blau-20); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .vb-druck .vb-blick div.neu { border-left-color: var(--minze); }
@@ -2250,7 +2251,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 57 · 26.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 58 · 26.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -11892,7 +11893,8 @@
     const wann = geladen ? new Date(geladen) : new Date();
     const standKurz = wann.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ', ' + wann.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
     const datum = wann.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const kicker = name ? 'Vorbereitet von ' + esc(name) : 'Vorbereitung Portfoliorunde';
+                                                                                                  
+    const kicker = name ? `<div class="vb-kicker">Vorbereitet von ${esc(name)}</div>` : '';
     const kopf = `<div class="vb-kopf"><b>Portfolio-Steuerung · Vorbereitung</b><span>Sandbox · ${datum}</span></div>`;
     const fuss = n => `<div class="vb-fuss"><span>Ausgangsstand ${standKurz} · Vorschlag, keine Entscheidung</span><span>Seite ${n} von 2</span></div>`;
     const liste = (gruppen, mitNeu) => gruppen.map(g => `<div class="vb-label">${esc(g.name)} <b>· ${g.eintraege.length}</b></div>
@@ -11907,7 +11909,7 @@
     const block = (titel, klasse, eintraege, zeile) => `<div class="vb-label">${titel} <b>· ${eintraege.length}</b></div>
       ${eintraege.length ? '<ul>' + eintraege.map(e => `<li class="${klasse}"><b>${esc(e.name)}</b><span class="abt">${esc(e.kuerzel)}</span>${zeile(e)}</li>`).join('') + '</ul>' : '<p class="vb-leer">keine</p>'}`;
     return `<section class="vb-seite">${kopf}
-      <div class="vb-kicker">${kicker}</div>
+      ${kicker}
       <h1>Leitungsportfolio: vorher, Änderungen, nachher.</h1>
       <div class="vb-blick">
         <div class="neu"><b>+${d.zahlen.neu}</b><span>neu im Leitungsportfolio</span></div>
