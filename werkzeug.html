@@ -2197,7 +2197,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 52 · 26.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 53 · 26.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -8060,7 +8060,7 @@
     };
     wurzel.querySelector('.vs-schliessen').addEventListener('click', zu);
     document.getElementById('tgFertig').addEventListener('click', zu);
-    dialog.onclick = event => { if (event.target === dialog) zu(); };
+    hintergrundSchliessen(dialog, () => zu());
     dialog.oncancel = () => { setTimeout(() => { if (ansicht === 'priorisieren') renderPriorisieren(); if (ansicht === 'erfassen') renderStand(); }, 0); };
     if (!dialog.open) dialog.showModal();
   }
@@ -8099,7 +8099,7 @@
       dialog.close();
       tgErfassenOeffnen();
     });
-    dialog.onclick = event => { if (event.target === dialog) dialog.close(); };
+    hintergrundSchliessen(dialog, () => dialog.close());
     if (!dialog.open) dialog.showModal();
   }
 
@@ -8198,7 +8198,7 @@
       if (datei) datei.value = '';
       if (ansicht === 'erfassen') renderErfassen(); else renderStand();
     });
-    dialog.onclick = event => { if (event.target === dialog) schliessen(); };
+    hintergrundSchliessen(dialog, () => schliessen());
     dialog.oncancel = () => { if (datei) datei.value = ''; };
     if (!dialog.open) dialog.showModal();
   }
@@ -8333,6 +8333,15 @@
                                                                         
                                                                           
                                                           
+                                                                              
+                                                                          
+                                                                           
+                                                                  
+  function hintergrundSchliessen(dialog, zu) {
+    dialog.onpointerdown = event => { dialog.dataset.hintergrund = event.target === dialog ? '1' : ''; };
+    dialog.onclick = event => { if (event.target === dialog && dialog.dataset.hintergrund === '1') zu(); };
+  }
+
   function nominierungKnoepfeHtml(v, gesperrt) {
     return `<div class="wahl wahl-nominierung">
             <button type="button" data-nominierung="nominiert" aria-pressed="${v.leitung === 'nominiert'}"${gesperrt ? ' disabled' : ''}>Für Leitungsportfolio nominieren<small>die Abteilung nominiert etwa 8 bis 10 Vorhaben</small></button>
@@ -8509,7 +8518,7 @@
       offenId = v.id;
       wechsle('erfassen');
     });
-    dialog.onclick = event => { if (event.target === dialog) dialog.close(); };
+    hintergrundSchliessen(dialog, () => dialog.close());
                                                                             
                                                                                
     dialog.onclose = () => { vorschauId = null; if (ansicht === 'priorisieren') renderBild(); };
@@ -11150,7 +11159,7 @@
       const name = nameFeld.value.trim() || hausStandName(art, new Date().toISOString());
       hausAbschlussAusfuehren(gewaehlte, { name: name, art: art });
     });
-    dialog.onclick = event => { if (event.target === dialog) dialog.close(); };
+    hintergrundSchliessen(dialog, () => dialog.close());
     if (!dialog.open) dialog.showModal();
   }
 
@@ -11283,7 +11292,7 @@
       dialog.close();
       hausZurueckstellenAusfuehren(vorgemerkt, grundFeld ? grundFeld.value.trim() : '');
     });
-    dialog.onclick = event => { if (event.target === dialog) dialog.close(); };
+    hintergrundSchliessen(dialog, () => dialog.close());
     if (!dialog.open) dialog.showModal();
   }
 
@@ -11421,7 +11430,7 @@
       dialog.close();
       hausVerschiebenAusfuehren(eintrag, ziel);
     });
-    dialog.onclick = event => { if (event.target === dialog) dialog.close(); };
+    hintergrundSchliessen(dialog, () => dialog.close());
     if (!dialog.open) dialog.showModal();
   }
 
@@ -11664,7 +11673,7 @@
       } catch (fehler) {                   }
       location.reload();
     });
-    dialog.onclick = event => { if (event.target === dialog) dialog.close(); };
+    hintergrundSchliessen(dialog, () => dialog.close());
     dialog.onclose = () => { hausVorschauSchluessel = null; if (ansicht === 'haus') renderHaus(); };
     if (!dialog.open) dialog.showModal();
     if (ansicht === 'haus') renderHaus();
