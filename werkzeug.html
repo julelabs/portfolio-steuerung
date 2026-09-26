@@ -1143,7 +1143,11 @@
   .mx-zelle.drop-ziel { outline: 2px dashed var(--blau); outline-offset: -5px; }
 
   .pf-korb, .pf-korb-leer { flex-basis: 100%; min-height: 13px; }
-  .pf-korb { font-family: var(--display); font-size: 11px; line-height: 15px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-2); }
+                                                                               
+                                                                               
+                                                                        
+                                                                                
+  .pf-korb { font-family: var(--body); font-size: 13px; line-height: 16px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--fg-muted); }
                                                                               
                                                                             
                                                                       
@@ -1752,7 +1756,7 @@
                       
   .haus-gruppe + .haus-gruppe { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
   .haus-gruppe + .haus-gruppe.haus-gruppe-rest { margin-top: 18px; padding-top: 12px; border-top-color: var(--blau-20); }
-  .haus-gruppe-kopf { color: var(--fg-muted); font-size: 10.5px; margin-bottom: 8px; }
+  .haus-gruppe-kopf { color: var(--fg-muted); font-size: 13px; margin-bottom: 8px; }
   .haus-gruppe-body { display: flex; flex-wrap: wrap; gap: 10px; }
   @media (max-width: 860px) { .haus-zeile { grid-template-columns: 1fr; gap: 8px; } }
 
@@ -2242,7 +2246,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 54 · 26.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 55 · 26.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -8210,11 +8214,23 @@
                                                                               
                                                                            
     const ganzerStand = /(^|[?&])kopie(=|&|$)/.test(spOrt().search || '');
+                                                                        
+                                                                             
+                                                                          
+                                                                            
+                                                                            
+                                              
+    const eigene = String(S.abteilung || '').trim();
+    const fremdeAbteilung = json => {
+      const genannt = String((json && json.metadaten && json.metadaten.abteilung) || (json && json.stand && json.stand.abteilung) || '').trim();
+      if (!genannt || !eigene) return '';
+      return genannt.toLocaleLowerCase('de') === eigene.toLocaleLowerCase('de') ? '' : genannt;
+    };
     const berichte = dateien.map(datei => {
       let json;
       try { json = JSON.parse(datei.text); }
       catch (fehler) { return { name: datei.name, fehler: 'Die Datei ist kein gültiges JSON.' }; }
-      return Object.assign({ name: datei.name }, referatsstandEinlesen(kopie, json, { ganzerStand }));
+      return Object.assign({ name: datei.name, fremd: fremdeAbteilung(json) }, referatsstandEinlesen(kopie, json, { ganzerStand }));
     });
     const zahlwort = (n, ein, mehr) => (n === 1 ? '1 ' + ein : n + ' ' + mehr);
                                                                          
@@ -8238,6 +8254,7 @@
       ? `<section class="vs-block"><h3>${esc(bericht.name)}</h3><p class="fehlt">${esc(bericht.fehler)}</p></section>`
       : `<section class="vs-block">
           <h3>${esc(bericht.name)}</h3>
+          ${bericht.fremd ? `<p class="fehlt" data-fremde-abteilung><b>Diese Datei stammt aus „${esc(bericht.fremd)}“.</b> Du arbeitest gerade in „${esc(eigene)}“. Beim Übernehmen landen die Vorhaben hier, nicht dort.</p>` : ''}
           <p>${bericht.referate.length ? esc(bericht.referate.join(', ')) : 'Kein Referat erkannt.'}</p>
           ${zeilenHtml(bericht)}
         </section>`;
@@ -10477,10 +10494,9 @@
           <button type="button" data-haus-umfang="alle" aria-pressed="${!hausNurNominierte}">Alle Vorhaben</button>
         </div>`}
         <input class="haus-suche" type="search" id="hausSuche" value="${esc(hausSuche)}" placeholder="Vorhaben suchen ..." aria-label="Vorhaben suchen" autocomplete="off">
-        <span class="linse-wort" id="hausAnzeigenWort">Anzeigen</span>
         <div class="linse">
-          <button class="linse-knopf${leer ? ' leer' : ''}" type="button" id="hausAnzeigen" aria-haspopup="true" aria-expanded="${hausLinseOffen}" aria-controls="hausAnzeigenMenue" aria-labelledby="hausAnzeigenWort hausAnzeigen">${esc(leer ? (lpSchalter ? 'Abteilung oder Veränderung' : 'alle Abteilungen') : teile.join(' · '))}</button>
-          <div class="linse-menue${hausLinseOffen ? '' : ' verborgen'}" id="hausAnzeigenMenue" role="group" aria-labelledby="hausAnzeigenWort">
+          <button class="linse-knopf${leer ? ' leer' : ''}" type="button" id="hausAnzeigen" aria-haspopup="true" aria-expanded="${hausLinseOffen}" aria-controls="hausAnzeigenMenue" aria-label="Anzeigen: ${esc(leer ? 'alles' : teile.join(' · '))}">${esc(leer ? 'Anzeigen' : teile.join(' · '))}</button>
+          <div class="linse-menue${hausLinseOffen ? '' : ' verborgen'}" id="hausAnzeigenMenue" role="group" aria-label="Anzeigen">
             <button class="linse-eintrag" type="button" data-haus-anzeigen="alle" aria-pressed="${leer}">alle Abteilungen</button>
             ${lpSchalter ? `<button class="linse-eintrag" type="button" id="hausSeitSchalter" aria-pressed="${lpAn}">Veränderung im Leitungsportfolio</button>
             <p class="linse-notiz">${esc(seitName ? 'seit ' + seitName : 'seit dem letzten Stand je Abteilung')}</p>` : ''}
