@@ -1988,7 +1988,7 @@
   .vb-druck .vb-kopf { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 3mm; border-bottom: 2pt solid var(--blau); }
   .vb-druck .vb-kopf b { color: var(--blau); font-size: 10.5pt; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
   .vb-druck .vb-kopf span { color: var(--fg-muted); font-size: 8.5pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-  .vb-druck .vb-kicker { margin-top: 8mm; color: var(--fg-muted); font-size: 8.5pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .vb-druck .vb-kicker { margin-top: 5mm; color: var(--fg-muted); font-size: 8.5pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
   .vb-druck h1 { color: var(--blau); font-size: 26pt; font-weight: 800; line-height: 1.08; letter-spacing: -0.02em; margin: 2mm 0 5mm; max-width: 152mm; }
   .vb-druck .vb-blick { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 4mm; }
   .vb-druck .vb-blick div { background: var(--blau-10); padding: 4mm 6mm 3.5mm; border-left: 4mm solid var(--blau-20); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
@@ -2250,7 +2250,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 56 · 26.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 57 · 26.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -11892,7 +11892,7 @@
     const wann = geladen ? new Date(geladen) : new Date();
     const standKurz = wann.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ', ' + wann.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
     const datum = wann.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const kicker = 'Vorbereitung Portfoliorunde' + (name ? ' · von ' + esc(name) : '');
+    const kicker = name ? 'Vorbereitet von ' + esc(name) : 'Vorbereitung Portfoliorunde';
     const kopf = `<div class="vb-kopf"><b>Portfolio-Steuerung · Vorbereitung</b><span>Sandbox · ${datum}</span></div>`;
     const fuss = n => `<div class="vb-fuss"><span>Ausgangsstand ${standKurz} · Vorschlag, keine Entscheidung</span><span>Seite ${n} von 2</span></div>`;
     const liste = (gruppen, mitNeu) => gruppen.map(g => `<div class="vb-label">${esc(g.name)} <b>· ${g.eintraege.length}</b></div>
