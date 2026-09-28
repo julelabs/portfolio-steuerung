@@ -2075,6 +2075,19 @@
     body.druck-vorbereitung #spielLeiste,
     body.druck-vorbereitung .vorschau-dialog { display: none !important; }
     body.druck-vorbereitung .vb-seite2 { break-before: page; }
+                                                                     
+                                                                     
+                                                                       
+                                           
+    body.druck-vorbereitung .buehne > :not(#vbDruck) { display: none !important; }
+    body.druck-vorbereitung .buehne { max-width: none; padding: 0; margin: 0; }
+                                                                           
+                                                                             
+                                                                           
+                                                                            
+                                             
+    body.druck-vorbereitung .vb-seite { height: 269mm; box-sizing: border-box; padding: 9mm 0 0; display: flex; flex-direction: column; overflow: hidden; }
+    body.druck-vorbereitung .vb-fuss { margin-top: auto; }
   }
                                                           
   .impressum-dialog { margin: auto; border: 1px solid var(--line); border-radius: 10px; padding: 24px 28px 20px; max-width: 440px; width: min(440px, 92vw); color: var(--fg); box-shadow: 0 18px 40px rgba(13,12,43,0.18); }
@@ -2303,7 +2316,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 63 · 28.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 64 · 28.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -5843,8 +5856,12 @@
       vorher.push({ kuerzel: a.kuerzel, name: a.name, eintraege: alt });
       const w = leitungsportfolioWandel(referenz, liste);
       const neuNamen = new Set(w.neu.map(x => x.v.name));
+                                                                              
+                                                                       
+                                                               
       nachher.push({ kuerzel: a.kuerzel, name: a.name,
-        eintraege: liste.filter(v => portfolio(v, liste).wert === 'haus').map(v => ({ name: v.name, neu: neuNamen.has(v.name) })) });
+        eintraege: liste.filter(v => portfolio(v, liste).wert === 'haus').map(v => ({ name: v.name, neu: neuNamen.has(v.name) }))
+          .sort((x, y) => (y.neu ? 1 : 0) - (x.neu ? 1 : 0)) });
       w.neu.forEach(x => neu.push({ name: x.v.name, kuerzel: a.kuerzel, grund: x.grund, satz: String(x.v.bmWarum || '').trim() }));
       w.raus.forEach(x => raus.push({ name: x.name, kuerzel: a.kuerzel, grund: x.grund,
         satz: x.v && x.v.zurueckgestellt ? String(x.v.zurueckgestellt.grund || '').trim() : '' }));
@@ -12316,15 +12333,30 @@
       ${fuss(2)}
     </section>`;
   }
+                                                                          
+                                                                      
+                                                       
+  function vbSeitenregel(an) {
+    let stil = document.getElementById('vbSeitenregel');
+    if (!an) { if (stil) stil.remove(); return; }
+    if (!stil) {
+      stil = document.createElement('style');
+      stil.id = 'vbSeitenregel';
+      document.head.appendChild(stil);
+    }
+    stil.textContent = '@page { size: A4 portrait; margin: 12mm }';
+  }
   function vorbereitungDrucken(name) {
     if (speicherArt !== 'spiel' || !spiel) return;
     const d = vorbereitungAufbereiten(spiel.abteilungen);
     document.getElementById('vbDruck').innerHTML = vorbereitungDruckHtml(d, name, spiel.geladen);
     document.body.classList.add('druck-vorbereitung');
+    vbSeitenregel(true);
     window.print();
   }
   window.addEventListener('afterprint', () => {
     document.body.classList.remove('druck-vorbereitung');
+    vbSeitenregel(false);
   });
 
   window.addEventListener('afterprint', () => {
