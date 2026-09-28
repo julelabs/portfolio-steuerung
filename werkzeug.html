@@ -2031,13 +2031,16 @@
                                                                        
                                                                      
   .vb-druck { display: none; font-family: var(--display); color: var(--fg); font-size: 10.5pt; line-height: 1.55; }
-  .vb-druck .vb-seite { position: relative; padding: 9mm 0 20mm; }
+  .vb-druck .vb-seite { width: 100%; border-collapse: collapse; }
+  .vb-druck .vb-seite td { padding: 0; vertical-align: top; }
+  .vb-druck .vb-seite thead td { padding: 9mm 0 6mm; }
+  .vb-druck .vb-fuss-platz { height: 12mm; }
   .vb-druck .vb-kopf { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 3mm; border-bottom: 2pt solid var(--blau); }
   .vb-druck .vb-kopf b { color: var(--blau); font-size: 10.5pt; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
   .vb-druck .vb-kopf span { color: var(--fg-muted); font-size: 8.5pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
   .vb-druck .vb-kicker { margin-top: 5mm; color: var(--fg-muted); font-size: 8.5pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
   .vb-druck h1 { color: var(--blau); font-size: 26pt; font-weight: 800; line-height: 1.08; letter-spacing: -0.02em; margin: 2mm 0 5mm; max-width: 152mm; }
-  .vb-druck .vb-kopf + h1 { margin-top: 6mm; }
+  .vb-druck h1:first-child { margin-top: 0; }
   .vb-druck .vb-blick { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 4mm; }
   .vb-druck .vb-blick div { background: var(--blau-10); padding: 4mm 6mm 3.5mm; border-left: 4mm solid var(--blau-20); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .vb-druck .vb-blick div.neu { border-left-color: var(--minze); }
@@ -2062,7 +2065,7 @@
   .vb-druck li .abt { color: var(--fg-muted); font-size: 9pt; font-weight: 700; letter-spacing: .06em; margin-left: 1mm; }
   .vb-druck .vb-zwei { display: grid; grid-template-columns: 1fr 1fr; column-gap: 8mm; }
   .vb-druck .vb-leer { color: var(--fg-muted); }
-  .vb-druck .vb-fuss { margin-top: 8mm; border-top: 1px solid var(--line); padding-top: 2mm; display: flex; justify-content: space-between; color: var(--fg-muted); font-size: 8pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .vb-druck .vb-fuss { margin: 0; border-top: 1px solid var(--line); padding-top: 2mm; background: var(--weiss); display: flex; justify-content: space-between; color: var(--fg-muted); font-size: 8pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
   @media print {
     body.druck-vorbereitung .vb-druck { display: block; }
     body.druck-vorbereitung header.top,
@@ -2081,13 +2084,15 @@
                                            
     body.druck-vorbereitung .buehne > :not(#vbDruck) { display: none !important; }
     body.druck-vorbereitung .buehne { max-width: none; padding: 0; margin: 0; }
-                                                                           
-                                                                             
-                                                                           
+                                                                      
                                                                             
-                                             
-    body.druck-vorbereitung .vb-seite { height: 269mm; box-sizing: border-box; padding: 9mm 0 0; display: flex; flex-direction: column; overflow: hidden; }
-    body.druck-vorbereitung .vb-fuss { margin-top: auto; }
+                                                                           
+                                                                    
+                        
+    body.druck-vorbereitung .vb-seite thead { display: table-header-group; }
+    body.druck-vorbereitung .vb-seite tfoot { display: table-footer-group; }
+    body.druck-vorbereitung .vb-seite tbody tr, body.druck-vorbereitung .vb-seite tbody td { break-inside: auto; }
+    body.druck-vorbereitung .vb-fuss { position: fixed; left: 0; right: 0; bottom: 0; }
   }
                                                           
   .impressum-dialog { margin: auto; border: 1px solid var(--line); border-radius: 10px; padding: 24px 28px 20px; max-width: 440px; width: min(440px, 92vw); color: var(--fg); box-shadow: 0 18px 40px rgba(13,12,43,0.18); }
@@ -2316,7 +2321,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 64 · 28.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 65 · 28.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -12299,7 +12304,17 @@
                                                                                                   
     const kicker = name ? `<div class="vb-kicker">Vorbereitet von ${esc(name)}</div>` : '';
     const kopf = `<div class="vb-kopf"><b>Portfolio-Steuerung · Vorbereitung</b><span>Sandbox · ${datum}</span></div>`;
-    const fuss = n => `<div class="vb-fuss"><span>Ausgangsstand ${standKurz} · Vorschlag, keine Entscheidung</span><span>Seite ${n} von 2</span></div>`;
+                                                                        
+                                                                            
+                                                                             
+                                                                            
+                                                                            
+                                                                          
+                                                                            
+    const fuss = `<div class="vb-fuss"><span>Ausgangsstand ${standKurz} · Vorschlag, keine Entscheidung</span></div>`;
+    const seite = (klasse, inhalt) => `<table class="vb-seite ${klasse}"><thead><tr><td>${kopf}</td></tr></thead>
+      <tfoot><tr><td><div class="vb-fuss-platz"></div></td></tr></tfoot>
+      <tbody><tr><td>${inhalt}</td></tr></tbody></table>`;
     const liste = (gruppen, mitNeu) => gruppen.map(g => `<div class="vb-label">${esc(g.name)} <b>· ${g.eintraege.length}</b></div>
       ${g.eintraege.length ? '<ul>' + g.eintraege.map(e => mitNeu
         ? `<li${e.neu ? ' class="neu"' : ''}>${e.neu ? '<b>' + esc(e.name) + '</b>' : esc(e.name)}</li>`
@@ -12311,8 +12326,7 @@
     const satz = e => e.satz ? ` <span class="g">· „${esc(e.satz)}“</span>` : '';
     const block = (titel, klasse, eintraege, zeile) => `<div class="vb-label">${titel} <b>· ${eintraege.length}</b></div>
       ${eintraege.length ? '<ul>' + eintraege.map(e => `<li class="${klasse}"><b>${esc(e.name)}</b><span class="abt">${esc(e.kuerzel)}</span>${zeile(e)}</li>`).join('') + '</ul>' : '<p class="vb-leer">keine</p>'}`;
-    return `<section class="vb-seite">${kopf}
-      ${kicker}
+    return seite('vb-seite1', `${kicker}
       <h1>Leitungsportfolio: vorher, Änderungen, nachher.</h1>
       <div class="vb-blick">
         <div class="neu"><b>+${d.zahlen.neu}</b><span>neu im Leitungsportfolio</span></div>
@@ -12320,18 +12334,12 @@
         <div><b>${d.zahlen.nachher}</b><span>Vorhaben im Leitungsportfolio, vorher ${d.zahlen.vorher}</span></div>
       </div>
       <h2>Leitungsportfolio zum Ausgangsstand</h2>
-      ${halb(d.vorher, false)}
-      ${fuss(1)}
-    </section>
-    <section class="vb-seite vb-seite2">${kopf}
-      <h2 style="margin-top:8mm">Was sich in der Vorbereitung ändert</h2>
+      ${halb(d.vorher, false)}`) + seite('vb-seite2', `<h2 style="margin-top:0">Was sich in der Vorbereitung ändert</h2>
       ${block('Neu im Leitungsportfolio', 'neu', d.neu, satz)}
       ${block('Nicht mehr dabei', 'raus', d.raus, satz)}
       ${block('Innerhalb der Abteilung umsortiert', 'sort', d.sortiert, e => ` <span class="g">· ${esc(e.von)} → ${esc(e.nach)}</span>`)}
       <h2>Leitungsportfolio nach der Vorbereitung</h2>
-      ${halb(d.nachher, true)}
-      ${fuss(2)}
-    </section>`;
+      ${halb(d.nachher, true)}`) + fuss;
   }
                                                                           
                                                                       
