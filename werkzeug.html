@@ -1400,7 +1400,36 @@
                                 
   #spielLeiste { position: relative; }
   #spielLeiste .textbtn { margin-left: 10px; }
-  #spielLeiste .spiel-zweit { display: block; }
+                                                                          
+                                                                       
+                                                                        
+                                                                            
+                                                                      
+                                                                         
+                                                                       
+                                                                    
+  body.spiel:not(.spiel-gesperrt) #spielLeiste { background: var(--weiss); color: var(--fg-2); box-shadow: none; padding: 7px 18px; font-size: 13.5px; line-height: 1.4; }
+  body.spiel:not(.spiel-gesperrt) #spielLeiste .textbtn { color: var(--blau); margin-left: 14px; font-size: 13.5px; }
+  .spiel-marke { display: inline-block; background: var(--kirsche); color: var(--weiss); font-weight: 600; font-size: 12.5px; border-radius: 999px; padding: 1px 9px 2px; margin-right: 8px; }
+  body.spiel-gesperrt .spiel-marke { display: none; }
+  body.spiel header.top { background: var(--lavendel); color: var(--dunkel); padding-bottom: 6px; }
+  body.spiel header.top .brand { color: var(--blau); }
+  body.spiel .brand .pg, body.spiel .top-link, body.spiel .schritt, body.spiel .schritt-haus { color: var(--fg-2); }
+  body.spiel .top-link:hover, body.spiel .schritt:hover, body.spiel .schritt-haus:hover,
+  body.spiel .schritt[aria-current="true"], body.spiel .schritt-haus[aria-current="true"] { color: var(--blau); }
+  body.spiel .schritt-trenn { background: rgba(54,52,157,.25); }
+  body.spiel #spListenWahl { color: var(--dunkel); border-color: var(--feldkante); }
+  body.spiel .auftakt { background: var(--lavendel); color: var(--dunkel); padding-top: 22px; }
+  body.spiel .auftakt-raster { background-image: radial-gradient(circle at center, rgba(54,52,157,.18) 1px, transparent 1.6px); opacity: .7; }
+  body.spiel .auf-kicker, body.spiel .haus-demo, body.spiel .textbtn.hell { color: var(--blau); }
+  body.spiel .textbtn.hell:hover { color: var(--blau-60); }
+  body.spiel .haus-lage, body.spiel .haus-lage-zahlen { color: var(--fg-2); }
+  body.spiel .kopf-mini, body.spiel .pf-mini, body.spiel .hs-mini { box-shadow: 0 10px 26px rgba(54,52,157,.12); }
+  body.spiel header.top :focus-visible, body.spiel .auftakt :focus-visible { outline-color: var(--blau); }
+  body.spiel .hs-mini { overflow: hidden; }
+  .hs-probe { opacity: 0; animation: hsProbe 4.2s var(--ease) 1.1s 1 forwards; }
+  @keyframes hsProbe { 0% { opacity: 0; transform: translateX(84px); } 16% { opacity: 1; transform: translateX(0); } 72% { opacity: 1; transform: translateX(0); } 90%, 100% { opacity: 0; transform: translateX(84px); } }
+  @media (prefers-reduced-motion: reduce) { .hs-probe { animation: none; } }
   body.spiel-gesperrt > :not(#spielLeiste) { display: none !important; }
   .qt-kap { color: var(--fg-muted); font-size: 13px; }
   .textbtn.qt-tun { padding: 0; font-size: 13px; }
@@ -1762,7 +1791,16 @@
   .haus-gruppe + .haus-gruppe.haus-gruppe-rest { margin-top: 18px; padding-top: 12px; border-top-color: var(--blau-20); }
   .haus-gruppe-kopf { color: var(--fg-muted); font-size: 13px; margin-bottom: 8px; }
   .haus-gruppe-body { display: flex; flex-wrap: wrap; gap: 10px; }
-  @media (max-width: 860px) { .haus-zeile { grid-template-columns: 1fr; gap: 8px; } }
+                                                                      
+                                                                         
+                                                                          
+                                                                            
+                                                                      
+  .haus-gruppe[data-haus-korb] .haus-gruppe-body { min-height: 20px; }
+  .haus-gruppe.drop-ziel { outline: 2px dashed var(--blau); outline-offset: 3px; }
+  .haus-ablage { grid-column: 2; outline: 2px dashed var(--blau); outline-offset: -5px; padding: 16px 18px; color: var(--blau); font-size: 13px; }
+  .haus-ablage.verborgen { display: none; }
+  @media (max-width: 860px) { .haus-zeile { grid-template-columns: 1fr; gap: 8px; } .haus-ablage { grid-column: auto; } }
 
                                                                             
                                                                              
@@ -1858,7 +1896,11 @@
   #hausKoerper .haus-zeile:first-child, #hausKoerper > .lane:first-child { border-top: 0; }
   .haus-entfernen { font-family: var(--body); font-size: 12px; font-weight: 400; color: var(--fg-muted); padding: 2px 0; }
   .haus-entfernen:hover { color: var(--kirsche-text); text-decoration: underline; text-underline-offset: 3px; }
-  .pt-haus-wrap .pt-lupe { width: 24px; height: 24px; top: 4px; right: 31px; }
+                                                                         
+                                                                   
+                                     
+  .pt-haus-wrap .pt-lupe { width: 24px; height: 24px; top: 4px; right: 5px; }
+  .pt-haus-wrap.mit-haken .pt-lupe { right: 31px; }
   .pt-haken { width: 22px; height: 22px; display: grid; place-items: center; border: 1.5px solid var(--feldkante); border-radius: 999px; background: var(--weiss); color: transparent; cursor: pointer; padding: 0; }
   .pt-haus-wrap .pt-haken { position: absolute; z-index: 5; top: 5px; right: 5px; }
   .pt-haken svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 3; }
@@ -2251,7 +2293,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 58 · 26.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 61 · 28.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -2699,6 +2741,53 @@
     const alt = v.zurueckgestellt;
     v.zurueckgestellt = null;
     return historieFortschreiben(v, 'zurueckgestellt', alt, null, heute);
+  }
+
+                                                                          
+                                                                           
+                                                                            
+                                                                       
+                                    
+                                                                    
+                                                                           
+                                              
+                                                                        
+                                                                    
+                                                                          
+                                                                           
+                                                           
+                                                                          
+                                                                          
+  const SPIEL_ZUG_ENTSCHEIDUNG = { haus: 'prio', fach: 'prio', warte: 'wartet', nicht: 'nicht' };
+  function spielZug(v, zielKorb, quellKorb) {
+    const ziel = SPIEL_ZUG_ENTSCHEIDUNG[zielKorb];
+    if (!v || !ziel || zielKorb === quellKorb) return null;
+    const zug = {
+      entscheidung: v.entscheidung === ziel ? null : ziel,
+      nominieren: false,
+      warum: false,
+      zurueckstellen: false,
+      rueckfrage: false
+    };
+    if (zielKorb === 'haus') {
+      zug.nominieren = true;
+      zug.warum = !String(v.bmWarum || '').trim();
+      return zug;
+    }
+    if (quellKorb === 'haus') {
+                                                                           
+                                                                          
+      if (zielKorb === 'fach') zug.entscheidung = null;
+      zug.zurueckstellen = true;
+      zug.rueckfrage = true;
+      return zug;
+    }
+                                                                             
+                                                                           
+                                                                         
+                                       
+    if (zielKorb === 'fach' && wirksamNominiert(v)) zug.zurueckstellen = true;
+    return zug;
   }
 
                                                                              
@@ -6757,6 +6846,8 @@
 
   function spielTitelSetzen() {
     document.title = SPIEL_TITEL;
+                                                                                
+    document.body.classList.add('spiel');
                                                                              
                                                                         
                                                    
@@ -6782,9 +6873,11 @@
     const d = new Date(spiel.geladen);
     const wann = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ', '
       + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-    el.innerHTML = `<span>Sandbox · Stand vom ${esc(wann)} · Der gemeinsame Stand bleibt unberührt.</span>`
-      + '<button class="textbtn hell" type="button" id="spielNeuLaden">Neu aus den Listen laden</button>'
-      + '<span class="spiel-zweit">Vorauswahl und Szenarien ausprobieren, ohne den gemeinsamen Stand zu verändern.</span>';
+                                                                            
+                                                                             
+                                                         
+    el.innerHTML = `<span><b class="spiel-marke">Sandbox</b>Stand vom ${esc(wann)} · Der gemeinsame Stand bleibt unberührt.</span>`
+      + '<button class="textbtn hell" type="button" id="spielNeuLaden">Neu aus den Listen laden</button>';
     document.getElementById('spielNeuLaden').addEventListener('click', spielNeuLadenFragen);
   }
 
@@ -8451,6 +8544,19 @@
     dialog.onclick = event => { if (event.target === dialog && dialog.dataset.hintergrund === '1') zu(); };
   }
 
+                                                                   
+                                                                    
+                                                                           
+  function wahlKnoepfeHtml(wahl) {
+    const wahlKnopf = (wert, titel, unter) =>
+      `<button type="button" data-wahl="${wert}" aria-pressed="${wahl === wert}">${esc(titel)}<small>${esc(unter)}</small></button>`;
+    return `<div class="wahl">
+          ${wahlKnopf('prio', 'Eingeplant', 'wird im nächsten Halbjahr gemacht und bekommt Kapazität')}
+          ${wahlKnopf('wartet', 'Wartet', 'gewollt, startet erst bei einer benannten Bedingung')}
+          ${wahlKnopf('nicht', 'Eingestellt', 'wird nicht weiterverfolgt')}
+        </div>`;
+  }
+
   function nominierungKnoepfeHtml(v, gesperrt) {
     return `<div class="wahl wahl-nominierung">
             <button type="button" data-nominierung="nominiert" aria-pressed="${v.leitung === 'nominiert'}"${gesperrt ? ' disabled' : ''}>Für Leitungsportfolio nominieren<small>die Abteilung nominiert etwa 8 bis 10 Vorhaben</small></button>
@@ -8473,8 +8579,6 @@
     const zentralHinweis = wahl === 'nicht' && verknuepfungsZahl(v, S.vorhaben) >= 3
       ? `<p class="vs-hinweis">${esc(verknuepfungsRegeltext(v, S.vorhaben))} Prüft in der Runde, ob das eingestellt bleiben soll.</p>`
       : '';
-    const wahlKnopf = (wert, titel, unter) =>
-      `<button type="button" data-wahl="${wert}" aria-pressed="${wahl === wert}">${esc(titel)}<small>${esc(unter)}</small></button>`;
                                                                           
                                                                               
     const nominierungGesperrt = wahl === 'wartet' || wahl === 'nicht';
@@ -8535,11 +8639,7 @@
             ? '<p class="vs-empfehlung">Keine Empfehlung möglich, die Folgen sind noch nicht bekannt. Ihr könnt trotzdem entscheiden.</p>'
             : '<p class="vs-empfehlung">Die Regel lässt die Empfehlung offen.</p>')
           : `<p class="vs-empfehlung">Die Regel empfiehlt: <strong>${esc(ENTSCHEIDUNG[e.wert])}</strong>.</p>`}
-        <div class="wahl">
-          ${wahlKnopf('prio', 'Eingeplant', 'wird im nächsten Halbjahr gemacht und bekommt Kapazität')}
-          ${wahlKnopf('wartet', 'Wartet', 'gewollt, startet erst bei einer benannten Bedingung')}
-          ${wahlKnopf('nicht', 'Eingestellt', 'wird nicht weiterverfolgt')}
-        </div>
+        ${wahlKnoepfeHtml(wahl)}
         
         <div class="vs-nominierung">
           <h4>Nominierung für das Leitungsportfolio</h4>
@@ -10396,6 +10496,7 @@
     };
   }
 
+  let spielProbeGelaufen = false;
   const HAUS_MINI = [['prio lf', 'prio lf', 'prio', 'prio'], ['prio lf', 'prio', 'prio', 'wartet'], ['prio lf', 'prio', 'wartet']];
 
   function renderHausKopf(bau) {
@@ -10441,6 +10542,15 @@
       `<div class="hs-mini-zeile"><span class="hs-mini-kuerzel">${esc(kuerzel[i])}</span>`
       + zeile.map(marke => `<span class="mk ${marke}"><i></i></span>`).join('')
       + '</div>').join('');
+                                                                         
+                                                                            
+                                                                        
+                                                                               
+    if (speicherArt === 'spiel' && !spielProbeGelaufen) {
+      spielProbeGelaufen = true;
+      const dritte = document.querySelectorAll('#hausMini .hs-mini-zeile')[2];
+      if (dritte) dritte.insertAdjacentHTML('beforeend', '<span class="mk prio lf hs-probe"><i></i></span>');
+    }
     const neuLaden = document.getElementById('hausNeuLaden');
     if (neuLaden) neuLaden.addEventListener('click', () => { hausHinweis = ''; hausLaden(); renderHaus(); });
     const einlesen = document.getElementById('hausEinlesen');
@@ -10634,6 +10744,10 @@
                                                                               
                                                                    
   function hausHakenHtml(eintrag, an) {
+                                                                           
+                                                                          
+                                                                       
+    if (speicherArt === 'spiel') return '';
     if (!hausKuratierbar(eintrag, hausUmgebung())) return '';
     return `<button class="pt-haken" type="button" data-haus-haken="${esc(eintrag.schluessel)}" aria-pressed="${an}"
       aria-label="${esc(eintrag.v.name)} zum Zurückstellen vormerken">${HAUS_HAKEN_SVG}</button>`;
@@ -10667,7 +10781,8 @@
     const zweiteZeile = grund
       ? `<span class="pt-haus-seit">${esc(grund)}</span>`
       : `<span class="pt-haus-info">${esc(eintrag.folgen)} · ${esc(zielText)}</span>`;
-    return `<div class="pt-wrap pt-haus-wrap${lp ? ' lp-' + lp : ''}">
+    const hakenHtml = lp === 'raus' ? '' : hausHakenHtml(eintrag, an);
+    return `<div class="pt-wrap pt-haus-wrap${lp ? ' lp-' + lp : ''}${hakenHtml ? ' mit-haken' : ''}">
       <button class="pt pt-haus ${eintrag.wahl} ${eintrag.nominiert && lp !== 'raus' ? 'lf' : ''} ${opt.gedaempft ? 'abgewaehlt' : ''} ${eintrag.schluessel === hausVorschauSchluessel ? 'aktiv' : ''}"
         type="button" data-haus-kachel="${esc(eintrag.schluessel)}"
         title="${esc(v.name)} · ${esc(eintrag.abteilung)} · ${esc(PORTFOLIO[eintrag.korb])}">
@@ -10682,7 +10797,7 @@
       <button class="pt-lupe" type="button" data-haus-vorschau="${esc(eintrag.schluessel)}" aria-label="${esc(v.name)} kurz ansehen" title="Kurz ansehen">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 5 5"></path></svg>
       </button>
-      ${lp === 'raus' ? '' : hausHakenHtml(eintrag, an)}
+      ${hakenHtml}
     </div>`;
   }
                                                                              
@@ -10718,7 +10833,10 @@
       const drin = [];
       gruppe.koerbe.forEach(korb => eintraege.filter(e => e.korb === korb).forEach(e => drin.push(e)));
       if (gruppe.nurGefuellt && !drin.length) return '';
-      return `<div class="haus-gruppe${gruppe.klasse ? ' ' + gruppe.klasse : ''}">
+                                                                             
+                                                                      
+      const ablage = speicherArt === 'spiel' && gruppe.koerbe[0] !== 'offen' ? ` data-haus-korb="${gruppe.koerbe[0]}"` : '';
+      return `<div class="haus-gruppe${gruppe.klasse ? ' ' + gruppe.klasse : ''}"${ablage}>
         <p class="pf-korb haus-gruppe-kopf">${esc(gruppe.name)} · ${drin.length}</p>
         <div class="haus-gruppe-body">${drin.map(e => hausKachel(e, { gedaempft: gedaempft && !hausAuswahl[e.schluessel], ohneKuerzel: true })).join('')}</div>
       </div>`;
@@ -10832,7 +10950,14 @@
           : !offen
             ? `<div class="haus-flaeche">${meine.map(e => hausKachel(e, { gedaempft: gedaempft && !hausAuswahl[e.schluessel], ohneKuerzel: true })).join('')}</div>`
             : `<div class="haus-gruppen">${hausGruppenHtml(meine)}</div>`;
-      return `<div class="haus-zeile${offen ? ' offen' : ''}${spalten ? ' lp-spalten' : ''}">${kopf}${flaeche}</div>`;
+                                                                            
+                                                                           
+                                                                           
+                                                                        
+      const ablage = speicherArt === 'spiel' && !offen && !spalten && !a.fehler && meine.length
+        ? '<div class="haus-ablage verborgen" data-haus-ablage data-haus-korb="fach">Ins Abteilungsportfolio zurückstellen</div>'
+        : '';
+      return `<div class="haus-zeile${offen ? ' offen' : ''}${spalten ? ' lp-spalten' : ''}">${kopf}${flaeche}${ablage}</div>`;
     }).join('');
                                                                              
                                                                                 
@@ -11078,6 +11203,114 @@
         : { spalte, richtung: 'auf' };
       renderHaus();
     }));
+    if (speicherArt === 'spiel' && hausReiter === 'portfolio') hausZiehenVerdrahten(koerper);
+  }
+
+                                                                         
+                                                                          
+                                                                          
+                                                                            
+                                                                           
+                                                                     
+                                                                    
+                                    
+  let hausZiehSchluessel = null, hausZiehZeile = null;
+  function hausZiehenVerdrahten(koerper) {
+    const markiere = ziel => koerper.querySelectorAll('[data-haus-korb]').forEach(z =>
+      z.classList.toggle('drop-ziel', z === ziel));
+    const aufraeumen = () => {
+      hausZiehSchluessel = null;
+      hausZiehZeile = null;
+      markiere(null);
+      koerper.querySelectorAll('[data-haus-ablage]').forEach(el => el.classList.add('verborgen'));
+    };
+    koerper.querySelectorAll('.haus-zeile:not(.lp-spalten) [data-haus-kachel]').forEach(el => {
+      el.setAttribute('draggable', 'true');
+      el.addEventListener('dragstart', e => {
+        hausZiehSchluessel = el.dataset.hausKachel;
+        hausZiehZeile = el.closest('.haus-zeile');
+        el.classList.add('zieht');
+        const ablage = hausZiehZeile && hausZiehZeile.querySelector('[data-haus-ablage]');
+        if (ablage) ablage.classList.remove('verborgen');
+        if (e.dataTransfer) {
+          e.dataTransfer.effectAllowed = 'move';
+          try { e.dataTransfer.setData('text/plain', hausZiehSchluessel); } catch (fehler) {                                      }
+        }
+      });
+      el.addEventListener('dragend', () => {
+        el.classList.remove('zieht');
+        aufraeumen();
+      });
+    });
+    koerper.querySelectorAll('[data-haus-korb]').forEach(zone => {
+      const eigeneZeile = () => !!hausZiehSchluessel && zone.closest('.haus-zeile') === hausZiehZeile;
+      zone.addEventListener('dragover', e => {
+        if (!eigeneZeile()) return;
+        e.preventDefault();
+        if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+        markiere(zone);
+      });
+      zone.addEventListener('drop', e => {
+        if (!eigeneZeile()) return;
+        e.preventDefault();
+        const schluessel = hausZiehSchluessel;
+        aufraeumen();
+        const eintrag = hausAufbau().alle.find(x => x.schluessel === schluessel);
+        if (eintrag) hausSpielZug(eintrag, zone.dataset.hausKorb);
+      });
+    });
+  }
+
+                                                                            
+                                                                          
+                                   
+  function spielZugAnwenden(v, zug, grund) {
+    if (zug.entscheidung) feldSetzen(v, 'entscheidung', zug.entscheidung);
+    if (zug.nominieren) nominierungSetzen(v, 'nominiert');
+    if (zug.warum && !String(v.bmWarum || '').trim()) v.bmWarum = SPIEL_WARUM;
+    if (zug.zurueckstellen) {
+      zurueckstellen(v);
+      if (grund && v.zurueckgestellt) v.zurueckgestellt.grund = grund;
+    }
+  }
+
+  const SPIEL_ZUG_SATZ = {
+    haus: 'ist jetzt für das Leitungsportfolio nominiert.',
+    fach: 'steht jetzt im restlichen Abteilungsportfolio.',
+    warte: 'steht jetzt auf wartet.',
+    nicht: 'steht jetzt auf eingestellt.'
+  };
+                                                                       
+                                                                       
+                                                                            
+                                                                        
+                                                                         
+                                                                
+  function hausSpielZug(eintrag, zielKorb, danach) {
+    if (speicherArt !== 'spiel') return false;
+    const zug = spielZug(eintrag.v, zielKorb, eintrag.korb);
+    if (!zug) return false;
+    const ausfuehren = grund => hausSchreibweg(eintrag, v => spielZugAnwenden(v, zug, grund))
+      .then(gut => {
+        const satz = zug.zurueckstellen && zielKorb === 'fach'
+          ? eintrag.v.name + ' steht wieder im Abteilungsportfolio.'
+          : eintrag.v.name + (zug.zurueckstellen ? ' ist zurückgestellt und ' : ' ') + SPIEL_ZUG_SATZ[zielKorb];
+        hausKuratierungMelden(gut ? 1 : 0, gut ? 0 : 1, satz);
+        renderHaus();
+        if (danach) danach();
+        return null;
+      });
+    if (zug.rueckfrage) {
+      hausKuratierungOeffnen({
+        eintraege: [eintrag],
+        zusatz: zug.entscheidung === 'wartet' ? 'Danach steht es auf wartet.'
+          : zug.entscheidung === 'nicht' ? 'Danach steht es auf eingestellt.' : '',
+        ausfuehren: ausfuehren
+      });
+      return true;
+    }
+    ausfuehren('');
+    return true;
   }
 
                                                                             
@@ -11131,6 +11364,13 @@
     const vbKnopf = document.getElementById('hausVorbereitungDruck');
     if (vbKnopf) vbKnopf.classList.toggle('verborgen', speicherArt !== 'spiel');
     if (!H) return;
+                                                                              
+                                                                            
+                        
+    if (speicherArt === 'spiel' && Object.keys(hausAuswahl).length) {
+      hausAuswahl = {};
+      hausSchreib(HAUS_AUSWAHL, hausAuswahl);
+    }
     const bau = hausAufbau();
     if (hausAktiv && !bau.sichtbar.some(e => e.schluessel === hausAktiv)) hausAktiv = null;
     renderHausKopf(bau);
@@ -11151,7 +11391,10 @@
     const fuss = document.getElementById('hausFussHinweis');
     if (fuss) {
       const kuratierbar = bau.alle.some(e => hausKuratierbar(e, hausUmgebung()));
-      fuss.textContent = !kuratierbar
+                                                                               
+      fuss.textContent = speicherArt === 'spiel'
+        ? 'Sandbox: Ziehen ändert nur den Spielstand. Raus aus dem Leitungsportfolio fragt einmal nach.'
+        : !kuratierbar
         ? 'Lesesicht. Stände aus Dateien lassen sich hier nicht verändern.'
         : (speicherArt === 'liste'
           ? 'Zurückstellen schreibt in die Liste der betroffenen Abteilung. Die Vormerkung bleibt in diesem Browser, bis sie bestätigt wird.'
@@ -11368,9 +11611,12 @@
     hausSchreib(HAUS_DATEIEN, dateien);
   }
 
-  function hausKuratierungOeffnen() {
+                                                                          
+                                                                             
+                                                      
+  function hausKuratierungOeffnen(auftrag) {
     const bau = hausAufbau();
-    const vorgemerkt = hausVorgemerkte(hausAuswahl, bau.alle, hausUmgebung());
+    const vorgemerkt = auftrag ? auftrag.eintraege : hausVorgemerkte(hausAuswahl, bau.alle, hausUmgebung());
     const dialog = document.getElementById('hausKuratierung');
     const wurzel = document.getElementById('hausKuratierungInhalt');
     if (!vorgemerkt.length || !dialog || !wurzel) return;
@@ -11385,7 +11631,7 @@
         <ul class="vs-liste">${vorgemerkt.map(e => `<li>${esc(e.v.name)} (${esc(e.kuerzel)})</li>`).join('')}</ul>
       </section>
       <section class="vs-block">
-        <p>Die Vorhaben kehren in das Portfolio ihrer Abteilung zurück. ${speicherArt === 'spiel' ? 'Die Abteilungen sehen davon nichts.' : 'Die Abteilungen sehen diese Entscheidung.'} Es wird nichts gelöscht; die Zurückstellung kann jederzeit zurückgenommen werden.</p>
+        <p>Die Vorhaben kehren in das Portfolio ihrer Abteilung zurück. ${speicherArt === 'spiel' ? 'Die Abteilungen sehen davon nichts.' : 'Die Abteilungen sehen diese Entscheidung.'} Es wird nichts gelöscht; die Zurückstellung kann jederzeit zurückgenommen werden.${auftrag && auftrag.zusatz ? ' ' + esc(auftrag.zusatz) : ''}</p>
         ${nurDemo ? '<p class="vs-leer">Demo: Es wird nichts gespeichert.</p>' : ''}
         ${speicherArt === 'spiel' ? '<p class="vs-leer">Nur in der Sandbox.</p>' : ''}
         ${speicherArt === 'spiel' ? '<div class="vs-feld"><label for="hausKuratierungGrund">Warum? Ein Satz, freiwillig</label><input type="text" id="hausKuratierungGrund" maxlength="240" placeholder="Steht später auf dem Papier aus der Sandbox"></div>' : ''}
@@ -11400,6 +11646,7 @@
     document.getElementById('hausKuratierungOk').addEventListener('click', () => {
       const grundFeld = document.getElementById('hausKuratierungGrund');
       dialog.close();
+      if (auftrag) { auftrag.ausfuehren(grundFeld ? grundFeld.value.trim() : ''); return; }
       hausZurueckstellenAusfuehren(vorgemerkt, grundFeld ? grundFeld.value.trim() : '');
     });
     hintergrundSchliessen(dialog, () => dialog.close());
@@ -11657,6 +11904,14 @@
                                                                              
                                                          
     const spielNominierung = speicherArt === 'spiel' && eintrag.quelle === 'spiel' && !eintrag.nominiert && eintrag.wahl === 'prio';
+                                                                         
+                                                                           
+                                                                
+                                                                         
+                                                                         
+                                                          
+    const spielKnoepfe = speicherArt === 'spiel' && eintrag.quelle === 'spiel';
+    const spielGesperrt = eintrag.wahl === 'wartet' || eintrag.wahl === 'nicht';
                                                                        
                                                                              
                                                                              
@@ -11689,11 +11944,16 @@
         <p class="${v.ruhen === WAEHLEN ? 'vs-leer' : ''}">${esc(v.ruhen === WAEHLEN ? 'Noch nicht beantwortet.' : v.ruhen)}</p>
         ${konkret ? `<p class="vs-dazu">„${esc(konkret)}“</p>` : ''}
       </section>
+      ${spielKnoepfe ? `<section class="vs-block vs-entscheid">
+        <h3>Entscheidung der Abteilung</h3>
+        ${wahlKnoepfeHtml(eintrag.wahl)}
+      </section>` : ''}
       <section class="vs-block">
         <h3>Nominierung</h3>
         <p>${esc(nominierung)}</p>
         ${IST_NOMINIERT(v.leitung) && v.bmWarum.trim() && !spielWarum ? `<p class="vs-dazu">„${esc(v.bmWarum)}“</p>` : ''}
-        ${spielNominierung ? nominierungKnoepfeHtml(v, false) : ''}
+        ${spielKnoepfe ? nominierungKnoepfeHtml(v, spielGesperrt) : spielNominierung ? nominierungKnoepfeHtml(v, false) : ''}
+        ${spielKnoepfe && spielGesperrt ? '<p class="vs-gesperrt">Nominiert werden kann nur, was eingeplant ist.</p>' : ''}
         ${spielWarum ? `<div class="vs-feld"><label for="spielWarum">Warum? Ein Satz, freiwillig</label><input type="text" id="spielWarum" maxlength="240" value="${esc(v.bmWarum)}" placeholder="${esc(SPIEL_WARUM)}"></div>` : ''}
       </section>
       ${eintrag.wahl === 'wartet' ? `<section class="vs-block">
@@ -11715,7 +11975,8 @@
       </section>` : ''}
       ${verlaufHtml(v)}
       <div class="vs-fuss">
-        ${kuratierbar ? `<button class="textbtn blau" type="button" id="hausVorschauHaken">${an ? 'Vormerkung zurücknehmen' : 'Zum Zurückstellen vormerken'}</button>` : ''}
+        ${kuratierbar && !spielKnoepfe ? `<button class="textbtn blau" type="button" id="hausVorschauHaken">${an ? 'Vormerkung zurücknehmen' : 'Zum Zurückstellen vormerken'}</button>` : ''}
+        ${spielKnoepfe && eintrag.korb === 'haus' ? '<button class="textbtn blau" type="button" id="hausVorschauZurueckstellen">Zurückstellen</button>' : ''}
         ${ruecknahmeMoeglich ? '<button class="textbtn blau" type="button" id="hausVorschauRuecknahme">Zurückstellung zurücknehmen</button>' : ''}
         ${verschiebKandidaten.length ? '<button class="textbtn blau" type="button" id="hausVorschauVerschieben">In andere Abteilung verschieben</button>' : ''}
         ${hausSteckbriefWeg(eintrag)}
@@ -11729,8 +11990,27 @@
     });
                                                                              
                          
+                                                                         
+                                                                    
+                                                                            
+                                                                   
+                                                   
+    const spielZugAusVorschau = ziel => {
+      if (spielZug(v, ziel, eintrag.korb) && spielZug(v, ziel, eintrag.korb).rueckfrage) dialog.close();
+      hausSpielZug(eintrag, ziel, () => { if (dialog.open) hausVorschauOeffnen(schluessel); });
+    };
+    if (spielKnoepfe) {
+      wurzel.querySelectorAll('[data-wahl]').forEach(el => el.addEventListener('click', () => {
+        const wahl = el.dataset.wahl;
+        spielZugAusVorschau(wahl === 'wartet' ? 'warte' : wahl === 'nicht' ? 'nicht' : wirksamNominiert(v) ? 'haus' : 'fach');
+      }));
+      wurzel.querySelectorAll('[data-nominierung]').forEach(el => el.addEventListener('click', () =>
+        spielZugAusVorschau(el.dataset.nominierung === 'nominiert' ? 'haus' : 'fach')));
+      const zurueck = document.getElementById('hausVorschauZurueckstellen');
+      if (zurueck) zurueck.addEventListener('click', () => spielZugAusVorschau('fach'));
+    }
     wurzel.querySelectorAll('[data-nominierung]').forEach(el => el.addEventListener('click', () => {
-      if (speicherArt !== 'spiel') return;
+      if (speicherArt !== 'spiel' || spielKnoepfe) return;
       nominierungSetzen(v, v.leitung === el.dataset.nominierung ? 'offen' : el.dataset.nominierung);
       if (IST_NOMINIERT(v.leitung) && !v.bmWarum.trim()) v.bmWarum = SPIEL_WARUM;
       speichern();
