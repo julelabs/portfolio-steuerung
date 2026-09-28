@@ -547,8 +547,9 @@
   .bd-summen td { color: var(--fg); font-variant-numeric: tabular-nums; }
   .bd-summen td:nth-child(4) { font-weight: 700; }
   .bd-summen-fuss { margin: 6px 0 0; font-size: 13.5px; color: var(--fg-muted); }
-  .bd-summen .bd-summen-tg { padding-left: 22px; border-left: 1px solid var(--line); }
-  .bd-summen td.bd-summen-tg { color: var(--fg-2); }
+                                                                       
+                                    
+  .bd-summen tr.bd-summen-teil th { font-weight: 400; color: var(--fg-2); padding-left: 16px; }
   .bd-summen .bd-summen-personal span { color: var(--fg-muted); }
   .bd-tg { font-size: 13.5px; padding: 0; }
   .bd-trenn { color: var(--fg-muted); font-weight: 400; margin: 0 3px 0 10px; }
@@ -1547,6 +1548,10 @@
   .tg-zeile .feld:first-of-type { margin-top: 8px; }
   .tg-referat { font-family: var(--display); font-weight: 700; font-size: 15px; }
   .tg-neu { display: flex; gap: 8px; margin-top: 18px; }
+  .tg-kopf { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .tg-kopf .tg-referat { margin: 0; }
+  .tg-kopf input.mittel { flex: 0 1 220px; width: auto; }
+  .tg-hinweis { margin: 2px 0 10px; font-size: 13px; color: var(--kirsche-text); }
   .tg-neu input { flex: 1; }
                                                                             
                                                                         
@@ -2293,7 +2298,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 61 · 28.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 62 · 28.09.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -3370,10 +3375,16 @@
   function vzaeSummen(liste, tagesgeschaeft) {
     const tg = Number.isFinite(tagesgeschaeft) && tagesgeschaeft > 0 ? runde1(tagesgeschaeft) : 0;
     const leer = () => ({ anzahl: 0, bedarf: 0, gedeckt: 0, luecke: 0, ohneAngabe: 0, personal: 0 });
-    const aus = { tagesgeschaeft: tg, alle: leer(), eingeplant: leer() };
+                                                                             
+                                                              
+    const aus = { tagesgeschaeft: tg, alle: leer(), eingeplant: leer(), leitung: leer(), rest: leer() };
     (liste || []).forEach(v => {
       const d = deckung(v);
-      const ziele = gewaehlt(v, liste) === 'prio' ? [aus.alle, aus.eingeplant] : [aus.alle];
+      const ziele = [aus.alle];
+      if (gewaehlt(v, liste) === 'prio') {
+        ziele.push(aus.eingeplant);
+        ziele.push(portfolio(v, liste).wert === 'haus' ? aus.leitung : aus.rest);
+      }
       ziele.forEach(z => {
         z.anzahl += 1;
         z.bedarf += d.bedarf;
@@ -3381,8 +3392,46 @@
         if (d.gedeckt !== null) { z.gedeckt += Math.min(d.gedeckt, d.bedarf); z.luecke += d.luecke; }
       });
     });
-    [aus.alle, aus.eingeplant].forEach(z => { z.bedarf = runde1(z.bedarf); z.gedeckt = runde1(z.gedeckt); z.luecke = runde1(z.luecke); z.personal = runde1(z.gedeckt + tg); });
+    [aus.alle, aus.eingeplant, aus.leitung, aus.rest].forEach(z => { z.bedarf = runde1(z.bedarf); z.gedeckt = runde1(z.gedeckt); z.luecke = runde1(z.luecke); z.personal = runde1(z.gedeckt + tg); });
     return aus;
+  }
+
+                                                                              
+                                                                          
+                                                                        
+                                                                       
+                                                                           
+                                                                        
+                                                           
+  function referatTraeger(stand, referat) {
+    const r = String(referat || '').trim();
+    return ((stand && stand.vorhaben) || []).filter(v => String(v.referat || '').trim() === r).length;
+  }
+  function referatUmbenennen(stand, alt, neu) {
+    const a = String(alt || '').trim(), n = String(neu || '').trim();
+    if (!stand || !a || !n || a === n) return 0;
+    let zahl = 0;
+    (stand.vorhaben || []).forEach(v => { if (String(v.referat || '').trim() === a) { v.referat = n; zahl += 1; } });
+    const zeilen = Array.isArray(stand.tagesgeschaeft) ? stand.tagesgeschaeft : [];
+    const ziel = zeilen.find(z => z.referat === n);
+    zeilen.forEach(z => {
+      if (z.referat !== a) return;
+      if (ziel && ziel !== z) {
+        if (!String(ziel.vzae || '').trim()) ziel.vzae = z.vzae;
+        if (!String(ziel.gebundenDurch || '').trim()) ziel.gebundenDurch = z.gebundenDurch;
+        z.referat = '';
+      } else {
+        z.referat = n;
+      }
+    });
+    stand.tagesgeschaeft = zeilen.filter(z => z.referat);
+    return zahl;
+  }
+  function referatEntfernen(stand, referat) {
+    if (!stand || referatTraeger(stand, referat) > 0) return false;
+    const r = String(referat || '').trim();
+    stand.tagesgeschaeft = (Array.isArray(stand.tagesgeschaeft) ? stand.tagesgeschaeft : []).filter(z => z.referat !== r);
+    return true;
   }
 
                                                                                          
@@ -8106,13 +8155,21 @@
     const sum = vzaeSummen(S.vorhaben, tg.summe);
                                                                                
                                                                          
-    const sumZeile = (titel, z) => `<tr><th scope="row">${titel} <span>${z.anzahl}</span></th><td>${zahlText(z.bedarf)}</td><td>${zahlText(z.gedeckt)}</td><td>${zahlText(z.luecke)}</td><td class="bd-summen-tg">${zahlText(sum.tagesgeschaeft)}</td><td class="bd-summen-personal">${(z.ohneAngabe || tg.offen.length) ? '<span>mind.</span> ' : ''}${zahlText(z.personal)}</td></tr>`;
+                                                                             
+                                                                         
+                                                                   
+                                                                           
+                                                                               
+    const mind = !!(sum.alle.ohneAngabe || tg.offen.length);
+    const sumZeile = (titel, z, klasse) => `<tr${klasse ? ` class="${klasse}"` : ''}><th scope="row">${titel} <span>${z.anzahl}</span></th><td>${zahlText(z.bedarf)}</td><td>${zahlText(z.gedeckt)}</td><td>${zahlText(z.luecke)}</td><td class="bd-summen-personal">${(z.ohneAngabe || tg.offen.length) ? '<span>mind.</span> ' : ''}${zahlText(z.personal)}</td></tr>`;
+    const fuss = [];
+    if (sum.alle.ohneAngabe) fuss.push(`Bei ${sum.alle.ohneAngabe === 1 ? 'einem Vorhaben' : sum.alle.ohneAngabe + ' Vorhaben'} mit Bedarf fehlt die Deckung, ${sum.alle.ohneAngabe === 1 ? 'es zählt' : 'sie zählen'} bei gedeckt und ungedeckt nicht mit.`);
+    if (mind) fuss.push('„mind.“: Deckungsangaben oder das Tagesgeschäft einzelner Referate fehlen.');
     const summen = sum.alle.bedarf > 0 ? `<table class="bd-summen" id="bdSummen">
-        <caption>Aus Steckbriefen und Tagesgeschäft, in VZÄ</caption>
-        <thead><tr><th scope="col"></th><th scope="col">Bedarf</th><th scope="col">von der Abteilung gedeckt</th><th scope="col">noch ungedeckt</th><th scope="col" class="bd-summen-tg">Tagesgeschäft</th><th scope="col">gedeckt + Tagesgeschäft</th></tr></thead>
-        <tbody>${sumZeile('Eingeplant', sum.eingeplant)}${sumZeile('Alle Vorhaben', sum.alle)}</tbody>
-      </table>${sum.alle.ohneAngabe ? `<p class="bd-summen-fuss">Bei ${sum.alle.ohneAngabe === 1 ? 'einem Vorhaben' : sum.alle.ohneAngabe + ' Vorhaben'} mit Bedarf fehlt die Angabe zur Deckung. ${sum.alle.ohneAngabe === 1 ? 'Es zählt' : 'Sie zählen'} bei „gedeckt“ und „ungedeckt“ nicht mit.</p>` : ''}
-      <p class="bd-summen-fuss">„mind.“ steht, solange Deckungsangaben oder das Tagesgeschäft einzelner Referate fehlen.</p>` : '';
+        <caption>In VZÄ, aus den Steckbriefen · Tagesgeschäft ${zahlText(sum.tagesgeschaeft)}</caption>
+        <thead><tr><th scope="col"></th><th scope="col">Bedarf</th><th scope="col">gedeckt</th><th scope="col">ungedeckt</th><th scope="col">gedeckt + Tagesgeschäft</th></tr></thead>
+        <tbody>${sumZeile('Eingeplant', sum.eingeplant)}${sumZeile('Leitungsportfolio', sum.leitung, 'bd-summen-teil')}${sumZeile('Restliches Abteilungsportfolio', sum.rest, 'bd-summen-teil')}${sumZeile('Alle Vorhaben', sum.alle)}</tbody>
+      </table>${fuss.length ? `<p class="bd-summen-fuss">${fuss.join(' ')}</p>` : ''}` : '';
     document.getElementById('bdStand').innerHTML = eingabe + summen + (ohneKap
       ? '<p class="bd-stand">Noch keine Kapazität eingetragen. Solange das Feld leer ist, rechnet das Werkzeug keine Auslastung und zeigt keine Kapazitätslücken.</p>'
       : standHinweis + tgHinweis);
@@ -8179,6 +8236,9 @@
     return zeile;
   }
 
+                                                                          
+                                                                  
+  let tgUmbenennen = null, tgHinweis = null;
   function tgErfassenOeffnen() {
     const dialog = document.getElementById('tgDialog');
     const wurzel = document.getElementById('tgInhalt');
@@ -8188,8 +8248,16 @@
                                                                                     
     const zeilen = referate.map((referat, i) => {
       const zeile = tgEintrag(referat);
+      const traeger = referatTraeger(S, referat);
       return `<div class="tg-zeile">
-        <p class="tg-referat">${esc(referat)}</p>
+        <div class="tg-kopf">
+          ${tgUmbenennen === referat
+            ? `<input type="text" class="mittel" data-tg-name="${esc(referat)}" value="${esc(referat)}" maxlength="40" aria-label="Referat umbenennen" autocomplete="off">`
+            : `<p class="tg-referat">${esc(referat)}</p>`}
+          <button class="textbtn blau" type="button" data-tg-umbenennen="${esc(referat)}">${tgUmbenennen === referat ? 'Abbrechen' : 'Umbenennen'}</button>
+          <button class="textbtn blau" type="button" data-tg-entfernen="${esc(referat)}">Entfernen</button>
+        </div>
+        ${tgHinweis === referat ? `<p class="tg-hinweis">Dieses Referat steht an ${traeger === 1 ? 'einem Vorhaben' : traeger + ' Vorhaben'} und bleibt deshalb.</p>` : ''}
         <div class="feld">
           <label for="tg-vzae-${i}">Im Tagesgeschäft gebundene VZÄ<span class="pflichtzeichen" aria-hidden="true">*</span></label>
           <input type="text" inputmode="decimal" class="kurz" id="tg-vzae-${i}" data-tg-vzae="${esc(referat)}" required aria-required="true" maxlength="6" placeholder="z. B. 3,5" value="${esc(zeile.vzae)}">
@@ -8235,12 +8303,45 @@
       if (ziel) ziel.focus();
     };
     document.getElementById('tgNeuAdd').addEventListener('click', neuAufnehmen);
+                                                                       
+                                                                         
+                                                        
+    wurzel.querySelectorAll('[data-tg-umbenennen]').forEach(el => el.addEventListener('click', () => {
+      const referat = el.dataset.tgUmbenennen;
+      tgUmbenennen = tgUmbenennen === referat ? null : referat;
+      tgHinweis = null;
+      tgErfassenOeffnen();
+      const feld = document.querySelector('#tgInhalt [data-tg-name]');
+      if (feld) { feld.focus(); feld.select(); }
+    }));
+    const nameFeld = wurzel.querySelector('[data-tg-name]');
+    if (nameFeld) {
+      const uebernehmen = () => {
+        const alt = nameFeld.dataset.tgName;
+        const neu = nameFeld.value.trim();
+        tgUmbenennen = null;
+        if (neu && neu !== alt) { referatUmbenennen(S, alt, neu); speichern(); }
+        tgErfassenOeffnen();
+      };
+      nameFeld.addEventListener('change', uebernehmen);
+      nameFeld.addEventListener('keydown', event => {
+        if (event.key === 'Enter') { event.preventDefault(); uebernehmen(); }
+        if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); tgUmbenennen = null; tgErfassenOeffnen(); }
+      });
+    }
+    wurzel.querySelectorAll('[data-tg-entfernen]').forEach(el => el.addEventListener('click', () => {
+      const referat = el.dataset.tgEntfernen;
+      tgUmbenennen = null;
+      if (referatEntfernen(S, referat)) { tgHinweis = null; speichern(); } else { tgHinweis = referat; }
+      tgErfassenOeffnen();
+    }));
     document.getElementById('tgNeuName').addEventListener('keydown', event => {
       if (event.key === 'Enter') { event.preventDefault(); neuAufnehmen(); }
     });
                                                                               
                                                                    
     const zu = () => {
+      tgUmbenennen = null; tgHinweis = null;
       dialog.close();
       if (ansicht === 'priorisieren') renderPriorisieren();
                                                                          
@@ -9164,7 +9265,7 @@
     const zone = (korb, label) => {
       const drin = imKorb(korb);
       return `<div class="mx-zelle pf-gebunden pf-zone" role="cell" data-wahl="prio" data-zone="${korb}">
-        <span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))} VZÄ${korb === 'haus' ? '<span class="pf-richtwert">Richtwert: etwa 8 bis 10 Vorhaben je Abteilung</span>' : ''}</span>
+        <span class="pf-korb">${esc(label)} · Bedarf ${zahlText(vzaeSumme(drin))} VZÄ${korb === 'haus' ? '<span class="pf-richtwert">Richtwert: etwa 8 bis 10 Vorhaben je Abteilung</span>' : ''}</span>
         ${korb === 'fach' ? tgKarte : ''}
         ${drin.map(v => kachel(v, true)).join('')}</div>`;
     };
