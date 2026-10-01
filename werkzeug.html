@@ -1053,6 +1053,11 @@
                                                            
   .koav-zeile { display: inline-flex; align-items: center; gap: 9px; cursor: pointer; }
   .koav-zeile input { width: 16px; height: 16px; accent-color: var(--blau); cursor: pointer; }
+                                                                          
+                                                                         
+  .haken-reihe { display: flex; flex-wrap: wrap; gap: 8px 28px; }
+  .koav-zeile-feld { margin-top: 10px; max-width: 300px; }
+  .koav-zeile-feld label { display: block; font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--fg); margin-bottom: 2px; }
   .abh-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 8px; }
   .abh-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--blau-10); border-radius: 999px; padding: 5px 6px 5px 12px; font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--fg-2); }
   .abh-chip button { border: 0; background: transparent; cursor: pointer; color: var(--fg-muted); font-size: 15px; line-height: 1; padding: 2px 7px; border-radius: 999px; }
@@ -2327,7 +2332,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 66 · 28.09.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 67 · 01.10.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -2558,6 +2563,15 @@
                                                                        
                                                               
       koav: false,
+                                                                            
+                                                                          
+                                                                          
+                                         
+      koavZeile: '',
+                                                                            
+                                                                              
+                                                
+      gesetz: false,
                                                                          
                                                                     
                                                                             
@@ -2590,7 +2604,7 @@
       hinweis: '',
                                                                              
                                                                            
-                                                                 
+                                                                    
       link: '',
       entscheidung: 'offen', bedingung: '', begruendung: ''
     };
@@ -2915,10 +2929,18 @@
     if (!v) return false;
     const leer = feld => String(v[feld] || '').trim() === '';
     const leereFelder = ['referat', 'veraenderung', 'vzae', 'vzaeGedeckt', 'startAb', 'endeBis',
-      'bmWarum', 'hinweis', 'link', 'rollenFehlen', 'chanceKonkret', 'pflichtKonkret', 'zusageKonkret', 'schadenKonkret', 'klaerungKonkret'];
+      'bmWarum', 'hinweis', 'link', 'koavZeile', 'rollenFehlen', 'chanceKonkret', 'pflichtKonkret', 'zusageKonkret', 'schadenKonkret', 'klaerungKonkret'];
     const gewaehltFelder = ['ziel', 'reichweite', 'wirkungAb', 'ruhen', 'laeuft'];
-    return leereFelder.every(leer) && gewaehltFelder.every(feld => v[feld] === WAEHLEN) && v.leitung === 'offen' && v.koav !== true
+    return leereFelder.every(leer) && gewaehltFelder.every(feld => v[feld] === WAEHLEN) && v.leitung === 'offen' && v.koav !== true && v.gesetz !== true
       && !themenListe(v).length;
+  }
+
+                                                                         
+                                                                                
+  function koavText(v) {
+    if (!v || !v.koav) return '';
+    const zeile = String(v.koavZeile || '').trim();
+    return zeile ? 'Bestandteil KoaV · Zeile ' + zeile : 'Bestandteil KoaV';
   }
 
                                                                          
@@ -3975,7 +3997,10 @@
                                                                            
                                                                         
                                                                   
-  const SCHEMAVERSION = '7';
+                                                                       
+                                                                        
+                                                                 
+  const SCHEMAVERSION = '8';
 
   function exportDatum(zeitpunkt) {
     const datum = zeitpunkt === undefined ? new Date() : new Date(zeitpunkt);
@@ -4073,7 +4098,7 @@
                                                                        
                                                                     
     const meta = exportMetadaten(abteilung, zeitpunkt);
-    const kopf = ['Abteilung', 'Berichtszeitraum', 'Exportzeitpunkt', 'Schemaversion', 'Vorhaben-ID', 'Kennung', 'Vorhaben', 'Referat', 'Ziel', 'Angestrebte Veränderung', 'Wer profitiert', 'Erste Wirkung in', 'Folgen des Ruhenlassens', 'Konkretisierung', 'Bestandteil KoaV', 'VZÄ', 'Davon gedeckt (VZÄ)', 'Stand', 'Geplanter Start', 'Voraussichtliches Ende', 'Nominierung', 'Begründung Nominierung', 'Hängt zusammen mit', 'Fehlende Rollen oder Fähigkeiten', 'Punkte Folgen (0 bis 3)', 'Punkte Nominierung (0 bis 1)', 'Punkte Ziel (0 bis 1)', 'Steuerungsbedarf (0 bis 5)', 'Empfehlung', 'Regel', 'Entscheidung der Abteilung', 'Portfolio (abgeleitet)', 'Begründung bei Abweichung', 'Bedingung', 'Hinweis für die Runde'];
+    const kopf = ['Abteilung', 'Berichtszeitraum', 'Exportzeitpunkt', 'Schemaversion', 'Vorhaben-ID', 'Kennung', 'Vorhaben', 'Referat', 'Ziel', 'Angestrebte Veränderung', 'Wer profitiert', 'Erste Wirkung in', 'Folgen des Ruhenlassens', 'Konkretisierung', 'Bestandteil KoaV', 'KoaV-Zeile', 'Gesetzesvorhaben', 'VZÄ', 'Davon gedeckt (VZÄ)', 'Stand', 'Geplanter Start', 'Voraussichtliches Ende', 'Nominierung', 'Begründung Nominierung', 'Hängt zusammen mit', 'Fehlende Rollen oder Fähigkeiten', 'Punkte Folgen (0 bis 3)', 'Punkte Nominierung (0 bis 1)', 'Punkte Ziel (0 bis 1)', 'Steuerungsbedarf (0 bis 5)', 'Empfehlung', 'Regel', 'Entscheidung der Abteilung', 'Portfolio (abgeleitet)', 'Begründung bei Abweichung', 'Bedingung', 'Hinweis für die Runde', 'Link', 'Themen'];
     const zeilen = liste.map(v => {
       const e = empfehlung(v, liste);
       const s = steuerungsbedarf(v);
@@ -4085,12 +4110,13 @@
       return [meta.abteilung, meta.berichtszeitraum, meta.exportzeitpunkt, meta.schemaversion, v.id, v.kennung,
         v.name, v.referat, v.ziel === WAEHLEN ? '' : v.ziel, v.veraenderung,
         v.reichweite === WAEHLEN ? '' : v.reichweite, v.wirkungAb === WAEHLEN ? '' : v.wirkungAb,
-        v.ruhen === WAEHLEN ? '' : v.ruhen, konkret, v.koav ? 'ja' : '', v.vzae, v.vzaeGedeckt, v.laeuft === WAEHLEN ? '' : v.laeuft,
+        v.ruhen === WAEHLEN ? '' : v.ruhen, konkret, v.koav ? 'ja' : '', v.koav ? String(v.koavZeile || '').trim() : '', v.gesetz ? 'ja' : '', v.vzae, v.vzaeGedeckt, v.laeuft === WAEHLEN ? '' : v.laeuft,
         v.startAb, v.endeBis,
         v.leitung === 'offen' ? '' : lb, IST_NOMINIERT(v.leitung) ? v.bmWarum : '', haengt, v.rollenFehlen,
         punkt(0), punkt(1), punkt(2), s.vollstaendig ? s.summe : '',
         ENTSCHEIDUNG[e.wert], e.regel, ENTSCHEIDUNG[gewaehlt(v, liste)], PORTFOLIO[portfolio(v, liste).wert],
-        weichtAb(v, liste) ? v.begruendung : '', gewaehlt(v, liste) === 'wartet' ? v.bedingung : '', v.hinweis
+        weichtAb(v, liste) ? v.begruendung : '', gewaehlt(v, liste) === 'wartet' ? v.bedingung : '', v.hinweis,
+        v.link || '', themenListe(v).join('; ')
       ].map(cleanCell).join('\t');
     });
     return [kopf.join('\t'), ...zeilen].join('\n');
@@ -5526,9 +5552,16 @@
   function hausFilter(eintraege, wahl) {
     const nurNominierte = !!(wahl && wahl.nurNominierte);
     const abteilung = (wahl && wahl.abteilung) || 'alle';
+                                                                             
+                                                                            
+                                                                  
+    const nurKoav = !!(wahl && wahl.nurKoav);
+    const nurGesetz = !!(wahl && wahl.nurGesetz);
     return (eintraege || []).filter(e => {
       if (nurNominierte && !e.nominiert) return false;
       if (abteilung !== 'alle' && e.kuerzel !== abteilung) return false;
+      if (nurKoav && !(e.v && e.v.koav)) return false;
+      if (nurGesetz && !(e.v && e.v.gesetz)) return false;
       return true;
     });
   }
@@ -5585,7 +5618,9 @@
     entscheidung: e => ENTSCHEIDUNG[e.wahl] || '',
     nominierung: e => hausNominierungsWort(e),
     folgen: e => e.folgen,
-    koav: e => e.v.koav ? 'ja' : '',
+                                                                           
+    koav: e => e.v.koav ? (String(e.v.koavZeile || '').trim() || 'ja') : '',
+    gesetz: e => e.v.gesetz ? 'ja' : '',
     stand: e => e.stand,
     verknuepft: e => e.verknuepft || 0,
                                                                                    
@@ -7732,8 +7767,15 @@
           ${v.ruhen === RUHEN[6] ? feldFolge(v, 'klaerungKonkret', 'Was müsste geklärt werden, und wer kann das?', 'Die Regel gibt ohne Folgen keine Empfehlung; die Runde kann trotzdem entscheiden.', true) : ''}
           
           <div class="feld">
-            <label class="koav-zeile" for="koav"><input type="checkbox" id="koav" data-haken="koav" data-id="${v.id}" ${v.koav ? 'checked' : ''}> Bestandteil des Koalitionsvertrags (KoaV)</label>
+            <div class="haken-reihe">
+              <label class="koav-zeile" for="koav"><input type="checkbox" id="koav" data-haken="koav" data-id="${v.id}" ${v.koav ? 'checked' : ''}> Bestandteil des Koalitionsvertrags (KoaV)</label>
+              <label class="koav-zeile" for="gesetz"><input type="checkbox" id="gesetz" data-haken="gesetz" data-id="${v.id}" ${v.gesetz ? 'checked' : ''}> Gesetzesvorhaben</label>
+            </div>
             <p class="feld-hilfe">Hilft dem Haus beim Überblick. Die Empfehlung bleibt gleich.</p>
+            <div class="koav-zeile-feld${v.koav ? '' : ' verborgen'}" id="koavZeileFeld">
+              <label for="koavZeile">Zeile im Koalitionsvertrag</label>
+              <input type="text" id="koavZeile" data-id="${v.id}" data-feld="koavZeile" maxlength="40" placeholder="z. B. 1234 oder 1234 bis 1240" value="${esc(v.koavZeile || '')}">
+            </div>
           </div>
         </div>
       </div>
@@ -7889,13 +7931,23 @@
       speichern();
       renderErfassen();
     }));
-                                                                      
-                                                                        
+                                                                            
+                                                                         
+                   
     wurzel.querySelectorAll('[data-haken]').forEach(el => el.addEventListener('change', event => {
       const ziel = nachId(event.target.dataset.id);
       if (!ziel) return;
       ziel[event.target.dataset.haken] = event.target.checked;
       speichern();
+                                                                           
+                                                                          
+                                                                   
+      if (event.target.dataset.haken === 'koav') {
+        const zeilenFeld = document.getElementById('koavZeileFeld');
+        if (zeilenFeld) zeilenFeld.classList.toggle('verborgen', !event.target.checked);
+        const eingabe = document.getElementById('koavZeile');
+        if (event.target.checked && eingabe) eingabe.focus();
+      }
     }));
                                                                         
                                                                            
@@ -8740,7 +8792,7 @@
         ${v.laeuft === LAEUFT[1] || v.laeuft === LAEUFT[2] ? `<span>${esc(v.laeuft)}</span>` : ''}
         <span>${bedarf ? zahlText(bedarf) + ' VZÄ Bedarf' : 'Personalbedarf offen'}</span>
         ${v.ziel && v.ziel !== WAEHLEN ? `<span>${esc(v.ziel)}</span>` : ''}
-        ${v.koav ? '<span>Bestandteil KoaV</span>' : ''}
+        ${v.koav ? `<span>${esc(koavText(v))}</span>` : ''}${v.gesetz ? '<span>Gesetzesvorhaben</span>' : ''}
         
         ${istZurueckgestellt(v) ? `<span>${esc(ZURUECKGESTELLT_CHIP)}</span>` : ''}
       </div>
@@ -10380,6 +10432,9 @@
 
   let H = null;
   let hausReiter = 'portfolio', hausNurNominierte = true, hausAbteilungen = [], hausLinseOffen = false;
+                                                                            
+                                                                     
+  let hausNur = { koav: false, gesetz: false };
   const hausAbtGewaehlt = kuerzel => !hausAbteilungen.length || hausAbteilungen.includes(kuerzel);
                                                                           
                                                                 
@@ -10420,9 +10475,10 @@
     if (Array.isArray(sicht.abteilungen)) hausAbteilungen = sicht.abteilungen.filter(k => typeof k === 'string');
     else if (typeof sicht.abteilung === 'string' && sicht.abteilung !== 'alle') hausAbteilungen = [sicht.abteilung];
     if (sicht.offen && typeof sicht.offen === 'object') hausOffen = sicht.offen;
+    if (sicht.nur && typeof sicht.nur === 'object') hausNur = { koav: !!sicht.nur.koav, gesetz: !!sicht.nur.gesetz };
   }
   function hausSichtSichern() {
-    hausSchreib(HAUS_SICHT, { reiter: hausReiter, nurNominierte: hausNurNominierte, abteilungen: hausAbteilungen, offen: hausOffen });
+    hausSchreib(HAUS_SICHT, { reiter: hausReiter, nurNominierte: hausNurNominierte, abteilungen: hausAbteilungen, offen: hausOffen, nur: hausNur });
   }
 
                                                                              
@@ -10625,7 +10681,7 @@
                                                                          
                                                                             
                                                                        
-      sichtbar: hausFilter(alle, { nurNominierte: hausNurNominierte, abteilung: 'alle' }).filter(e => hausAbtGewaehlt(e.kuerzel)).filter(hausSuchTreffer),
+      sichtbar: hausFilter(alle, { nurNominierte: hausNurNominierte, abteilung: 'alle', nurKoav: hausNur.koav, nurGesetz: hausNur.gesetz }).filter(e => hausAbtGewaehlt(e.kuerzel)).filter(hausSuchTreffer),
       zaehler: hausZaehler(abteilungen, alle)
     };
   }
@@ -10736,6 +10792,8 @@
     const teile = [];
     if (hausAbteilungen.length) teile.push(hausAbteilungen.length <= 3 ? hausAbteilungen.join(', ') : hausAbteilungen.length + ' Abteilungen');
     if (lpAn) teile.push('Veränderung');
+    if (hausNur.koav) teile.push('KoaV');
+    if (hausNur.gesetz) teile.push('Gesetze');
     const leer = !teile.length;
     document.getElementById('hausSteuer').innerHTML = `
         ${imWandel ? '' : `<div class="haus-schalter" role="group" aria-label="Umfang">
@@ -10746,9 +10804,13 @@
         <div class="linse">
           <button class="linse-knopf${leer ? ' leer' : ''}" type="button" id="hausAnzeigen" aria-haspopup="true" aria-expanded="${hausLinseOffen}" aria-controls="hausAnzeigenMenue" aria-label="Anzeigen: ${esc(leer ? 'alles' : teile.join(' · '))}">${esc(leer ? 'Anzeigen' : teile.join(' · '))}</button>
           <div class="linse-menue${hausLinseOffen ? '' : ' verborgen'}" id="hausAnzeigenMenue" role="group" aria-label="Anzeigen">
-            <button class="linse-eintrag" type="button" data-haus-anzeigen="alle" aria-pressed="${leer}">alle Abteilungen</button>
+            <button class="linse-eintrag" type="button" data-haus-anzeigen="alle" aria-pressed="${leer}">alles anzeigen</button>
             ${lpSchalter ? `<button class="linse-eintrag" type="button" id="hausSeitSchalter" aria-pressed="${lpAn}">Veränderung im Leitungsportfolio</button>
             <p class="linse-notiz">${esc(seitName ? 'seit ' + seitName : 'seit dem letzten Stand je Abteilung')}</p>` : ''}
+            <div class="linse-gruppe">
+              <label class="linse-haken"><input type="checkbox" data-haus-nur="koav" ${hausNur.koav ? 'checked' : ''}>nur KoaV-Vorhaben</label>
+              <label class="linse-haken"><input type="checkbox" data-haus-nur="gesetz" ${hausNur.gesetz ? 'checked' : ''}>nur Gesetzesvorhaben</label>
+            </div>
             <div class="linse-gruppe">${bau.abteilungen.map(a => `<label class="linse-haken"><input type="checkbox" data-haus-abteilung="${esc(a.kuerzel)}" ${hausAbteilungen.includes(a.kuerzel) ? 'checked' : ''}>${esc(a.kuerzel + ' · ' + a.name)}</label>`).join('')}</div>
           </div>
         </div>`;
@@ -10760,6 +10822,7 @@
     const nachWahl = () => { const knopf = document.getElementById('hausAnzeigen'); if (knopf) knopf.focus(); };
     document.querySelector('#hausAnzeigenMenue [data-haus-anzeigen="alle"]').addEventListener('click', () => {
       hausAbteilungen = [];
+      hausNur = { koav: false, gesetz: false };
       seitSetzen(false);
       hausAktiv = null;
       hausLinseOffen = false;
@@ -10791,6 +10854,15 @@
       hausSichtSichern();
       renderHaus();
       const wieder = [...document.querySelectorAll('#hausAnzeigenMenue [data-haus-abteilung]')].find(feld => feld.dataset.hausAbteilung === kuerzel);
+      if (wieder) wieder.focus();
+    }));
+    document.querySelectorAll('#hausAnzeigenMenue [data-haus-nur]').forEach(el => el.addEventListener('change', () => {
+      const art = el.dataset.hausNur;
+      hausNur = Object.assign({}, hausNur, { [art]: el.checked });
+      hausAktiv = null;
+      hausSichtSichern();
+      renderHaus();
+      const wieder = [...document.querySelectorAll('#hausAnzeigenMenue [data-haus-nur]')].find(feld => feld.dataset.hausNur === art);
       if (wieder) wieder.focus();
     }));
                                                                              
@@ -11192,6 +11264,7 @@
     { schluessel: 'nominierung', text: 'Nominierung' },
     { schluessel: 'folgen', text: 'Folgen' },
     { schluessel: 'koav', text: 'KoaV' },
+    { schluessel: 'gesetz', text: 'Gesetz' },
     { schluessel: 'stand', text: 'Stand' },
     { schluessel: 'verknuepft', text: 'Verknüpft' }
   ];
@@ -11204,7 +11277,7 @@
   function hausSuchTreffer(eintrag) {
     const suche = hausSuche.trim().toLowerCase();
     if (!suche) return true;
-    return [eintrag.v.name, eintrag.v.referat, eintrag.ziel, eintrag.v.bmWarum, eintrag.v.koav ? 'koav koalitionsvertrag' : '', themenListe(eintrag.v).join(' ')]
+    return [eintrag.v.name, eintrag.v.referat, eintrag.ziel, eintrag.v.bmWarum, eintrag.v.koav ? 'koav koalitionsvertrag ' + String(eintrag.v.koavZeile || '') : '', eintrag.v.gesetz ? 'gesetz gesetzesvorhaben' : '', themenListe(eintrag.v).join(' ')]
       .join(' ').toLowerCase().indexOf(suche) >= 0;
   }
 
@@ -11229,7 +11302,8 @@
         <td><span class="hs-punkt ${e.wahl}" aria-hidden="true"></span>${esc(ENTSCHEIDUNG[e.wahl])}</td>
         <td>${esc(hausNominierungsWort(e))}</td>
         <td>${esc(e.folgen)}</td>
-        <td>${e.v.koav ? 'ja' : ''}</td>
+        <td>${esc(HAUS_TABELLENWERT.koav(e))}</td>
+        <td>${HAUS_TABELLENWERT.gesetz(e)}</td>
         <td>${esc(e.stand)}</td>
         <td>${e.verknuepft || ''}</td>
         ${hausSeitAn ? `<td>${esc(e.seit || '')}</td>` : ''}
@@ -12065,7 +12139,7 @@
         <span>${esc(ENTSCHEIDUNG[eintrag.wahl])}</span>
         ${eintrag.ziel && eintrag.ziel !== WAEHLEN ? `<span>${esc(eintrag.ziel)}</span>` : ''}
         ${eintrag.stand ? `<span>${esc(eintrag.stand)}</span>` : ''}
-        ${v.koav ? '<span>Bestandteil KoaV</span>' : ''}
+        ${v.koav ? `<span>${esc(koavText(v))}</span>` : ''}${v.gesetz ? '<span>Gesetzesvorhaben</span>' : ''}
         ${eintrag.zurueckgestellt ? `<span>${esc(ZURUECKGESTELLT_CHIP)}</span>` : ''}
       </div>
       ${themenStatusHtml(v)}
@@ -12228,7 +12302,7 @@
     const referat = String(v.referat || '').trim();
     const zielText = eintrag.ziel === OHNE_ZIEL ? 'ohne Hausziel'
       : eintrag.ziel === WAEHLEN ? 'Ziel offen' : eintrag.ziel;
-    const meta = [mitKuerzel ? eintrag.kuerzel : '', referat, zielText, v.koav ? 'Bestandteil KoaV' : '']
+    const meta = [mitKuerzel ? eintrag.kuerzel : '', referat, zielText, koavText(v), v.gesetz ? 'Gesetzesvorhaben' : '']
       .filter(Boolean).join(' · ');
     const warum = String(v.bmWarum || '').trim();
     return `<div class="druck-item eingeplant nominiert">
