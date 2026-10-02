@@ -2332,7 +2332,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 67 · 01.10.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 68 · 02.10.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -2431,6 +2431,7 @@
       <span class="fuss-rechts">
         <button class="textbtn blau verborgen" type="button" id="hausVorbereitungDruck">Vorbereitung drucken</button>
         <button class="textbtn blau" type="button" id="hausPortfolioDruck">Portfolio drucken</button>
+        <button class="textbtn blau" type="button" id="hausExport" title="Die Liste so, wie sie dasteht, als Tabelle (TSV) für Excel">Liste exportieren</button>
         <button class="textbtn blau" type="button" id="hausDruck">Liste drucken</button>
         <button type="button" class="impressum-link" data-impressum>Impressum</button>
       </span>
@@ -5810,6 +5811,40 @@
                                                                          
                                                                              
                                                  
+                                                                              
+                                                                           
+                                                                       
+                                                                          
+                                                                              
+                                                                          
+                                                                             
+                        
+  function hausTsv(abteilungen, eintraege, zeitpunkt) {
+    const geladen = abteilungen || [];
+    const externe = [];
+    geladen.forEach(a => {
+      const liste = (a && a.stand && Array.isArray(a.stand.vorhaben)) ? a.stand.vorhaben : [];
+      liste.forEach(v => { if (v && v.kennung) externe.push({ kennung: v.kennung, name: v.name || '', abteilung: a.kuerzel }); });
+    });
+    let kopf = '';
+    const jeAbteilung = new Map();
+    geladen.forEach(a => {
+      const stand = (a && a.stand) || {};
+      const liste = Array.isArray(stand.vorhaben) ? stand.vorhaben : [];
+      const zeilen = tsv(stand.abteilung || a.name || a.kuerzel, liste, zeitpunkt, externe).split('\n');
+      if (!kopf) kopf = zeilen[0];
+      const nachId = new Map();
+      liste.forEach((v, i) => nachId.set(v.id, zeilen[i + 1]));
+      jeAbteilung.set(a.kuerzel, nachId);
+    });
+    if (!kopf) kopf = tsv('', [], zeitpunkt).split('\n')[0];
+    const koerper = (eintraege || []).map(e => {
+      const nachId = e && jeAbteilung.get(e.kuerzel);
+      return nachId && e.v ? nachId.get(e.v.id) : '';
+    }).filter(Boolean);
+    return [kopf].concat(koerper).join('\n');
+  }
+
   function hausDruckEintraege(eintraege) {
     return (eintraege || []).filter(e => e.nominiert);
   }
@@ -11571,6 +11606,9 @@
   function renderHaus() {
     const vbKnopf = document.getElementById('hausVorbereitungDruck');
     if (vbKnopf) vbKnopf.classList.toggle('verborgen', speicherArt !== 'spiel');
+                                                                   
+    const exKnopf = document.getElementById('hausExport');
+    if (exKnopf) exKnopf.classList.toggle('verborgen', speicherArt === 'spiel');
     if (!H) return;
                                                                               
                                                                             
@@ -12452,6 +12490,14 @@
     document.body.classList.remove('druck-hausportfolio');
   });
 
+                                                                            
+                                                                   
+  function hausListeExportieren() {
+    const bau = hausAufbau();
+    const zeilen = hausTabelle(bau.sichtbar, hausSortierung);
+    herunterladen(hausTsv(bau.abteilungen, zeilen, new Date()), 'portfolio_haus.tsv', 'text/tab-separated-values');
+  }
+
   function hausDrucken() {
     if (hausReiter !== 'liste') {
       hausDruckReiter = hausReiter;
@@ -12733,6 +12779,7 @@
       });
     }));
     document.getElementById('hausDruck').addEventListener('click', hausDrucken);
+    document.getElementById('hausExport').addEventListener('click', hausListeExportieren);
     document.getElementById('hausPortfolioDruck').addEventListener('click', hausPortfolioDrucken);
     document.getElementById('hausVorbereitungDruck').addEventListener('click', vorbereitungDruckFragen);
     document.getElementById('hausDatei').addEventListener('change', event => {
