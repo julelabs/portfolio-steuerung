@@ -2332,7 +2332,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 68 · 02.10.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 69 · 04.10.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -2431,7 +2431,7 @@
       <span class="fuss-rechts">
         <button class="textbtn blau verborgen" type="button" id="hausVorbereitungDruck">Vorbereitung drucken</button>
         <button class="textbtn blau" type="button" id="hausPortfolioDruck">Portfolio drucken</button>
-        <button class="textbtn blau" type="button" id="hausExport" title="Die Liste so, wie sie dasteht, als Tabelle (TSV) für Excel">Liste exportieren</button>
+        <button class="textbtn blau" type="button" id="hausExport" title="Die Liste so, wie sie dasteht, als Tabelle (CSV) für Excel">Liste exportieren</button>
         <button class="textbtn blau" type="button" id="hausDruck">Liste drucken</button>
         <button type="button" class="impressum-link" data-impressum>Impressum</button>
       </span>
@@ -5843,6 +5843,19 @@
       return nachId && e.v ? nachId.get(e.v.id) : '';
     }).filter(Boolean);
     return [kopf].concat(koerper).join('\n');
+  }
+
+                                                                                  
+                                                                          
+                                                                  
+                                                                     
+                                                                      
+  function csvAusTsv(text) {
+    const feld = wert => (/[;"]/.test(wert) ? '"' + wert.replace(/"/g, '""') + '"' : wert);
+    return '\uFEFF' + String(text || '').split('\n').map(zeile => zeile.split('\t').map(feld).join(';')).join('\r\n');
+  }
+  function hausCsv(abteilungen, eintraege, zeitpunkt) {
+    return csvAusTsv(hausTsv(abteilungen, eintraege, zeitpunkt));
   }
 
   function hausDruckEintraege(eintraege) {
@@ -12490,12 +12503,12 @@
     document.body.classList.remove('druck-hausportfolio');
   });
 
-                                                                            
-                                                                   
+                                                                        
+                                                                               
   function hausListeExportieren() {
     const bau = hausAufbau();
     const zeilen = hausTabelle(bau.sichtbar, hausSortierung);
-    herunterladen(hausTsv(bau.abteilungen, zeilen, new Date()), 'portfolio_haus.tsv', 'text/tab-separated-values');
+    herunterladen(hausCsv(bau.abteilungen, zeilen, new Date()), 'portfolio_haus.csv', 'text/csv');
   }
 
   function hausDrucken() {
