@@ -2332,7 +2332,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 70 · 09.10.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 71 · 12.10.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -6030,6 +6030,52 @@
     spiel.abteilungen.forEach(a => spielAusgangsstandAnlegen(a.stand, zeitpunkt));
     return spiel;
   }
+                                                                            
+                                                                            
+                                                                           
+                                                                              
+                                                                      
+                                                                    
+                                                                             
+                                                                              
+  const SPIEL_DATEI_ART = 'sandbox';
+  function spielDatei(spiel, zeitpunkt) {
+    const datum = exportDatum(zeitpunkt);
+    return {
+      metadaten: {
+        art: SPIEL_DATEI_ART,
+        exportzeitpunkt: datum ? datum.toISOString() : '',
+        schemaversion: SCHEMAVERSION,
+        geladen: String(spiel.geladen || ''),
+        quelle: spiel.quelle
+      },
+      sandbox: { geladen: spiel.geladen, quelle: spiel.quelle, aktiv: spiel.aktiv, abteilungen: spiel.abteilungen }
+    };
+  }
+                                                                         
+                                                           
+  function spielDateiname(zeitpunkt) {
+    const datum = exportDatum(zeitpunkt);
+    if (!datum) return 'sandbox.json';
+    const zwei = n => String(n).padStart(2, '0');
+    return 'sandbox_' + datum.getFullYear() + '-' + zwei(datum.getMonth() + 1) + '-' + zwei(datum.getDate())
+      + '_' + zwei(datum.getHours()) + zwei(datum.getMinutes()) + '.json';
+  }
+                                                                       
+                                                                           
+                                                       
+  function spielAusDatei(text, quelleErwartet) {
+    let json;
+    try { json = JSON.parse(String(text || '')); } catch (fehler) { return { fehler: 'Die Datei ist kein gültiges JSON.' }; }
+    if (json && (Array.isArray(json.vorhaben) || (json.stand && Array.isArray(json.stand.vorhaben)))) {
+      return { fehler: 'Das ist ein Abteilungsstand, keine Sandbox-Datei.' };
+    }
+    if (!json || !json.metadaten || json.metadaten.art !== SPIEL_DATEI_ART || !json.sandbox) return { fehler: 'Das ist keine Sandbox-Datei.' };
+    const spiel = spielObjektAufbereiten(json.sandbox);
+    if (!spiel) return { fehler: 'Die Sandbox-Datei enthält keine Abteilung.' };
+    if (quelleErwartet && spiel.quelle !== quelleErwartet) return { fehler: 'Diese Sandbox-Datei stammt aus der Demo, nicht aus den Listen.' };
+    return { spiel: spiel };
+  }
                  
 
   const SPEICHER = 'portfolio-prio-v3';
@@ -7047,8 +7093,25 @@
                                                                             
                                                                              
                                                          
+                                                                            
+                                                                          
+                                              
     el.innerHTML = `<span><b class="spiel-marke">Sandbox</b>Stand vom ${esc(wann)} · Der gemeinsame Stand bleibt unberührt.</span>`
-      + '<button class="textbtn hell" type="button" id="spielNeuLaden">Neu aus den Listen laden</button>';
+      + '<button class="textbtn hell" type="button" id="spielSichern">Spielstand sichern</button>'
+      + '<button class="textbtn hell" type="button" id="spielLaden">Spielstand laden</button>'
+      + '<button class="textbtn hell" type="button" id="spielNeuLaden">Neu aus den Listen laden</button>'
+      + '<input type="file" id="spielDatei" accept=".json,application/json" hidden>';
+    document.getElementById('spielSichern').addEventListener('click', spielSichern);
+    document.getElementById('spielLaden').addEventListener('click', () => document.getElementById('spielDatei').click());
+    document.getElementById('spielDatei').addEventListener('change', event => {
+      const datei = event.target.files && event.target.files[0];
+      event.target.value = '';
+      if (!datei) return;
+      const leser = new FileReader();
+      leser.onload = () => spielDateiUebernehmen(String(leser.result || ''), datei.name);
+      leser.onerror = () => syncHinweisZeigen(datei.name + ': Die Datei ließ sich nicht lesen.', 12000);
+      leser.readAsText(datei, 'UTF-8');
+    });
     document.getElementById('spielNeuLaden').addEventListener('click', spielNeuLadenFragen);
   }
 
@@ -7182,6 +7245,29 @@
       spielLeisteZeigen();
       spielNachWechsel();
     }).catch(() => spielSperren(SPIEL_NICHT_LESBAR));
+  }
+                                                                           
+                                                                            
+                                                                           
+                                                                     
+                                                                       
+  function spielSichern() {
+    if (!spiel) return;
+    const zeitpunkt = new Date();
+    herunterladen(JSON.stringify(spielDatei(spiel, zeitpunkt), null, 2), spielDateiname(zeitpunkt), 'application/json');
+  }
+  function spielDateiUebernehmen(text, dateiname) {
+    if (!spiel) return false;
+    const ergebnis = spielAusDatei(text, spiel.quelle === 'liste' ? 'liste' : null);
+    if (ergebnis.fehler) { syncHinweisZeigen((dateiname ? dateiname + ': ' : '') + ergebnis.fehler, 12000); return false; }
+    if (!confirm('Der aktuelle Spielstand wird durch den aus der Datei ersetzt' + (dateiname ? ' (' + dateiname + ')' : '') + '.')) return false;
+    spielSetzen(ergebnis.spiel);
+    spielAblegen();
+    hausAuswahl = {};
+    hausSchreib(HAUS_AUSWAHL, hausAuswahl);
+    spielLeisteZeigen();
+    spielNachWechsel();
+    return true;
   }
                                                                           
                                                                        
@@ -12712,6 +12798,8 @@
       window.__listeAktualisieren = spAktualisieren;
                                                                                
       window.__hausDateien = hausDateienUebernehmen;
+                                                                        
+      window.__spielDatei = spielDateiUebernehmen;
     }
                                                                          
                                                                            
