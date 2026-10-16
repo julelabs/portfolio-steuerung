@@ -1416,6 +1416,22 @@
                                                                     
   body.spiel:not(.spiel-gesperrt) #spielLeiste { background: var(--weiss); color: var(--fg-2); box-shadow: none; padding: 7px 18px; font-size: 13.5px; line-height: 1.4; }
   body.spiel:not(.spiel-gesperrt) #spielLeiste .textbtn { color: var(--blau); margin-left: 14px; font-size: 13.5px; }
+                                                                                
+                                                                     
+                                                                       
+                                                          
+  body.spiel:not(.spiel-gesperrt) #spielLeiste { display: flex; align-items: center; justify-content: space-between; gap: 16px; text-align: left; }
+  .spiel-menue { position: relative; flex: 0 0 auto; }
+  .spiel-menue-knopf::after { content: ''; display: inline-block; width: 6px; height: 6px; margin: 0 0 3px 8px;
+    border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); }
+  .spiel-menue-knopf[aria-expanded="true"]::after { transform: rotate(-135deg); margin-bottom: -1px; }
+  .spiel-menue-liste { display: none; position: absolute; right: 0; top: calc(100% + 8px); z-index: 70; min-width: 290px;
+    background: var(--weiss); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 10px 26px rgba(13,12,43,.14); padding: 6px; }
+  .spiel-menue-liste.offen { display: block; }
+  .spiel-menue-eintrag { display: block; width: 100%; text-align: left; font: inherit; font-family: var(--display); font-weight: 600; font-size: 13.5px;
+    color: var(--fg); background: none; border: 0; border-radius: 5px; padding: 8px 10px; cursor: pointer; }
+  .spiel-menue-eintrag:hover, .spiel-menue-eintrag:focus-visible { background: var(--blau-10); color: var(--blau); }
+  .spiel-menue-trenn { display: block; height: 1px; background: var(--line); margin: 6px 4px; }
   .spiel-marke { display: inline-block; background: var(--kirsche); color: var(--weiss); font-weight: 600; font-size: 12.5px; border-radius: 999px; padding: 1px 9px 2px; margin-right: 8px; }
   body.spiel-gesperrt .spiel-marke { display: none; }
   body.spiel header.top { background: var(--lavendel); color: var(--dunkel); padding-bottom: 6px; }
@@ -1608,7 +1624,7 @@
   .textbtn.blau { color: var(--blau); }
 
   .fusszeile { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--fg-muted); font-size: 13px; }
-  .fuss-rechts { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .fuss-rechts { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-left: auto; }
   .verborgen { display: none; }
                                                                                         
   .nur-vorlesen { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -2332,7 +2348,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 71 · 12.10.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 73 · 16.10.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -2426,8 +2442,8 @@
     </div>
     
     <div class="haus-leiste verborgen" id="hausLeiste"></div>
+    
     <div class="fusszeile">
-      <span id="hausFussHinweis">Die Vormerkung bleibt in diesem Browser, bis sie bestätigt wird.</span>
       <span class="fuss-rechts">
         <button class="textbtn blau verborgen" type="button" id="hausVorbereitungDruck">Vorbereitung drucken</button>
         <button class="textbtn blau" type="button" id="hausPortfolioDruck">Portfolio drucken</button>
@@ -7093,14 +7109,27 @@
                                                                             
                                                                              
                                                          
-                                                                            
-                                                                          
-                                              
+                                                                         
+                                                                           
+                                                                       
+                                                                           
+                                                                         
+                                                                    
     el.innerHTML = `<span><b class="spiel-marke">Sandbox</b>Stand vom ${esc(wann)} · Der gemeinsame Stand bleibt unberührt.</span>`
-      + '<button class="textbtn hell" type="button" id="spielSichern">Spielstand sichern</button>'
-      + '<button class="textbtn hell" type="button" id="spielLaden">Spielstand laden</button>'
-      + '<button class="textbtn hell" type="button" id="spielNeuLaden">Neu aus den Listen laden</button>'
+      + '<span class="spiel-menue" id="spielMenue">'
+      + '<button class="textbtn hell spiel-menue-knopf" type="button" id="spielMenueKnopf" aria-haspopup="true" aria-expanded="false" aria-controls="spielMenueListe">Spielstand</button>'
+      + '<div class="spiel-menue-liste" id="spielMenueListe" role="menu" aria-label="Spielstand">'
+      + '<button class="spiel-menue-eintrag" type="button" role="menuitem" id="spielSichern">Als Datei sichern</button>'
+      + '<button class="spiel-menue-eintrag" type="button" role="menuitem" id="spielLaden">Aus Datei laden</button>'
+      + '<span class="spiel-menue-trenn" aria-hidden="true"></span>'
+      + '<button class="spiel-menue-eintrag" type="button" role="menuitem" id="spielNeuLaden">Von vorn mit dem aktuellen Stand</button>'
+      + '</div></span>'
       + '<input type="file" id="spielDatei" accept=".json,application/json" hidden>';
+    document.getElementById('spielMenueKnopf').addEventListener('click', event => {
+      event.stopPropagation();
+      spielMenueSchalten(!spielMenueOffen());
+    });
+    document.getElementById('spielMenueListe').addEventListener('click', () => spielMenueSchalten(false));
     document.getElementById('spielSichern').addEventListener('click', spielSichern);
     document.getElementById('spielLaden').addEventListener('click', () => document.getElementById('spielDatei').click());
     document.getElementById('spielDatei').addEventListener('change', event => {
@@ -7114,6 +7143,21 @@
     });
     document.getElementById('spielNeuLaden').addEventListener('click', spielNeuLadenFragen);
   }
+
+                                                                             
+                                                       
+  function spielMenueOffen() {
+    const liste = document.getElementById('spielMenueListe');
+    return !!liste && liste.classList.contains('offen');
+  }
+  function spielMenueSchalten(offen) {
+    const liste = document.getElementById('spielMenueListe');
+    const knopf = document.getElementById('spielMenueKnopf');
+    if (!liste || !knopf) return;
+    liste.classList.toggle('offen', !!offen);
+    knopf.setAttribute('aria-expanded', String(!!offen));
+  }
+  document.addEventListener('click', () => { if (spielMenueOffen()) spielMenueSchalten(false); });
 
   function spielSperren(text) {
     speicherArt = 'spiel';
@@ -7236,7 +7280,7 @@
   function spielNeuLadenFragen() {
     if (!spiel) return;
     const tag = new Date(spiel.geladen).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
-    if (!confirm('Der Spielstand vom ' + tag + ' wird verworfen.')) return;
+    if (!confirm('Der Spielstand vom ' + tag + ' wird verworfen. Die Sandbox beginnt von vorn mit dem gemeinsamen Stand von jetzt.')) return;
     const neu = spiel.quelle === 'liste' && spSite ? spielAusListen() : Promise.resolve(spielAusDemo());
     neu.then(gut => {
       if (!gut) { spielSperren(SPIEL_NICHT_LESBAR); return; }
@@ -9103,13 +9147,31 @@
     if (linseOffen && !innen) linseSchalten(false);
     if (typeof hausLinseOffen !== 'undefined' && hausLinseOffen && !innen) hausLinseSchalten(false);
   });
+                                                                           
+                                                                              
+                                                                   
+                                                                            
+  document.addEventListener('click', ev => {
+    const ziel = ev.target;
+    if (ziel && ziel.closest && ziel.closest('.pt-wrap, button, a, input, select, textarea, label, summary, dialog, [data-haus-kachel], [data-haus-ablage]')) return;
+    if (ansicht === 'haus' && hausAktiv) { hausAktiv = null; renderHaus(); return; }
+    if (ansicht === 'priorisieren' && sicht === 'portfolio' && abhAktivId) { abhAktivId = null; renderBild(); }
+  });
   document.addEventListener('keydown', ev => {
     if (ev.key !== 'Escape') return;
+                                                               
+    if (spielMenueOffen()) { spielMenueSchalten(false); return; }
                                                                              
                                                                    
     if (!hausLinseOffen && !linseOffen && abhAktivId && ansicht === 'priorisieren' && sicht === 'portfolio' && !document.querySelector('dialog[open]')) {
       abhAktivId = null;
       renderBild();
+      return;
+    }
+                         
+    if (!hausLinseOffen && !linseOffen && hausAktiv && ansicht === 'haus' && !document.querySelector('dialog[open]')) {
+      hausAktiv = null;
+      renderHaus();
       return;
     }
     if (hausLinseOffen) { hausLinseSchalten(false); const haus = document.getElementById('hausAnzeigen'); if (haus) haus.focus(); }
@@ -11189,19 +11251,10 @@
     }).join('');
   }
 
-  function hausLinsenSatz(bau) {
-    const eintrag = hausAktiv ? bau.alle.find(e => e.schluessel === hausAktiv) : null;
-    if (!eintrag) return 'Kachel anklicken zeigt verknüpfte Vorhaben.';
-    const namen = hausVerbundeneNamen(eintrag, bau);
-    const ohne = eintrag.ohneTreffer.length;
-    if (!namen.length && !ohne) return 'Keine Verknüpfung zu einem anderen Vorhaben erfasst. Erneut anklicken setzt die Auswahl zurück.';
-    const rest = ohne === 1
-      ? 'einem Vorhaben, das in keiner geladenen Abteilung liegt'
-      : ohne + ' Vorhaben, die in keiner geladenen Abteilung liegen';
-    const teile = namen.length && ohne ? namensListe(namen) + ' und ' + rest
-      : namen.length ? namensListe(namen) : rest;
-    return `${eintrag.v.name} hängt zusammen mit ${teile}. Erneut anklicken setzt die Auswahl zurück.`;
-  }
+                                                                              
+                                                                               
+                                                                         
+                                                                   
                                                                             
                                                                        
                                                                         
@@ -11316,8 +11369,7 @@
       : '';
     document.getElementById('hausKoerper').innerHTML = `
       ${koepfe}
-      <div class="haus-zeilen">${zeilen || '<p class="haus-leer">Keine Abteilung geladen.</p>'}</div>
-      <p class="abh-info" aria-live="polite"><span>${esc(hausLinsenSatz(bau))}</span></p>`;
+      <div class="haus-zeilen">${zeilen || '<p class="haus-leer">Keine Abteilung geladen.</p>'}</div>`;
     document.getElementById('hausKoerper').querySelectorAll('[data-haus-klappe]').forEach(el => el.addEventListener('click', () => {
       const kuerzel = el.dataset.hausKlappe;
       if (hausOffen[kuerzel]) delete hausOffen[kuerzel]; else hausOffen[kuerzel] = true;
@@ -11342,7 +11394,7 @@
         </div>
         <div class="lane-body">${bahn.eintraege.map(e => hausKachel(e, { gedaempft: gedaempft && !hausAuswahl[e.schluessel] })).join('')}</div>
       </div>`;
-    }).join('') + `<p class="abh-info" aria-live="polite"><span>${esc(hausLinsenSatz(bau))}</span></p>`;
+    }).join('');
                                                                                
     hausMarkieren(bau);
   }
@@ -11735,22 +11787,6 @@
     else if (hausReiter === 'laufzeiten') renderHausLaufzeiten(bau);
     else if (hausReiter === 'veraenderung') renderHausVeraenderung(bau);
     else renderHausListe(bau);
-                                                                         
-                                                                         
-                                                                          
-                             
-    const fuss = document.getElementById('hausFussHinweis');
-    if (fuss) {
-      const kuratierbar = bau.alle.some(e => hausKuratierbar(e, hausUmgebung()));
-                                                                               
-      fuss.textContent = speicherArt === 'spiel'
-        ? 'Sandbox: Ziehen ändert nur den Spielstand. Raus aus dem Leitungsportfolio fragt einmal nach.'
-        : !kuratierbar
-        ? 'Lesesicht. Stände aus Dateien lassen sich hier nicht verändern.'
-        : (speicherArt === 'liste'
-          ? 'Zurückstellen schreibt in die Liste der betroffenen Abteilung. Die Vormerkung bleibt in diesem Browser, bis sie bestätigt wird.'
-          : 'Demo: Zurückstellen wird hier nur vorgeführt und nicht gespeichert.');
-    }
     hausVerdrahten();
   }
 
