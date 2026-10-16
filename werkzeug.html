@@ -1068,7 +1068,7 @@
   .lane { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 18px; align-items: start; border-top: 1px solid var(--line); padding: 11px 0; }
                                                                             
                                                                                   
-  .lane-name { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--fg); }
+  .lane-name { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--fg); display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
   .lane-meta { color: var(--fg-muted); font-size: 12.5px; }
   .lane-sub { color: var(--fg-muted); font-size: 12.5px; margin-bottom: 2px; }
                                                                               
@@ -1939,7 +1939,7 @@
 
                                                                              
                                 
-  .lz-gruppe { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-2); background: var(--blau-10); padding: 6px 10px; border-radius: 4px; margin: 16px 0 2px; }
+  .lz-gruppe { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-2); background: var(--blau-10); padding: 6px 10px; border-radius: 4px; margin: 16px 0 2px; display: flex; align-items: center; gap: 6px; }
 
                                                                          
                                                                           
@@ -2348,7 +2348,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 73 · 16.10.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 74 · 16.10.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -10646,6 +10646,10 @@
                                                                          
                                                                   
   let hausOffen = {};
+                                                                               
+                                                                           
+                                                                             
+  let hausOffenZiele = {};
   let hausAktiv = null, hausAuswahl = {}, hausSuche = '', hausHinweis = '';
   let hausSortierung = { spalte: 'abteilung', richtung: 'auf' };
   let hausLaedt = false, hausVorschauSchluessel = null, hausDruckReiter = null;
@@ -10677,10 +10681,11 @@
     if (Array.isArray(sicht.abteilungen)) hausAbteilungen = sicht.abteilungen.filter(k => typeof k === 'string');
     else if (typeof sicht.abteilung === 'string' && sicht.abteilung !== 'alle') hausAbteilungen = [sicht.abteilung];
     if (sicht.offen && typeof sicht.offen === 'object') hausOffen = sicht.offen;
+    if (sicht.offenZiele && typeof sicht.offenZiele === 'object') hausOffenZiele = sicht.offenZiele;
     if (sicht.nur && typeof sicht.nur === 'object') hausNur = { koav: !!sicht.nur.koav, gesetz: !!sicht.nur.gesetz };
   }
   function hausSichtSichern() {
-    hausSchreib(HAUS_SICHT, { reiter: hausReiter, nurNominierte: hausNurNominierte, abteilungen: hausAbteilungen, offen: hausOffen, nur: hausNur });
+    hausSchreib(HAUS_SICHT, { reiter: hausReiter, nurNominierte: hausNurNominierte, abteilungen: hausAbteilungen, offen: hausOffen, offenZiele: hausOffenZiele, nur: hausNur });
   }
 
                                                                              
@@ -10884,6 +10889,11 @@
                                                                             
                                                                        
       sichtbar: hausFilter(alle, { nurNominierte: hausNurNominierte, abteilung: 'alle', nurKoav: hausNur.koav, nurGesetz: hausNur.gesetz }).filter(e => hausAbtGewaehlt(e.kuerzel)).filter(hausSuchTreffer),
+                                                                            
+                                                                            
+                                                                              
+                
+      alleGefiltert: hausFilter(alle, { nurNominierte: false, abteilung: 'alle', nurKoav: hausNur.koav, nurGesetz: hausNur.gesetz }).filter(e => hausAbtGewaehlt(e.kuerzel)).filter(hausSuchTreffer),
       zaehler: hausZaehler(abteilungen, alle)
     };
   }
@@ -11042,6 +11052,7 @@
           hausNurNominierte = true;
           hausAktiv = null;
           hausOffen = {};
+          hausOffenZiele = {};
           hausSichtSichern();
         }
       }
@@ -11084,6 +11095,7 @@
                                                                              
                                                                                
       hausOffen = {};
+      hausOffenZiele = {};
       hausSichtSichern();
       renderHaus();
     }));
@@ -11259,6 +11271,16 @@
                                                                        
                                                                         
                                  
+                                                                           
+                                                                           
+                                                                           
+                                                                              
+  function hausKlappeHtml(attr, wert, offen, zahl, name) {
+    return `<button class="haus-klappe" type="button" ${attr}="${esc(wert)}" aria-expanded="${offen ? 'true' : 'false'}"`
+      + ` aria-label="${offen ? 'Nur nominierte zeigen: ' + esc(name) : 'Alle ' + zahl + ' Vorhaben zeigen: ' + esc(name)}"`
+      + ` title="${offen ? 'nur nominierte' : 'alle ' + zahl + ' Vorhaben'}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></button>`;
+  }
+
   function hausVerbundeneNamen(eintrag, bau) {
     return [...eintrag.verbunden]
       .map(s => bau.alle.find(e => e.schluessel === s))
@@ -11311,7 +11333,7 @@
                                                                             
                                                              
       const offen = !hausNurNominierte || !!hausOffen[a.kuerzel];
-      let meine = (offen ? bau.alle.filter(hausSuchTreffer) : bau.sichtbar).filter(e => e.kuerzel === a.kuerzel);
+      let meine = (offen ? bau.alleGefiltert : bau.sichtbar).filter(e => e.kuerzel === a.kuerzel);
                                                                         
                                                                              
                                                                             
@@ -11323,8 +11345,7 @@
                                                                            
                                                                            
                                                   
-      const klappe = a.fehler || !hausNurNominierte || !z.gesamt ? '' :
-        `<button class="haus-klappe" type="button" data-haus-klappe="${esc(a.kuerzel)}" aria-expanded="${offen ? 'true' : 'false'}" aria-label="${offen ? 'Nur nominierte Vorhaben von ' + esc(a.name) + ' zeigen' : 'Alle ' + z.gesamt + ' Vorhaben von ' + esc(a.name) + ' zeigen'}" title="${offen ? 'nur nominierte' : 'alle ' + z.gesamt + ' Vorhaben'}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></button>`;
+      const klappe = a.fehler || !hausNurNominierte || !z.gesamt ? '' : hausKlappeHtml('data-haus-klappe', a.kuerzel, offen, z.gesamt, a.name);
                                                                           
                                                     
                                                                               
@@ -11370,26 +11391,31 @@
     document.getElementById('hausKoerper').innerHTML = `
       ${koepfe}
       <div class="haus-zeilen">${zeilen || '<p class="haus-leer">Keine Abteilung geladen.</p>'}</div>`;
-    document.getElementById('hausKoerper').querySelectorAll('[data-haus-klappe]').forEach(el => el.addEventListener('click', () => {
-      const kuerzel = el.dataset.hausKlappe;
-      if (hausOffen[kuerzel]) delete hausOffen[kuerzel]; else hausOffen[kuerzel] = true;
-      hausSichtSichern();
-      renderHaus();
-    }));
     hausMarkieren(bau);
   }
 
   function renderHausZiele(bau) {
     const gedaempft = hausGedaempft();
-    document.getElementById('hausKoerper').innerHTML = hausZielBahnen(bau.sichtbar).map(bahn => {
+                                                                            
+                                                                              
+                                                                             
+                                                                             
+                         
+    const sichtbarSet = new Set(bau.sichtbar.map(e => e.schluessel));
+    document.getElementById('hausKoerper').innerHTML = hausZielBahnen(bau.alleGefiltert).map(ganze => {
+      const nurSichtbar = ganze.eintraege.filter(e => sichtbarSet.has(e.schluessel));
+      const offen = hausNurNominierte && !!hausOffenZiele[ganze.ziel];
+      const bahn = offen ? ganze : { ziel: ganze.ziel, eintraege: nurSichtbar, abteilungen: new Set(nurSichtbar.map(e => e.kuerzel)).size };
       const name = bahn.ziel === WAEHLEN ? 'Ziel noch nicht gewählt' : bahn.ziel;
       const meta = bahn.eintraege.length
         ? (bahn.eintraege.length === 1 ? 'ein Vorhaben' : bahn.eintraege.length + ' Vorhaben')
           + ' · aus ' + (bahn.abteilungen === 1 ? 'einer Abteilung' : bahn.abteilungen + ' Abteilungen')
         : 'kein Vorhaben';
-      return `<div class="lane">
+      const klappe = hausNurNominierte && (offen || ganze.eintraege.length > nurSichtbar.length)
+        ? hausKlappeHtml('data-haus-klappe-ziel', ganze.ziel, offen, ganze.eintraege.length, name) : '';
+      return `<div class="lane${offen ? ' offen' : ''}">
         <div>
-          <p class="lane-name">${esc(name)}</p>
+          <p class="lane-name">${esc(name)}${klappe}</p>
           <p class="lane-meta">${esc(meta)}</p>
         </div>
         <div class="lane-body">${bahn.eintraege.map(e => hausKachel(e, { gedaempft: gedaempft && !hausAuswahl[e.schluessel] })).join('')}</div>
@@ -11421,7 +11447,13 @@
                                                                
     const offene = [];
     const gruppen = abteilungen.map(a => {
-      const meine = bau.sichtbar.filter(e => e.kuerzel === a.kuerzel);
+                                                                          
+                                                        
+      const offen = hausNurNominierte && !!hausOffen[a.kuerzel];
+      const ganze = bau.alleGefiltert.filter(e => e.kuerzel === a.kuerzel);
+      const meine = (offen ? bau.alleGefiltert : bau.sichtbar).filter(e => e.kuerzel === a.kuerzel);
+      const klappe = hausNurNominierte && !a.fehler && (offen || ganze.length > meine.length)
+        ? hausKlappeHtml('data-haus-klappe', a.kuerzel, offen, ganze.length, a.name) : '';
       const mitBalken = meine.filter(e => e.zeit.art !== 'offen');
       meine.filter(e => e.zeit.art === 'offen').forEach(e => offene.push(e));
       mitBalken.sort((x, y) => {
@@ -11429,7 +11461,7 @@
         const sy = y.zeit.art === 'laufend' ? -1 : y.zeit.start;
         return sx - sy || x.zeit.ende - y.zeit.ende || x.v.name.localeCompare(y.v.name, 'de');
       });
-      return `<p class="lz-gruppe">${esc(a.name)}</p>`
+      return `<p class="lz-gruppe${offen ? ' offen' : ''}">${esc(a.name)}${klappe}</p>`
         + (mitBalken.length
           ? mitBalken.map(e => hausLzZeile(e, h0, raster.stil)).join('')
           : '<p class="lz-leer">Kein Vorhaben mit Zeitangaben.</p>');
@@ -11563,6 +11595,20 @@
 
   function hausVerdrahten() {
     const koerper = document.getElementById('hausKoerper');
+                                                                    
+                                                                       
+    koerper.querySelectorAll('[data-haus-klappe]').forEach(el => el.addEventListener('click', () => {
+      const kuerzel = el.dataset.hausKlappe;
+      if (hausOffen[kuerzel]) delete hausOffen[kuerzel]; else hausOffen[kuerzel] = true;
+      hausSichtSichern();
+      renderHaus();
+    }));
+    koerper.querySelectorAll('[data-haus-klappe-ziel]').forEach(el => el.addEventListener('click', () => {
+      const ziel = el.dataset.hausKlappeZiel;
+      if (hausOffenZiele[ziel]) delete hausOffenZiele[ziel]; else hausOffenZiele[ziel] = true;
+      hausSichtSichern();
+      renderHaus();
+    }));
     koerper.querySelectorAll('[data-haus-haken]').forEach(el => el.addEventListener('click', event => {
       event.stopPropagation();
       hausAuswahl = auswahlUmschalten(hausAuswahl, el.dataset.hausHaken);
