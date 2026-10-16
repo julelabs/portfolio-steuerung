@@ -1855,8 +1855,12 @@
                                                                   
   .haus-abt { display: flex; align-items: center; gap: 4px; }
   .haus-klappe { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: 0; border-radius: 4px; background: transparent; color: var(--fg-muted); cursor: pointer; padding: 0; }
-  .haus-klappe svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s ease; }
-  .haus-klappe[aria-expanded="true"] svg { transform: rotate(180deg); }
+                                                                              
+                                                                               
+                                                                           
+                          
+  .haus-klappe svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s ease; transform: rotate(-90deg); }
+  .haus-klappe[aria-expanded="true"] svg { transform: rotate(0deg); }
   .haus-klappe:hover { background: var(--blau-10); color: var(--fg); }
                                                                           
                                                                        
@@ -2350,7 +2354,7 @@
     <p>Ein Angebot der Stabsstelle Ziel- und Wirkungssteuerung</p>
     <p>Fachliche Verantwortung: Dr. Celina Gisch</p>
     <p>Konzeption und Entwicklung: Julia Breyer</p>
-    <p class="impressum-version"><span data-version>Version 75 · 16.10.2026</span></p>
+    <p class="impressum-version"><span data-version>Version 76 · 16.10.2026</span></p>
     <form method="dialog"><button type="submit" class="impressum-schliessen">Schließen</button></form>
   </dialog>
   
@@ -6392,7 +6396,7 @@
                                                                         
                                                             
     if (speicherArt === 'spiel') {
-      if (!spiel || event.key !== SPIEL || !event.newValue) return;
+      if (!spiel || event.key !== spielSchluessel() || !event.newValue) return;
       try { spielFremdUebernehmen(JSON.parse(event.newValue)); } catch (fehler) {                                       }
       return;
     }
@@ -6422,6 +6426,17 @@
   const spielModus = /(^|[?&])spiel(=|&|$)/.test(spOrt().search || '');
   const SPIEL = SPEICHER + '-spiel';
   let spSite = null;                                          
+                                                                                
+                                                                              
+                                                                          
+                                                                       
+                                                                        
+                                                                
+  function spielSchluessel() {
+    if (!spSite) return SPIEL;
+    const pfad = String(spSite).replace(/^[a-z]+:\/\/[^/]*/i, '').replace(/\/+$/, '');
+    return SPIEL + ':' + (pfad || '/');
+  }
   let spListe = null;                                               
   let spListen = [];                                              
   let spTyp = null;                                                    
@@ -7170,12 +7185,12 @@
   }
 
   function spielLesen() {
-    try { return spielObjektAufbereiten(JSON.parse(localStorage.getItem(SPIEL) || 'null')); } catch (fehler) { return null; }
+    try { return spielObjektAufbereiten(JSON.parse(localStorage.getItem(spielSchluessel()) || 'null')); } catch (fehler) { return null; }
   }
   function spielAblegen() {
     if (!spiel) return;
     try {
-      localStorage.setItem(SPIEL, JSON.stringify(spiel));
+      localStorage.setItem(spielSchluessel(), JSON.stringify(spiel));
     } catch (fehler) {
                                                                        
                                                               
